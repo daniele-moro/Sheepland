@@ -132,12 +132,13 @@ public class StatoPartita {
 				stradeAdiacenti.add((Strada)destArco);
 			}	
 		}
+		
 		return stradeAdiacenti;
 	}
 	public static void main(String[] args){
 		//Test per verificare il caricamento della mappa da XML e il prelievo delle strade adiacenti
 		StatoPartita stato = new StatoPartita();
-		System.out.println("A"+stato.getStradeAdiacenti(stato.strade.get(0)).toString());
+		System.out.println("Adiacenze"+stato.getStradeAdiacenti(stato.strade.get(0)).toString());
 	}
 	
 	
