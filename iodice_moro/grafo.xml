@@ -1,0 +1,11 @@
+<root>
+    <regione id="0" tipo="sabbia"/>
+        
+    <regione id="1" tipo="montagna"/>
+    <regione id="2" tipo="paludi"/>
+    <strada id="3" ncasella="0"/>
+    <strada id="4" ncasella="2"/>
+    
+    <arco id="6" source="3" dest="4"/>
+    <arco id="7" source="3" dest="5"/><strada id="5" ncasella="6"></strada>
+</root>
