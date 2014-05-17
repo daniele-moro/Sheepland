@@ -1,4 +1,4 @@
-package it.polimi.iodice_moro.Model;
+package it.polimi.iodice_moro.model;
 
 
 //Classe usata solo per avere presenza contemporanea di strade e regioni come vertici del grafo

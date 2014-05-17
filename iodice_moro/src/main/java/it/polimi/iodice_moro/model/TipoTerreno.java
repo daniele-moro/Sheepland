@@ -1,4 +1,4 @@
-package it.polimi.iodice_moro.Model;
+package it.polimi.iodice_moro.model;
 
 
 public enum TipoTerreno {

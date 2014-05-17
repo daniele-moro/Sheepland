@@ -1,4 +1,4 @@
-package it.polimi.iodice_moro.Model;
+package it.polimi.iodice_moro.model;
 
 import java.io.File;
 import java.io.IOException;
@@ -87,7 +87,7 @@ public class StatoPartita {
 
 			//DEBUG DEL GRAFO
 			System.out.println(mappa.toString());
-			System.out.println(mappa.edgesOf(nodi.get(0)).toString());
+			System.out.println(mappa.edgesOf(nodi.get(1)).toString());
 
 		} catch (IOException io) {
 			//Eccezione dovuta al file
@@ -100,14 +100,14 @@ public class StatoPartita {
 		
 	}
 
-	private void CaricaGrafo(){
+	private void caricaGrafo(){
 		parseMappaXML(FILE_GRAFO);
 	}
 	
 	
 	public StatoPartita() {
 		mappa= new SimpleGraph<VerticeGrafo,DefaultEdge>(DefaultEdge.class);
-		CaricaGrafo();
+		caricaGrafo();
 	}
 	
 	//Metodo che ritorna le strade adiacenti ad una strada data

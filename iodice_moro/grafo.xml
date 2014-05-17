@@ -1,11 +1,231 @@
-<root>
-    <regione id="0" tipo="sabbia"/>
-        
-    <regione id="1" tipo="montagna"/>
-    <regione id="2" tipo="paludi"/>
-    <strada id="3" ncasella="0"/>
-    <strada id="4" ncasella="2"/>
-    
-    <arco id="6" source="3" dest="4"/>
-    <arco id="7" source="3" dest="5"/><strada id="5" ncasella="6"></strada>
-</root>
+<graph>
+	
+	<!--Regioni -->
+	<regione id="1" tipo="pianura" />
+	<regione id="2" tipo="pianura" />
+	<regione id="3" tipo="pianura" />
+	<regione id="4" tipo="coltivazioni" />
+	<regione id="5" tipo="coltivazioni" />
+	<regione id="6" tipo="coltivazioni" />
+	<regione id="7" tipo="montagna" />
+	<regione id="8" tipo="montagna" />
+	<regione id="9" tipo="montagna" />
+	<regione id="10" tipo="sabbia" />
+	<regione id="11" tipo="sabbia" />
+	<regione id="12" tipo="sabbia" />
+	<regione id="13" tipo="paludi" />
+	<regione id="14" tipo="paludi" />
+	<regione id="15" tipo="paludi" />
+	<regione id="16" tipo="bosco" />
+	<regione id="17" tipo="bosco" />
+	<regione id="18" tipo="bosco" />
+	<regione id="19" tipo="sheepsburg" />
+	
+	<!--Strade -->
+	<strada id="101" ncasella="1" />
+	<strada id="102" ncasella="3" />
+	<strada id="103" ncasella="2" />
+	<strada id="104" ncasella="2" />
+	<strada id="105" ncasella="3" />
+	<strada id="106" ncasella="4" />
+	<strada id="107" ncasella="2" />
+	<strada id="108" ncasella="1" />
+	<strada id="109" ncasella="4" />
+	<strada id="110" ncasella="3" />
+	<strada id="111" ncasella="2" />
+	<strada id="112" ncasella="1" />
+	<strada id="113" ncasella="5" />
+	<strada id="114" ncasella="2" />
+	<strada id="115" ncasella="1" />
+	<strada id="116" ncasella="6" />
+	<strada id="117" ncasella="5" />
+	<strada id="118" ncasella="4" />
+	<strada id="119" ncasella="5" />
+	<strada id="120" ncasella="2" />
+	<strada id="121" ncasella="6" />
+	<strada id="122" ncasella="1" />
+	<strada id="123" ncasella="3" />
+	<strada id="124" ncasella="2" />
+	<strada id="125" ncasella="1" />
+	<strada id="126" ncasella="5" />
+	<strada id="127" ncasella="3" />
+	<strada id="128" ncasella="3" />
+	<strada id="129" ncasella="2" />
+	<strada id="130" ncasella="6" />
+	<strada id="131" ncasella="4" />
+	<strada id="132" ncasella="5" />
+	<strada id="133" ncasella="4" />
+	<strada id="134" ncasella="1" />
+	<strada id="135" ncasella="1" />
+	<strada id="136" ncasella="6" />
+	<strada id="137" ncasella="1" />
+	<strada id="138" ncasella="6" />
+	<strada id="139" ncasella="2" />
+	<strada id="140" ncasella="3" />
+	<strada id="141" ncasella="4" />
+	<strada id="142" ncasella="5" />
+	
+	
+	<!--
+		Collegamenti Strade/Strade (formato 1xx/1yy) e Strade/Regioni (formato 1xx/yy)
+	-->
+	
+	<arco source="101" dest="1" />
+	<arco source="101" dest="2" />
+	<arco source="101" dest="102" />
+	<arco source="101" dest="104" />
+	<arco source="102" dest="1" />
+	<arco source="102" dest="5" />
+	<arco source="102" dest="104" />
+	<arco source="102" dest="103" />
+	<arco source="102" dest="131" />
+	<arco source="103" dest="1" />
+	<arco source="103" dest="4" />
+	<arco source="103" dest="131" />
+	<arco source="104" dest="2" />
+	<arco source="104" dest="5" />
+	<arco source="104" dest="105" />
+	<arco source="104" dest="137" />
+	<arco source="105" dest="2" />
+	<arco source="105" dest="3" />
+	<arco source="105" dest="137" />
+	<arco source="105" dest="106" />
+	<arco source="105" dest="107" />
+	<arco source="106" dest="2" />
+	<arco source="106" dest="18" />
+	<arco source="106" dest="107" />
+	<arco source="107" dest="3" />
+	<arco source="107" dest="18" />
+	<arco source="107" dest="108" />
+	<arco source="107" dest="109" />
+	<arco source="108" dest="18" />
+	<arco source="108" dest="17" />
+	<arco source="108" dest="109" />
+	<arco source="109" dest="3" />
+	<arco source="109" dest="17" />
+	<arco source="109" dest="136" />
+	<arco source="109" dest="110" />
+	<arco source="110" dest="16" />
+	<arco source="110" dest="17" />
+	<arco source="110" dest="111" />
+	<arco source="110" dest="112" />
+	<arco source="110" dest="136" />
+	<arco source="111" dest="15" />
+	<arco source="111" dest="17" />
+	<arco source="111" dest="112" />
+	<arco source="112" dest="15" />
+	<arco source="112" dest="16" />
+	<arco source="112" dest="113" />
+	<arco source="112" dest="114" />
+	<arco source="113" dest="14" />
+	<arco source="113" dest="15" />
+	<arco source="113" dest="114" />
+	<arco source="114" dest="14" />
+	<arco source="114" dest="16" />
+	<arco source="114" dest="116" />
+	<arco source="114" dest="117" />
+	<arco source="115" dest="12" />
+	<arco source="115" dest="14" />
+	<arco source="115" dest="116" />
+	<arco source="115" dest="118" />
+	<arco source="116" dest="13" />
+	<arco source="116" dest="14" />
+	<arco source="116" dest="117" />
+	<arco source="116" dest="118" />
+	<arco source="117" dest="13" />
+	<arco source="117" dest="16" />
+	<arco source="117" dest="140" />
+	<arco source="117" dest="141" />
+	<arco source="118" dest="12" />
+	<arco source="118" dest="13" />
+	<arco source="118" dest="119" />
+	<arco source="118" dest="120" />
+	<arco source="119" dest="11" />
+	<arco source="119" dest="12" />
+	<arco source="119" dest="120" />
+	<arco source="120" dest="11" />
+	<arco source="120" dest="13" />
+	<arco source="120" dest="121" />
+	<arco source="120" dest="135" />
+	<arco source="121" dest="10" />
+	<arco source="121" dest="11" />
+	<arco source="121" dest="135" />
+	<arco source="121" dest="122" />
+	<arco source="121" dest="123" />
+	<arco source="122" dest="9" />
+	<arco source="122" dest="11" />
+	<arco source="122" dest="123" />
+	<arco source="123" dest="9" />
+	<arco source="123" dest="10" />
+	<arco source="123" dest="124" />
+	<arco source="123" dest="126" />
+	<arco source="124" dest="8" />
+	<arco source="124" dest="9" />
+	<arco source="124" dest="126" />
+	<arco source="125" dest="6" />
+	<arco source="125" dest="8" />
+	<arco source="125" dest="127" />
+	<arco source="125" dest="129" />
+	<arco source="126" dest="8" />
+	<arco source="126" dest="10" />
+	<arco source="126" dest="127" />
+	<arco source="126" dest="133" />
+	<arco source="127" dest="7" />
+	<arco source="127" dest="8" />
+	<arco source="127" dest="129" />
+	<arco source="127" dest="133" />
+	<arco source="128" dest="4" />
+	<arco source="128" dest="6" />
+	<arco source="128" dest="129" />
+	<arco source="128" dest="130" />
+	<arco source="129" dest="6" />
+	<arco source="129" dest="7" />
+	<arco source="129" dest="130" />
+	<arco source="130" dest="4" />
+	<arco source="130" dest="7" />
+	<arco source="130" dest="131" />
+	<arco source="130" dest="132" />
+	<arco source="131" dest="4" />
+	<arco source="131" dest="5" />
+	<arco source="131" dest="132" />
+	<arco source="132" dest="5" />
+	<arco source="132" dest="7" />
+	<arco source="132" dest="134" />
+	<arco source="132" dest="138" />
+	<arco source="133" dest="7" />
+	<arco source="133" dest="10" />
+	<arco source="133" dest="134" />
+	<arco source="133" dest="139" />
+	<arco source="134" dest="7" />
+	<arco source="134" dest="19" />
+	<arco source="134" dest="138" />
+	<arco source="134" dest="139" />
+	<arco source="135" dest="10" />
+	<arco source="135" dest="13" />
+	<arco source="135" dest="139" />
+	<arco source="135" dest="140" />
+	<arco source="136" dest="3" />
+	<arco source="136" dest="16" />
+	<arco source="136" dest="141" />
+	<arco source="136" dest="142" />
+	<arco source="137" dest="3" />
+	<arco source="137" dest="5" />
+	<arco source="137" dest="138" />
+	<arco source="137" dest="142" />
+	<arco source="138" dest="5" />
+	<arco source="138" dest="19" />
+	<arco source="138" dest="142" />
+	<arco source="139" dest="10" />
+	<arco source="139" dest="19" />
+	<arco source="139" dest="140" />
+	<arco source="140" dest="13" />
+	<arco source="140" dest="19" />
+	<arco source="140" dest="141" />
+	<arco source="141" dest="16" />
+	<arco source="141" dest="19" />
+	<arco source="141" dest="142" />
+	<arco source="142" dest="3" />
+	<arco source="142" dest="19" />
+	
+</graph>
+	
