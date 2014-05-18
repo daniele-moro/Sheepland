@@ -25,6 +25,7 @@ import org.jgrapht.graph.SimpleGraph;
  */
 public class StatoPartita {
 	
+	//--------------------------ATTRIBUTI------------------------------------------
 	/**
 	 * Costante per il numero di recinti normali massimo
 	 */
@@ -48,7 +49,7 @@ public class StatoPartita {
 	/**
 	 * Tessere per la gestione del costo dei terreni
 	 */
-	Map<String,Integer> tessere= new HashMap<String, Integer>();
+	private Map<String,Integer> tessere= new HashMap<String, Integer>();
 	
 	/**
 	 * Grafo che rappresenta la mappa, i vertici del grafo sono sia strade che regioni,
@@ -71,8 +72,23 @@ public class StatoPartita {
 	 */
 	private static StatoPartita instance = null;
 	
+	/**
+	 * Posizione della pecora nera
+	 */
+	private Regione posPecoraNera;
+	
+	/**
+	 * Giocatore corrente che sta giocando il turno attuale
+	 */
+	private Giocatore giocatoreCorrente;
+	
+	/**
+	 * Elenco dei giocatori che partecipano alla partita
+	 */
+	private ArrayList<Giocatore> giocatori = new ArrayList<Giocatore>();
 	
 	
+	//-----------------------------METODI-----------------------------------------
 	/**
 	 * Metodo per instanziare l'unico oggetto che può essere presente.
 	 * Prima di chiamare il costruttore controlla se esiste già una istanza di StatoPartita
@@ -82,6 +98,37 @@ public class StatoPartita {
 		if (instance == null)
 			instance = new StatoPartita();
 		return instance;
+	}
+	
+	/**
+	 * Costruttore per l'inizializzazione della partita, con caricamento della mappa,
+	 *  è privato perchè lo stato partita è un sigleton, per inizializare la classe si chiama instance()
+	 */
+	private StatoPartita() {
+		initTessere();
+		posPecoraNera=null;
+		giocatoreCorrente=null;
+		numRecinti=NUM_RECINTI_MAX;
+		turnoFinale=false;
+		mappa= new SimpleGraph<VerticeGrafo,DefaultEdge>(DefaultEdge.class);
+		caricaGrafo();
+	}
+	
+	/**
+	 * Metodo per inizializzare la lista di tessere con il loro costo,
+	 * il costo è inializzato a 0
+	 */
+	private void initTessere(){
+		TipoTerreno[] tipi= TipoTerreno.getTipi();
+		for(TipoTerreno t : tipi){
+			if(t.toString()!="sheepsburg"){
+				tessere.put(t.toString(), 0);
+			}
+		}
+	}
+
+	private void caricaGrafo(){
+		parseMappaXML(FILE_GRAFO);
 	}
 	
 	/**
@@ -183,61 +230,7 @@ public class StatoPartita {
 		}
 		
 	}
-
-	private void caricaGrafo(){
-		parseMappaXML(FILE_GRAFO);
-	}
-
-	/**
-	 * Costruttore per l'inizializzazione della partita, con caricamento della mappa,
-	 *  è privato perchè lo stato partita è un sigleton, per inizializare la classe si chiama instance()
-	 */
-	private StatoPartita() {
-		initTessere();
-		numRecinti=NUM_RECINTI_MAX;
-		turnoFinale=false;
-		mappa= new SimpleGraph<VerticeGrafo,DefaultEdge>(DefaultEdge.class);
-		caricaGrafo();
-	}
 	
-	/**
-	 * Metodo per inizializzare la lista di tessere con il loro costo,
-	 * il costo è inializzato a 0
-	 */
-	private void initTessere(){
-		TipoTerreno[] tipi= TipoTerreno.getTipi();
-		for(TipoTerreno t : tipi){
-			tessere.put(t.toString(), 0);
-		}
-	}
-	
-	/**
-	 * @return Numero di recinti ancora disponibili
-	 */
-	public int getNumRecinti() {
-		return numRecinti;
-	}
-	
-	/**
-	 * Metodo che decrementa il numero di recinti, quando uno di questi viene utilizzato
-	 */
-	public void decrementaNumRecinti() {
-		this.numRecinti--;
-	}
-
-	/**
-	 * @return Ritorna lo stato del turno finale
-	 */
-	public boolean isTurnoFinale() {
-		return turnoFinale;
-	}
-	
-	/**
-	 * @param turnoFinale Per settare quando è il turno finale
-	 */
-	public void setTurnoFinale(boolean turnoFinale) {
-		this.turnoFinale = turnoFinale;
-	}
 
 	/**
 	 * Metodo che ritorna le strade adiacenti ad una starda data
@@ -276,6 +269,83 @@ public class StatoPartita {
 		//Test per verificare il caricamento della mappa da XML e il prelievo delle strade adiacenti
 		StatoPartita stato = getInstance();
 		System.out.println("Adiacenze"+stato.getStradeAdiacenti(stato.strade.get(0)).toString());
+	}
+	
+	//------------------------GETTERS & SETTERS----------------------------------
+	
+	/**
+	 * @return Numero di recinti ancora disponibili
+	 */
+	public int getNumRecinti() {
+		return numRecinti;
+	}
+	
+	/**
+	 * Metodo che decrementa il numero di recinti, quando uno di questi viene utilizzato
+	 */
+	public void decrementaNumRecinti() {
+		this.numRecinti--;
+	}
+
+	/**
+	 * @return Ritorna lo stato del turno finale
+	 */
+	public boolean isTurnoFinale() {
+		return turnoFinale;
+	}
+	
+	/**
+	 * @param turnoFinale Per settare quando è il turno finale
+	 */
+	public void setTurnoFinale(boolean turnoFinale) {
+		this.turnoFinale = turnoFinale;
+	}
+
+	/**
+	 * @return Ritorna la Regione dove è posizionata la pecora nera
+	 */
+	public Regione getPosPecoraNera() {
+		return posPecoraNera;
+	}
+
+	/**
+	 * @param posPecoraNera Posizione della pecora nera
+	 */
+	public void setPosPecoraNera(Regione posPecoraNera) {
+		this.posPecoraNera = posPecoraNera;
+	}
+
+	/**
+	 * @return Ritorna il giocatore che sta giocando nel turno corrente
+	 */
+	public Giocatore getGiocatoreCorrente() {
+		return giocatoreCorrente;
+	}
+
+	public void setGiocatoreCorrente(Giocatore giocatoreCorrente) {
+		this.giocatoreCorrente = giocatoreCorrente;
+	}
+
+	public ArrayList<Giocatore> getGiocatori() {
+		return giocatori;
+	}
+
+	public void addGiocatore(Giocatore giocatore) {
+		giocatori.add(giocatore);
+	}
+	
+	public int numGiocatori(){
+		return giocatori.size();
+	}
+	
+	public int costoTessera(TipoTerreno tessera){
+		return tessere.get(tessera.toString());
+	}
+	
+	public void incCostoTessera(TipoTerreno tessera){
+		int costo=tessere.get(tessera.toString());
+		costo++;
+		tessere.put(tessera.toString(), costo);
 	}
 	
 	

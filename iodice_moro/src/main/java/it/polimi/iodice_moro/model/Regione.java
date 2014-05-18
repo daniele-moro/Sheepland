@@ -5,7 +5,9 @@ public class Regione extends VerticeGrafo{
 	//ATTRIBUTI
 	private int numPecore;
 	private boolean pecoraNera;
-	private final TipoTerreno tipo;//Attributo immutabile
+	
+	//Attributo immutabile
+	private final TipoTerreno tipo;
 	
 	//Costruttore per l'inizializzazione della mappa nel caricamento da XML
 	public Regione(String tipo){

@@ -1,11 +1,17 @@
 package it.polimi.iodice_moro.model;
 
-
-//Classe usata solo per avere presenza contemporanea di strade e regioni come vertici del grafo
-//(limitazione dovuto all'unico tipo possibile di vertice permesso dalla libreria JGraphT
+/**
+ * Superclasse astratta delle classi Regione e Strada, usata per avere come vertici del grafo sia Regioni che Strade
+ * (implementazione dovuto alla limitazione della libreria JGraphT che ammette un solo tipo per il Vertice)
+ * @author Antonio Iodice, Daniele Moro
+ *
+ */
 public abstract class VerticeGrafo {
 	
-	//metodo che verrà implemetnato nelle sottoclassi per verificare se l'istanza corrente è una regione o una strada
+	/**
+	 * Metodo Abstract che verrà implemetnato nelle sottoclassi per verificare se
+	 * l'istanza corrente è una regione o una strada
+	 */
 	public abstract boolean isRegione();
 
 }

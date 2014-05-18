@@ -3,7 +3,9 @@ package it.polimi.iodice_moro.model;
 public class Strada extends VerticeGrafo {
 	
 	//ATTRIBUTI
-	private final int nCasella;//Attributo immutabile
+	
+	//Attributo immutabile
+	private final int nCasella;
 	private boolean recinto;
 	
 	//Costruttore usato per l'inizializzazione della mappa caricata da XML

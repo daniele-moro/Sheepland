@@ -1,7 +1,7 @@
 package it.polimi.iodice_moro.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Giocatore {
 
@@ -9,22 +9,33 @@ public class Giocatore {
 	private String nome;
 	private int soldi;
 	private int turno;
+	//Attributi di gestione del turno
 	private int ultimaMossa;
 	private int numMosse;
 	private boolean pastoreSpostato;
+	
 	private Strada position;
+	private Map<String,Integer> tesserePossedute= new HashMap<String,Integer>();
 
-	//Lista di tessere (enum TipoTerreno)
-	private List<TipoTerreno> listaTessere = new ArrayList<TipoTerreno>();
 	
 	//CONSTRUCTOR
-	
 	Giocatore (String nome) {
 		this.nome=nome;
 		pastoreSpostato=false;
 		numMosse=0;
 		ultimaMossa=0;
-		//TURNO???
+		//TURNO?????
+		turno=0;
+		initTessere();
+	}
+	
+	private void initTessere(){
+		TipoTerreno[] tipi= TipoTerreno.getTipi();
+		for(TipoTerreno t : tipi){
+			if(t.toString()!="sheepsburg"){
+				tesserePossedute.put(t.toString(), 0);
+			}
+		}
 	}
 	
 	Giocatore (String nome, Strada position) {
@@ -35,11 +46,6 @@ public class Giocatore {
 	//GETTERS & SETTERS
 	public String getNome() {
 		return nome;
-	}
-
-	// Serve?
-	public void setNome(String nome) {
-		this.nome = nome;
 	}
 
 	public int getSoldi() {
@@ -90,17 +96,32 @@ public class Giocatore {
 		this.position = position;
 	}
 
-	// Getter di listaTessere. Setter non implementato.
-	public List<TipoTerreno> getListaTessere() {
-		return listaTessere;
+	/**
+	 * @return Ritorna l'elenco delle tessere possedute con il numero di tessere acuquistate per ogni tipo di terreno
+	 */
+	public Map<String,Integer> getTesserePossedute() {
+		return tesserePossedute;
 	}
 
+	/**
+	 * Metodo che aggiunge la tessera appena acquistata all'elenco di tessere possedute dal giocatore
+	 * @param tessera Tessera del terreno che si è comperato
+	 */
 	public void addTessera(TipoTerreno tessera) {
-		listaTessere.add(tessera);
+		int num=tesserePossedute.get(tessera.toString());
+		num++;
+		tesserePossedute.put(tessera.toString(), num);
 	}
 	
 	//
 	public void mossaFatta(){
 		numMosse++;
+	}
+	
+	//Metodo chiamato alla fine del turno del giocatore per azzerare gli attributi usati per la gestione del turno
+	public void fineTurno(){
+		numMosse=0;
+		ultimaMossa=-1;
+		pastoreSpostato=false;
 	}
 }
