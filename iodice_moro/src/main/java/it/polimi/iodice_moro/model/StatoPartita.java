@@ -22,6 +22,22 @@ public class StatoPartita {
 	private static final String FILE_GRAFO = "grafo.xml";
 	
 	//ATTRIBUTI
+	public int numRecinti;
+	public boolean turnoFinale;
+	
+	//Attributo per gestire l'istanza singleton.
+	private static StatoPartita instance = null;
+	
+	//Costruttore fittizio. Prima di chiamare il costruttore controlla 
+	//se esiste già istanza di StatoPartita.
+	public static StatoPartita getInstance() {
+		if (instance == null)
+			instance = new StatoPartita();
+		return instance;
+			}
+	
+	
+	
 	//Grafo che rappresenta la mappa, i vertici del grafo sono sia strade che regioni
 	//gli archi sono tra Regioni e Strade (regioni che hanno come confine la strada) e tra strade(tra strade adiacenti)
 	private UndirectedGraph<VerticeGrafo,DefaultEdge> mappa;
@@ -106,10 +122,29 @@ public class StatoPartita {
 	
 	
 	public StatoPartita() {
+		numRecinti=0;
+		turnoFinale=false;
 		mappa= new SimpleGraph<VerticeGrafo,DefaultEdge>(DefaultEdge.class);
 		caricaGrafo();
 	}
 	
+	//GETTERS & SETTERS	
+	public int getNumRecinti() {
+		return numRecinti;
+	}
+
+	public void setNumRecinti(int numRecinti) {
+		this.numRecinti = numRecinti;
+	}
+
+	public boolean isTurnoFinale() {
+		return turnoFinale;
+	}
+
+	public void setTurnoFinale(boolean turnoFinale) {
+		this.turnoFinale = turnoFinale;
+	}
+
 	//Metodo che ritorna le strade adiacenti ad una strada data
 	private ArrayList<Strada> getStradeAdiacenti(Strada strada){
 		//Prelevo tutti gli archi che partono dalla strada di cui devo trovare le adiacenti

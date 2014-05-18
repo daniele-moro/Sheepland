@@ -35,7 +35,7 @@ public class Regione extends VerticeGrafo{
 	@Override
 	public String toString() {
 		return "Regione [numPecore=" + numPecore + ", pecoraNera=" + pecoraNera
-				+ ", tipo=" + tipo + "]";
+				+ ", tipo=" + tipo + "]" +"\n";
 	}
 
 	//Metodo per verificare a runtime il tipo dinamico dell'istanza corrente

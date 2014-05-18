@@ -28,7 +28,7 @@ public class Strada extends VerticeGrafo {
 	//toString usato solo per debug
 	@Override
 	public String toString() {
-		return "Strada [nCasella=" + nCasella + ", recinto=" + recinto + "]";
+		return "Strada [nCasella=" + nCasella + ", recinto=" + recinto + "]" + "\n";
 	}
 
 
