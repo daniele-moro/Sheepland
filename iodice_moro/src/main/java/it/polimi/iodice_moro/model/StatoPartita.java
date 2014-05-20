@@ -15,8 +15,6 @@ import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
-
-//PER ORA implementa solo il caricamento della mappa da file xml (file che si trova nella stessa cartella della classe
 /**
  * Classe che gestisce lo stato corrente della partita.
  * SINGLETON
@@ -90,28 +88,40 @@ public class StatoPartita {
 	
 	//-----------------------------METODI-----------------------------------------
 	/**
-	 * Metodo per instanziare l'unico oggetto che può essere presente.
-	 * Prima di chiamare il costruttore controlla se esiste già una istanza di StatoPartita
+	 * Metodo per instanziare l'unica istanza che può essere presente nel programma.
+	 * Prima di chimare il costruttore controlla se esiste già una istanza di StatoPartita
+	 * @param path Path dove si trova il file da cui caricare la mappa
 	 * @return Ritorna l'unica istanza della classe StatoPartita
 	 */
-	public static StatoPartita getInstance() {
+	public static StatoPartita getInstance(String path) {
 		if (instance == null)
-			instance = new StatoPartita();
+			instance = new StatoPartita(path);
 		return instance;
 	}
 	
 	/**
-	 * Costruttore per l'inizializzazione della partita, con caricamento della mappa,
-	 *  è privato perchè lo stato partita è un sigleton, per inizializare la classe si chiama instance()
+	 * Overload del metodo {@link StatoParita#getInstance(String path)} 
+	 * il path per questo metodo è quello di default
+	 * @return
 	 */
-	private StatoPartita() {
+	public static StatoPartita getInstance(){
+		return getInstance(FILE_GRAFO);
+	}
+	
+	/**
+	 * Costruttore per l'inizializzazione della partita, con caricamento della mappa,
+	 *  è privato perchè lo StatoPartita è un singleton, 
+	 *  per inizializare la classe si chiama {@link StatoPartita#getInstance(String path)}
+	 * @param path Indirizzo del file da cui caricare la mappa
+	 */
+	private StatoPartita(String path) {
 		initTessere();
 		posPecoraNera=null;
 		giocatoreCorrente=null;
 		numRecinti=NUM_RECINTI_MAX;
 		turnoFinale=false;
 		mappa= new SimpleGraph<VerticeGrafo,DefaultEdge>(DefaultEdge.class);
-		caricaGrafo();
+		caricaMappa(path);
 	}
 	
 	/**
@@ -127,113 +137,113 @@ public class StatoPartita {
 		}
 	}
 
-	private void caricaGrafo(){
-		parseMappaXML(FILE_GRAFO);
-	}
-	
 	/**
-	 * parser del file XML contenente la mappa
-	 * @param pathFile Path del file da caricare
+	 * Metodo per caricare la mappa
+	 * @param path Indirizzo del file da cui caricare la mappa
 	 */
-	private void parseMappaXML(String pathFile){
-		Map<Integer,VerticeGrafo> nodi = new HashMap<Integer, VerticeGrafo>();
-		try{
-			/*
-			 * SAXBuilder usato per creare oggetti JDOM2
-			 */
-			SAXBuilder jdomBuilder = new SAXBuilder();
-			/*
-			 * Apertura del file xml in cui e' contenuta la mappa
-			 */
-			File xmlFile = new File(pathFile);
-			/*
-			 * jdomDocument e' l'oggetto JDOM2
-			 */
-			Document jdomDocument = (Document) jdomBuilder.build(xmlFile);
-			/*
-			 * Prelevo il nodo ROOT
-			 */
-			Element rootNode=jdomDocument.getRootElement();
+	private void caricaMappa(String path){
+		try {
+			parseMappaXML(path);
+		} catch (JDOMException | IOException e) {
 			
-			/*
-			 * Itero sulle regioni
-			 */
-			for (Element i : rootNode.getChildren("regione")){
-				/*
-				 * Prelevo i dati memorizzati nell'xml
-				 */
-				int id= Integer.parseInt(i.getAttributeValue("id"));
-				String tipo = i.getAttributeValue("tipo");
-				/*
-				 * Istanzio la nuova classe Regione
-				 */
-				Regione nuovaReg= new Regione(tipo);
-				/*
-				 * Aggiugo l'istanza alla HashMap dei nodi e al vettore delle regioni
-				 */
-				nodi.put(id,nuovaReg);
-				regioni.add(nuovaReg);
-				/*
-				 * Aggingo l'istanza al grafo (come vettore
-				 */
-				mappa.addVertex(nuovaReg);
-			}
-			/*
-			 * Itero sulle starde e applico lo stesso ragionamento delle regioni
-			 */
-			for (Element i : rootNode.getChildren("strada")){
-				/*
-				 * Prelevo i dati memorizzati nell'xml
-				 */
-				int id= Integer.parseInt(i.getAttributeValue("id"));
-				int ncas = Integer.parseInt(i.getAttributeValue("ncasella"));
-				
-				Strada nuovaStr= new Strada(ncas);
-				nodi.put(id,nuovaStr);
-				strade.add(nuovaStr);
-				mappa.addVertex(nuovaStr);
-			}
-			/*
-			 * itero sui link tra strade
-			 */
-			for (Element i : rootNode.getChildren("arco")){
-		//		int id= Integer.parseInt(i.getAttributeValue("id")); //ID dell'arco non usato
-				/*
-				 * Memorizzo id del source e della destinazione
-				 */
-				int idSource = Integer.parseInt(i.getAttributeValue("source"));
-				int idDest = Integer.parseInt(i.getAttributeValue("dest"));
-				
-				/*
-				 * prelevo dalla hashmap gli oggetti correlati a quell'id
-				 */
-				VerticeGrafo nodoSource = nodi.get(idSource);
-				VerticeGrafo nodoDest = nodi.get(idDest);
-				
-				/*
-				 * Aggiungo al grafo l'arco corrispondente
-				 */
-				mappa.addEdge((VerticeGrafo)nodoSource, (VerticeGrafo)nodoDest);
-			}
-
-			//DEBUG DEL GRAFO
-			System.out.println(mappa.toString());
-			System.out.println(mappa.edgesOf(nodi.get(1)).toString());
-
-		} catch (IOException io) {
-			//Eccezione dovuta al file
-			System.out.println(io.getMessage());
+			e.printStackTrace();
 		}
-		catch (JDOMException jdomex) {
-			//Eccezione dovuto a JDOM2
-			System.out.println(jdomex.getMessage());
-		}
-		
 	}
 	
+	/**
+	 * Parser del file XML contenente la mappa
+	 * @param pathFile Path del file da caricare
+	 * @throws IOException 
+	 * @throws JDOMException 
+	 */
+	private void parseMappaXML(String pathFile) throws JDOMException, IOException{
+		Map<Integer,VerticeGrafo> nodi = new HashMap<Integer, VerticeGrafo>();
+		/*
+		 * SAXBuilder usato per creare oggetti JDOM2
+		 */
+		SAXBuilder jdomBuilder = new SAXBuilder();
+		/*
+		 * Apertura del file xml in cui e' contenuta la mappa
+		 */
+		File xmlFile = new File(pathFile);
+		/*
+		 * jdomDocument e' l'oggetto JDOM2
+		 */
+		Document jdomDocument = (Document) jdomBuilder.build(xmlFile);
+		/*
+		 * Prelevo il nodo ROOT
+		 */
+		Element rootNode=jdomDocument.getRootElement();
+
+		/*
+		 * Itero sulle regioni
+		 */
+		for (Element i : rootNode.getChildren("regione")){
+			/*
+			 * Prelevo i dati memorizzati nell'xml
+			 */
+			int id= Integer.parseInt(i.getAttributeValue("id"));
+			String tipo = i.getAttributeValue("tipo");
+			/*
+			 * Istanzio la nuova classe Regione
+			 */
+			Regione nuovaReg= new Regione(tipo);
+			/*
+			 * Aggiugo l'istanza alla HashMap dei nodi e al vettore delle regioni
+			 */
+			nodi.put(id,nuovaReg);
+			regioni.add(nuovaReg);
+			/*
+			 * Aggingo l'istanza al grafo (come vettore
+			 */
+			mappa.addVertex(nuovaReg);
+		}
+		/*
+		 * Itero sulle starde e applico lo stesso ragionamento delle regioni
+		 */
+		for (Element i : rootNode.getChildren("strada")){
+			/*
+			 * Prelevo i dati memorizzati nell'xml
+			 */
+			int id= Integer.parseInt(i.getAttributeValue("id"));
+			int ncas = Integer.parseInt(i.getAttributeValue("ncasella"));
+
+			Strada nuovaStr= new Strada(ncas);
+			nodi.put(id,nuovaStr);
+			strade.add(nuovaStr);
+			mappa.addVertex(nuovaStr);
+		}
+		/*
+		 * itero sui link tra strade
+		 */
+		for (Element i : rootNode.getChildren("arco")){
+			//		int id= Integer.parseInt(i.getAttributeValue("id")); //ID dell'arco non usato
+			/*
+			 * Memorizzo id del source e della destinazione
+			 */
+			int idSource = Integer.parseInt(i.getAttributeValue("source"));
+			int idDest = Integer.parseInt(i.getAttributeValue("dest"));
+
+			/*
+			 * prelevo dalla hashmap gli oggetti correlati a quell'id
+			 */
+			VerticeGrafo nodoSource = nodi.get(idSource);
+			VerticeGrafo nodoDest = nodi.get(idDest);
+
+			/*
+			 * Aggiungo al grafo l'arco corrispondente
+			 */
+			mappa.addEdge((VerticeGrafo)nodoSource, (VerticeGrafo)nodoDest);
+		}
+
+		//DEBUG DEL GRAFO
+		System.out.println(mappa.toString());
+		System.out.println(mappa.edgesOf(nodi.get(1)).toString());
+
+	}
 
 	/**
-	 * Metodo che ritorna le strade adiacenti ad una starda data
+	 * Il metodo ritorna le strade adiacenti (quindi subito collegate) ad una strada passata come parametro
 	 * @param strada Strada di cui si vuole trovare le strade adiacenti
 	 * @return Ritorna le Strade adiacenti
 	 */
@@ -245,11 +255,14 @@ public class StatoPartita {
 		ArrayList<Strada> stradeAdiacenti = new ArrayList<Strada>();
 		
 		/*
-		 * itero sugli archi ottenuti, per ogni arco prelevo la sorgente dell'arco e 
-		 * controllo che il vertice sia una strada e non sia la strada che ho come parametro; 
-		 * se è una strada la memorizzo nell'array delle starde adiacenti
+		 * itero sugli archi ottenuti
 		 */
 		for(DefaultEdge arc : archi){
+			/*
+			 * Per ogni arco prelevo la sorgente dell'arco e 
+			 * controllo che il vertice sia una strada e non sia la strada che ho come parametro; 
+			 * se è una strada la memorizzo nell'array delle starde adiacenti
+			 */
 			VerticeGrafo destArco = mappa.getEdgeSource(arc);
 			if(!destArco.isRegione() && destArco!=strada){
 				stradeAdiacenti.add((Strada) destArco);
@@ -266,7 +279,7 @@ public class StatoPartita {
 	}
 	
 	/**
-	 * Metodo che preleva le strade che confinano con la regione passata come parametro
+	 * Il metodo preleva le strade che confinano con la regione passata come parametro
 	 * @param regione Regione di cui trovare le strade confinanti
 	 * @return Lista di strade che confinano con la regione passata
 	 */
@@ -302,8 +315,8 @@ public class StatoPartita {
 	}
 	
 	/**
-	 * Metodo che ritorna l'altra regione rispetto a quella passata come parametro e
-	 *  che confina con una strada passata come parametro
+	 * Metodo che ritorna l'altra regione rispetto a quella passata come parametro, questa regione
+	 * confina inoltre anche con la regione passata come parametro
 	 * @param regione Regione che confina con la strada
 	 * @param strada Strada che confina con la regione e che confinerà con la regione che stiamo cercando
 	 * @return Regione che confina con la strada del parametro
@@ -335,9 +348,11 @@ public class StatoPartita {
 	}
 	
 	/**
-	 * 
-	 * @param regione
-	 * @return
+	 * Metodo che ritorna le regioni adiacenti ad una regione data,
+	 *  usa {@link StatoPartita#getStradeConfini(Regione regione)} per trovare le strade che circondano la regione data;
+	 *  usa {@link StatoPartita#getAltraRegione(Regione regione, Strada strada)}
+	 * @param regione Regione di cui trovare le regioni che confinano con essa
+	 * @return Elenco delle regioni che confinano con il parametro passato
 	 */
 	public ArrayList<Regione> getRegioniAdiacenti(Regione regione){
 		/*
@@ -410,26 +425,46 @@ public class StatoPartita {
 		return giocatoreCorrente;
 	}
 
+	/**
+	 * @param giocatoreCorrente Setta il giocatore che sta svolgendo il turno corrente
+	 */
 	public void setGiocatoreCorrente(Giocatore giocatoreCorrente) {
 		this.giocatoreCorrente = giocatoreCorrente;
 	}
 
+	/** 
+	 * @return Elenco dei giocatori che partecipano alla partita
+	 */
 	public ArrayList<Giocatore> getGiocatori() {
 		return giocatori;
 	}
 
+	/**
+	 * @param giocatore Giocatore da aggiungere alla partita
+	 */
 	public void addGiocatore(Giocatore giocatore) {
 		giocatori.add(giocatore);
 	}
-	
+	/**
+	 * @return Ritorna il numero di giocatori che stanno giocando la partita
+	 */
 	public int numGiocatori(){
 		return giocatori.size();
 	}
 	
+	/**
+	 * Metodo per conoscere il costo di un tipo di terreno
+	 * @param tessera {@link TipoTerreno} del terreno di cui voglio conoscere il costo
+	 * @return Ritorna il costo del terreno
+	 */
 	public int costoTessera(TipoTerreno tessera){
 		return tessere.get(tessera.toString());
 	}
 	
+	/**
+	 * Metodo per incrementare il costo di un terreno
+	 * @param tessera {@link TipoTerreno} del terreno di cui voglio incrementare il costo
+	 */
 	public void incCostoTessera(TipoTerreno tessera){
 		int costo=tessere.get(tessera.toString());
 		costo++;

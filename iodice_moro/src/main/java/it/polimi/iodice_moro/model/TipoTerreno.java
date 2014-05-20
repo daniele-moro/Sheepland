@@ -6,17 +6,14 @@ package it.polimi.iodice_moro.model;
  * @author Antonio Iodice, Daniele Moro
  *
  */
-
 public enum TipoTerreno {
 SABBIA, MONTAGNA, PIANURA, BOSCO, PALUDI, COLTIVAZIONI, SHEEPSBURG;
 
 	/**
-	 * 
 	 * @param input Stringa con il valore che deve assumere l'enum
 	 * @return Istanza dell'enumeratore corretta
-	 * @throws IllegalArgumentException
 	 */
-	public static TipoTerreno parseInput(String input) throws IllegalArgumentException{
+	public static TipoTerreno parseInput(String input){
 		/*
 		 * Porto la stringa di input in maiuscolo, il metodo valueOf confronta il secondo parametro con tutte le possibili istanze dell'enumeratore,
 		 * se non matcha con nessuna della possibilita mi torna un eccezione di tipo IllegalArgumentException
