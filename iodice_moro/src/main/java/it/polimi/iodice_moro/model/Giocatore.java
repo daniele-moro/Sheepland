@@ -27,9 +27,8 @@ public class Giocatore {
 	}
 	
 	private void initTessere(){
-		TipoTerreno[] tipi= TipoTerreno.getTipi();
-		for(TipoTerreno t : tipi){
-			if(t.toString()!="sheepsburg"){
+		for(TipoTerreno t: TipoTerreno.values()){
+			if(t.toString().equals("sheepsburg")){
 				tesserePossedute.put(t.toString(), 0);
 			}
 		}

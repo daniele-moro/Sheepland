@@ -33,11 +33,4 @@ SABBIA, MONTAGNA, PIANURA, BOSCO, PALUDI, COLTIVAZIONI, SHEEPSBURG;
 		return super.toString().toLowerCase();
 	}
 	
-	/**
-	 * @return Vettore con tutti i possibili valori che puo' assumere l'enumeratore TipoTerreno
-	 */
-	public static TipoTerreno[] getTipi(){
-		return TipoTerreno.class.getEnumConstants();
-	}
-	
 }

@@ -117,11 +117,11 @@ public class StatoPartita {
 	/**
 	 * Metodo per inizializzare la lista di tessere con il loro costo,
 	 * il costo è inializzato a 0
+	 * utilizza {@link TipoTerreno#values()} per prelevare tutte le possibili istanze dell'enumeratore
 	 */
 	private void initTessere(){
-		TipoTerreno[] tipi= TipoTerreno.getTipi();
-		for(TipoTerreno t : tipi){
-			if(t.toString()!="sheepsburg"){
+		for(TipoTerreno t: TipoTerreno.values()){
+			if(t.toString().equals("sheepsburg")){
 				tessere.put(t.toString(), 0);
 			}
 		}
