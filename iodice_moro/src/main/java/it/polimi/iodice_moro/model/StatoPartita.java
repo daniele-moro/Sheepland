@@ -246,8 +246,8 @@ public class StatoPartita {
 		
 		/*
 		 * itero sugli archi ottenuti, per ogni arco prelevo la sorgente dell'arco e 
-		 * controllo che il vertice sia una regione e non sia la strada che ho come parametro; 
-		 * se è una regione la memorizzo nell'arrai delle starde adiacenti
+		 * controllo che il vertice sia una strada e non sia la strada che ho come parametro; 
+		 * se è una strada la memorizzo nell'array delle starde adiacenti
 		 */
 		for(DefaultEdge arc : archi){
 			VerticeGrafo destArco = mappa.getEdgeSource(arc);
@@ -263,6 +263,94 @@ public class StatoPartita {
 			}	
 		}
 		return stradeAdiacenti;
+	}
+	
+	/**
+	 * Metodo che preleva le strade che confinano con la regione passata come parametro
+	 * @param regione Regione di cui trovare le strade confinanti
+	 * @return Lista di strade che confinano con la regione passata
+	 */
+	public ArrayList<Strada> getStradeConfini(Regione regione){
+		/*
+		 * Prelevo tutti gli archi che partono dalla regione di cui devo trovare le strade confinanti
+		 */
+		Set<DefaultEdge> archi = mappa.edgesOf(regione);
+		ArrayList<Strada> stradeConfini = new ArrayList<Strada>();
+		/*
+		 * itero sugli archi ottenuti
+		 */
+		for(DefaultEdge arc : archi){
+			/*
+			 *per ogni arco prelevo la sorgente dell'arco e 
+			 * controllo che il vertice sia una strada; 
+			 * se è una strada la memorizzo nell'array delle starde adiacenti
+			 */
+			VerticeGrafo destArco = mappa.getEdgeSource(arc);
+			if(!destArco.isRegione()){
+				stradeConfini.add((Strada) destArco);
+			}
+			/*
+			 * stesso ragionamento di prima solo per la destinazione dell'arco
+			 */
+			destArco = mappa.getEdgeTarget(arc);
+			if(!destArco.isRegione()){
+				stradeConfini.add((Strada)destArco);
+			}
+		}
+		return stradeConfini;
+		
+	}
+	
+	/**
+	 * Metodo che ritorna l'altra regione rispetto a quella passata come parametro e
+	 *  che confina con una strada passata come parametro
+	 * @param regione Regione che confina con la strada
+	 * @param strada Strada che confina con la regione e che confinerà con la regione che stiamo cercando
+	 * @return Regione che confina con la strada del parametro
+	 */
+	public Regione getAltraRegione(Regione regione, Strada strada){
+		/*
+		 * prelevo tutti gli archi che partono dalla strada, tra tutti gli archi ce ne saranno solo 2 che sono regioni,
+		 * una di queste è quella che stiamo cercando
+		 */
+		Set<DefaultEdge> archi = mappa.edgesOf(strada);
+		/*
+		 * itero sugli archi che partono dalla strada passata come parametro
+		 * per ogni arco dovrò vedere la destinazione e source e verificare se è una regione e se lo è,
+		 * che sia diversa da quella passata come parametro
+		 */
+		for(DefaultEdge arc : archi){
+			VerticeGrafo destArco=mappa.getEdgeSource(arc);
+			if(destArco.isRegione() && destArco!=regione)
+				return (Regione) destArco;
+			destArco = mappa.getEdgeTarget(arc);
+			if(destArco.isRegione() && destArco!=regione)
+				return (Regione) destArco;
+		}
+		/*
+		 * se non trovo nessuna regione, torno null per segnalare che non ci sono regioni 
+		 * che sono adiacenti alla regione passata con in mezzo la strada passata come parametro
+		 */
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @param regione
+	 * @return
+	 */
+	public ArrayList<Regione> getRegioniAdiacenti(Regione regione){
+		/*
+		 * Prelevo tutti gli archi che partono dalla regione di cui devo trovare le regioni adiacenti
+		 */
+		ArrayList<Strada> stradeConfini = getStradeConfini(regione);
+		ArrayList<Regione> regioniConfini = new ArrayList<Regione>();
+		
+		for(Strada str : stradeConfini){
+			regioniConfini.add(getAltraRegione(regione, str));
+		}
+		return regioniConfini;
+		
 	}
 	
 	public static void main(String[] args){
@@ -283,7 +371,7 @@ public class StatoPartita {
 	/**
 	 * Metodo che decrementa il numero di recinti, quando uno di questi viene utilizzato
 	 */
-	public void decrementaNumRecinti() {
+	public void decNumRecinti() {
 		this.numRecinti--;
 	}
 
@@ -295,10 +383,10 @@ public class StatoPartita {
 	}
 	
 	/**
-	 * @param turnoFinale Per settare quando è il turno finale
+	 * @param turnoFinale Per settare true turnoFinale quando è il turno finale
 	 */
-	public void setTurnoFinale(boolean turnoFinale) {
-		this.turnoFinale = turnoFinale;
+	public void setTurnoFinale() {
+		this.turnoFinale = true;
 	}
 
 	/**
@@ -347,8 +435,4 @@ public class StatoPartita {
 		costo++;
 		tessere.put(tessera.toString(), costo);
 	}
-	
-	
-	
-
 }

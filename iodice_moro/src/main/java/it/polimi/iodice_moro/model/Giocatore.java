@@ -8,7 +8,6 @@ public class Giocatore {
 	//ATTRIBUTI
 	private String nome;
 	private int soldi;
-	private int turno;
 	//Attributi di gestione del turno
 	private int ultimaMossa;
 	private int numMosse;
@@ -24,8 +23,6 @@ public class Giocatore {
 		pastoreSpostato=false;
 		numMosse=0;
 		ultimaMossa=0;
-		//TURNO?????
-		turno=0;
 		initTessere();
 	}
 	
@@ -56,13 +53,6 @@ public class Giocatore {
 		this.soldi = soldi;
 	}
 
-	public int getTurno() {
-		return turno;
-	}
-
-	public void setTurno(int turno) {
-		this.turno = turno;
-	}
 
 	public int getUltimaMossa() {
 		return ultimaMossa;
@@ -76,8 +66,8 @@ public class Giocatore {
 		return numMosse;
 	}
 
-	public void setNumMosse(int numMosse) {
-		this.numMosse = numMosse;
+	public void incNumMosse() {
+		this.numMosse++;
 	}
 
 	public boolean isPastoreSpostato() {
@@ -113,15 +103,11 @@ public class Giocatore {
 		tesserePossedute.put(tessera.toString(), num);
 	}
 	
-	//
-	public void mossaFatta(){
-		numMosse++;
-	}
 	
 	//Metodo chiamato alla fine del turno del giocatore per azzerare gli attributi usati per la gestione del turno
-	public void fineTurno(){
+	/*public void fineTurno(){
 		numMosse=0;
 		ultimaMossa=-1;
 		pastoreSpostato=false;
-	}
+	}*/
 }
