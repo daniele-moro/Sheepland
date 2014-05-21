@@ -1,5 +1,6 @@
 package it.polimi.iodice_moro.controller;
 
+
 import it.polimi.iodice_moro.model.*;
 
 public class Controller {
@@ -14,10 +15,12 @@ public class Controller {
 	 */
 	private Giocatore giocatore;
 	
+	
+	
 	/**
 	 * Costruttore del controller del giocatore.
-	 * @param statopartita
-	 * @param giocatore
+	 * @param statopartita Istanza statopartita.
+	 * @param giocatore Istanza del giocatore gestito.
 	 */
 	public Controller(StatoPartita statopartita, Giocatore giocatore) {
 		super();
@@ -41,7 +44,7 @@ public class Controller {
 	
 	/**
 	 * Aggiunge un recinto alla strada, se sono disponibili.
-	 * @param strada
+	 * @param strada Strada sulla quale aggiungere il recinto.
 	 */
 	public void aggiungiRecinto(Strada strada) {
 		if(statopartita.getNumRecinti()>0) 
@@ -53,7 +56,7 @@ public class Controller {
 	/**
 	 * Sposta la pecora nell'altra regione adiacente alla posizione attuale
 	 * del giocatore.
-	 * Utilizza {@link StatoPartita.getAltraRegione} per ottenere l'altra regione adiacente.
+	 * Utilizza {@link StatoPartita#getAltraRegione} per ottenere l'altra regione adiacente.
 	 * @param Regionepecora regione in cui si trova la pecora.
 	 * @param Stradagiocatore strada in cui si trova il giocatore.
 	 * 
@@ -71,5 +74,21 @@ public class Controller {
 		
 	}
 	
+	/*
+	public boolean acquistaTessera(TipoTerreno tipo) {
+		Map<String, Integer> tess=statopartita.get
+		tess.put(tipo.toString(), map.get(key) + 1);
+	}
+	*/
+	
+	/*
+	public void spostaPedina (Strada nuovastrada) throws Exception {
+		if(nuovastrada.isRecinto()) 
+			throw new Exception();
+		if(giocatore.devePagare(nuovastrada)) 
+			giocatore.decrSoldi();
+		giocatore.setPosition(nuovastrada);
+	}
+	*/
 	
 }

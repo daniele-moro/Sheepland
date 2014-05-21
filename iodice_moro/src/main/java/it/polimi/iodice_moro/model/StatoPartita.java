@@ -131,7 +131,7 @@ public class StatoPartita {
 	 */
 	private void initTessere(){
 		for(TipoTerreno t: TipoTerreno.values()){
-			if(t.toString().equals("sheepsburg")){
+			if(!t.toString().equals("sheepsburg")){
 				tessere.put(t.toString(), 0);
 			}
 		}

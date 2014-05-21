@@ -7,11 +7,19 @@ package it.polimi.iodice_moro.model;
 
 public class Regione extends VerticeGrafo{
 	
-	//ATTRIBUTI
+	/**
+	 * Numero di pecore nella regione.
+	 */
 	private int numPecore;
+	
+	/**
+	 * Presenta pecora nera nella regione.
+	 */
 	private boolean pecoraNera;
 	
-	//Attributo immutabile
+	/**
+	 * Tipo del terreno. Attributo immutabile.
+	 */
 	private final TipoTerreno tipo;
 	
 	//Costruttore per l'inizializzazione della mappa nel caricamento da XML
