@@ -77,4 +77,22 @@ public class Regione extends VerticeGrafo{
 	public boolean isRegione() {
 		return true;
 	}
+	
+	/**
+	 * Aumenta numero pecore della regione di un'unità.
+	 */
+	public void addPecora() {
+		numPecore++;
+	}
+
+	/**
+	 * Diminuisce numero pecore della regione di un'unità.
+	 * @throws Exception se numero di pecore della regione è <=0.
+	 */
+	public void removePecora() throws Exception {
+		if(numPecore>0) 
+			numPecore--;
+		else 
+			throw new Exception();
+	}
 }
