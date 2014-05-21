@@ -11,12 +11,22 @@ public class Giocatore {
 	private int soldi;
 	
 	//Attributi di gestione del turno
-	private int ultimaMossa;
+	/**
+	 * Attributo per gestire l'ultima mossa che il giocatore 
+	 * rappresentato da questa istanza della classe Giocatore ha fatto nel turno corrente
+	 */
+	private TipoMossa ultimaMossa;
+	/**
+	 * Numero di mosse che il gicatore ha fatto nel turno corrente
+	 */
 	private int numMosse;
+	/**
+	 * Attributo per sapere se nel turno corrente il gicoatore ha gia spostato il proprio pastore
+	 */
 	private boolean pastoreSpostato;
 	
 	/**
-	 * Posizione giocatore.
+	 * Posizione giocatore nella mappa
 	 */
 	private Strada position;
 	
@@ -34,7 +44,7 @@ public class Giocatore {
 		this.nome=nome;
 		pastoreSpostato=false;
 		numMosse=0;
-		ultimaMossa=0;
+		ultimaMossa=TipoMossa.NO_MOSSA;
 		soldi=SOLDI_INIT;
 		initTessere();
 	}
@@ -91,7 +101,7 @@ public class Giocatore {
 	/**
 	 * @return Ritorna il valore dell'attributo ultimaMossa.
 	 */
-	public int getUltimaMossa() {
+	public TipoMossa getUltimaMossa() {
 		return ultimaMossa;
 	}
 
@@ -99,7 +109,7 @@ public class Giocatore {
 	 * Imposta il valore dell'attributo ultimamossa.
 	 * @param ultimaMossa Valore da impostare.
 	 */
-	public void setUltimaMossa(int ultimaMossa) {
+	public void setUltimaMossa(TipoMossa ultimaMossa) {
 		this.ultimaMossa = ultimaMossa;
 	}
 
