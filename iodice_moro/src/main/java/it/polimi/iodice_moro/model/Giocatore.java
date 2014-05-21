@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class Giocatore {
 
+	private static final int SOLDI_INIT = 20;
 	//ATTRIBUTI
 	private String nome;
 	private int soldi;
@@ -29,18 +30,19 @@ public class Giocatore {
 	/**
 	 * Costruttore classe Giocatore.
 	 */
-	Giocatore (String nome) {
+	public Giocatore (String nome) {
 		this.nome=nome;
 		pastoreSpostato=false;
 		numMosse=0;
 		ultimaMossa=0;
+		soldi=SOLDI_INIT;
 		initTessere();
 	}
 	
 	/**
 	 * Costruttore classe giocatore.
 	 */
-	Giocatore (String nome, Strada position) {
+	public Giocatore (String nome, Strada position) {
 		this(nome);
 		this.position=position;
 	}
@@ -69,16 +71,6 @@ public class Giocatore {
 	public int getSoldi() {
 		return soldi;
 	}
-
-	/*
-	**
-	 * Imposta quantità soldi giocatore.
-	 * @param soldi Valore da impostare.
-	 
-	public void setSoldi(int soldi) {
-		this.soldi = soldi;
-	}
-	*/
 
 	/**
 	 * Decrementa i soldi del giocatore di un'unità.
@@ -165,14 +157,6 @@ public class Giocatore {
 		tesserePossedute.put(tessera.toString(), num);
 	}
 
-	/*
-	public boolean devePagare(Strada strada) {
-		List<> adiacenti = new ArrayList<>(statopartita.getStradeAdiacenti(strada));
-		if(strada.equals(adiacenti.get(0)) || strada.equals(adiacenti.get(1)))
-			return true;
-		return false;
-	}
-	*/
 	
 	
 	//Metodo chiamato alla fine del turno del giocatore per azzerare gli attributi usati per la gestione del turno

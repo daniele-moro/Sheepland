@@ -247,7 +247,7 @@ public class StatoPartita {
 	 * @param strada Strada di cui si vuole trovare le strade adiacenti
 	 * @return Ritorna le Strade adiacenti
 	 */
-	private ArrayList<Strada> getStradeAdiacenti(Strada strada){
+	public ArrayList<Strada> getStradeAdiacenti(Strada strada){
 		/*
 		 * Prelevo tutti gli archi che partono dalla strada di cui devo trovare le adiacenti
 		 */
