@@ -78,6 +78,14 @@ public class Giocatore {
 	public void decrSoldi() {
 		soldi--;
 	}
+	
+	/**
+	 * Decrementa i soldi del giocatore di una quantità pari a val.
+	 * @param val Valore da decrementare.
+	 */
+	public void decrSoldi(int val) {
+		soldi=soldi-val;
+	}
 
 
 	/**

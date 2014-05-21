@@ -6,6 +6,7 @@ import it.polimi.iodice_moro.model.Regione;
 import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.Strada;
 import it.polimi.iodice_moro.model.TipoMossa;
+import it.polimi.iodice_moro.model.TipoTerreno;
 
 import java.util.HashMap;
 
@@ -60,28 +61,52 @@ public class Controller {
 		
 	}
 	
-	/*
-	public boolean acquistaTessera(TipoTerreno tipo) {
-		Map<String, Integer> tess=statopartita.get
-		tess.put(tipo.toString(), map.get(key) + 1);
+	/**
+	 * Giocatore compra la tessera, decrementando i suoi soldi di un valore pari
+	 * al costo attuale della tessera che compra.
+	 * @param tipo Tipo della tessera che vuole comprare.
+	 * @throws Exception Se il costo della tessera è maggiore dei soldi del giocatore.
+	 */
+	public void acquistaTessera(TipoTerreno tipo) throws Exception {
+		Giocatore giocatore=statopartita.getGiocatoreCorrente();
+		int costoTessera=statopartita.getCostoTessera(tipo);
+		if (costoTessera > giocatore.getSoldi() )
+			throw new Exception();
+		else {
+			giocatore.decrSoldi(statopartita.getCostoTessera(tipo));
+			giocatore.addTessera(tipo);
+		}
 	}
-	*/
 	
-	
+	/**
+	 * Cambia la posizione corrente del giocatore.
+	 * @param nuovastrada Nuova posizione.
+	 * @throws Exception Se nuova posizione è già occupata da un recinto.
+	 * @throws Exception Se non ha abbastanza soldi per muoversi.
+	 */
 	public void spostaPedina (Strada nuovastrada) throws Exception {
 		Giocatore giocatore = statopartita.getGiocatoreCorrente();
-		if(nuovastrada.isRecinto()) 
+		if(nuovastrada.isRecinto()) {
 			throw new Exception();
-		if(pagaSpostamento(nuovastrada, giocatore)) 
-			giocatore.decrSoldi();
+		}
+		if(pagaSpostamento(nuovastrada, giocatore)) {
+			if(giocatore.getSoldi()==0) {
+				throw new Exception();
+			}
+			else {
+				giocatore.decrSoldi();
+			}
+		}
 		this.aggiungiRecinto(giocatore.getPosition());
 		giocatore.setPosition(nuovastrada);
 	}
 
 	/**
-	 * @param nuovastrada
-	 * @param giocatore
-	 * @return
+	 * Controlla se la strada è contenuta nelle strada adiacenti alla posizione corrente 
+	 * del giocatore.
+	 * @param strada Strada da controllare se è contenuta.
+	 * @param giocatore Giocatore corrente.
+	 * @return Ritorna true se la strada è contenuta.
 	 */
 	private boolean pagaSpostamento(Strada strada, Giocatore giocatore) {
 		return !statopartita.getStradeAdiacenti(giocatore.getPosition()).contains(strada);

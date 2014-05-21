@@ -457,7 +457,7 @@ public class StatoPartita {
 	 * @param tessera {@link TipoTerreno} del terreno di cui voglio conoscere il costo
 	 * @return Ritorna il costo del terreno
 	 */
-	public int costoTessera(TipoTerreno tessera){
+	public int getCostoTessera(TipoTerreno tessera){
 		return tessere.get(tessera.toString());
 	}
 	
