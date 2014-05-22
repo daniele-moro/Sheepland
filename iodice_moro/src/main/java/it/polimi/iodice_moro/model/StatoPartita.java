@@ -4,8 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -17,17 +20,18 @@ import org.jgrapht.graph.SimpleGraph;
 
 /**
  * Classe che gestisce lo stato corrente della partita.
- * SINGLETON
  * @author Antonio Iodice, Daniele Moro
  *
  */
 public class StatoPartita {
 	
+	public static Logger logger_model =  Logger.getLogger("it.polimi.iodice_moro.model");
+	
 	//--------------------------ATTRIBUTI------------------------------------------
 	/**
 	 * Costante per il numero di recinti normali massimo
 	 */
-	private static final int NUM_RECINTI_MAX = 20;
+	public static final int NUM_RECINTI_MAX = 20;
 
 	/**
 	 * Costante per il file da cui caricare il grafo
@@ -37,12 +41,12 @@ public class StatoPartita {
 	/**
 	 * Numero di recinti ancora da posizionare
 	 */
-	public int numRecinti;
+	private int numRecinti;
 	
 	/**
 	 * Verifica se si è o meno nel turno finale
 	 */
-	public boolean turnoFinale;
+	private boolean turnoFinale;
 	
 	/**
 	 * Tessere per la gestione del costo dei terreni
@@ -58,17 +62,12 @@ public class StatoPartita {
 	/**
 	 * Lista delle strade della mappa
 	 */
-	private ArrayList<Strada> strade= new ArrayList<Strada>();
+	private List<Strada> strade= new ArrayList<Strada>();
 	
 	/**
 	 * Lista delle regioni della mappa
 	 */
-	private ArrayList<Regione> regioni= new ArrayList<Regione>();
-	
-	/**
-	 * Attributo per gestire l'istanza singleton.
-	 */
-	private static StatoPartita instance = null;
+	private List<Regione> regioni= new ArrayList<Regione>();
 	
 	/**
 	 * Posizione della pecora nera
@@ -83,30 +82,10 @@ public class StatoPartita {
 	/**
 	 * Elenco dei giocatori che partecipano alla partita
 	 */
-	private ArrayList<Giocatore> giocatori = new ArrayList<Giocatore>();
+	private List<Giocatore> giocatori = new ArrayList<Giocatore>();
 	
 	
 	//-----------------------------METODI-----------------------------------------
-	/**
-	 * Metodo per instanziare l'unica istanza che può essere presente nel programma.
-	 * Prima di chimare il costruttore controlla se esiste già una istanza di StatoPartita
-	 * @param path Path dove si trova il file da cui caricare la mappa
-	 * @return Ritorna l'unica istanza della classe StatoPartita
-	 */
-	public static StatoPartita getInstance(String path) {
-		if (instance == null)
-			instance = new StatoPartita(path);
-		return instance;
-	}
-	
-	/**
-	 * Overload del metodo {@link StatoParita#getInstance(String path)} 
-	 * il path per questo metodo è quello di default
-	 * @return
-	 */
-	public static StatoPartita getInstance(){
-		return getInstance(FILE_GRAFO);
-	}
 	
 	/**
 	 * Costruttore per l'inizializzazione della partita, con caricamento della mappa,
@@ -114,7 +93,7 @@ public class StatoPartita {
 	 *  per inizializare la classe si chiama {@link StatoPartita#getInstance(String path)}
 	 * @param path Indirizzo del file da cui caricare la mappa
 	 */
-	private StatoPartita(String path) {
+	public StatoPartita(String path) {
 		initTessere();
 		posPecoraNera=null;
 		giocatoreCorrente=null;
@@ -122,6 +101,13 @@ public class StatoPartita {
 		turnoFinale=false;
 		mappa= new SimpleGraph<VerticeGrafo,DefaultEdge>(DefaultEdge.class);
 		caricaMappa(path);
+	}
+	
+	/**
+	 * Costruttore senza parametri, usa come file del grafo il file di default
+	 */
+	public StatoPartita(){
+		this(FILE_GRAFO);
 	}
 	
 	/**
@@ -139,14 +125,17 @@ public class StatoPartita {
 
 	/**
 	 * Metodo per caricare la mappa
+	 * Gestisce le eventuali eccezioni generate dal caricamento da file della mappa
 	 * @param path Indirizzo del file da cui caricare la mappa
 	 */
 	private void caricaMappa(String path){
 		try {
 			parseMappaXML(path);
 		} catch (JDOMException | IOException e) {
-			
-			e.printStackTrace();
+			/*
+			 * L'eccezione viene loggata nel logger del model
+			 */
+			logger_model.log(Level.SEVERE, e.getMessage());
 		}
 	}
 	
@@ -370,7 +359,7 @@ public class StatoPartita {
 	
 	public static void main(String[] args){
 		//Test per verificare il caricamento della mappa da XML e il prelievo delle strade adiacenti
-		StatoPartita stato = getInstance();
+		StatoPartita stato = new StatoPartita();
 		System.out.println("Adiacenze"+stato.getStradeAdiacenti(stato.strade.get(0)).toString());
 	}
 	
@@ -435,7 +424,7 @@ public class StatoPartita {
 	/** 
 	 * @return Elenco dei giocatori che partecipano alla partita
 	 */
-	public ArrayList<Giocatore> getGiocatori() {
+	public List<Giocatore> getGiocatori() {
 		return giocatori;
 	}
 
@@ -474,14 +463,14 @@ public class StatoPartita {
 	/**
 	 * @return Elenco delle strade
 	 */
-	public ArrayList<Strada> getStrade(){
+	public List<Strada> getStrade(){
 		return strade;
 	}
 	
 	/**
 	 * @return Elenco delle regioni
 	 */
-	public ArrayList<Regione> getRegioni(){
+	public List<Regione> getRegioni(){
 		return regioni;
 	}
 }
