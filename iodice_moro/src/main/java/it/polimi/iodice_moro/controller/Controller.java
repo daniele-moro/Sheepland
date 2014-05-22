@@ -9,6 +9,9 @@ import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class Controller {
 	
@@ -58,7 +61,23 @@ public class Controller {
 			e.printStackTrace();
 			System.out.println("Non ci sono pecore da spostare");
 		}
-		
+	}
+	
+	/**
+	 * Sposta pecora nera.
+	 * @param regionePecora Regione dove si trova la pecora.
+	 * @param regAdiacente Regione dove deve essere spostata le pecora.
+	 * @see #checkSpostamentoNera
+	 */
+	public void spostaPecoraNera(Regione regionePecora, Regione regAdiacente) {
+		try {
+			regionePecora.removePecoraNera();
+			regAdiacente.addPecoraNera();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Non ci sono pecore da spostare");
+		}
 	}
 	
 	/**
@@ -112,9 +131,34 @@ public class Controller {
 		return !statopartita.getStradeAdiacenti(giocatore.getPosition()).contains(strada);
 	}
 	
-	//
-	private void spostaNera() {} //Metodo avviato all'inizio del turno per valutare spostamento pecora nera.
-	private int lanciaDado() {return 0;}
+	/**
+	 * Metodo avviato all'inizio del turno per valutare se la pecora nera deve essere
+	 * spostata, e chiama il metodo {@link #spostaPecoraNera(Regione, Regione)} per
+	 * effettuarlo in caso di risposta positiva.
+	 */
+	private void checkSpostamentoNera() {
+		int valoreDado = lanciaDado();
+		Regione posNera=statopartita.getPosPecoraNera();
+		List<Strada> stradeConfini=statopartita.getStradeConfini(posNera);
+		for(Strada strada : stradeConfini) {
+			if(strada.getnCasella()==valoreDado) {
+				if(strada.isRecinto()==false) {
+					Regione nuovaRegionePecora=statopartita.getAltraRegione(posNera, strada);
+					spostaPecoraNera(posNera, nuovaRegionePecora);
+				}
+				else return;
+			}
+		}
+	}
+	
+	/**
+	 * @return Ritorna valore compreso tra 0 e 6 (incluso).
+	 */
+	private int lanciaDado() {
+		Random random=new Random();
+		return random.nextInt(7);		
+	}
+	
 	private HashMap<Giocatore, Integer> calcolaPunteggio() {return null;} //Calcola punteggio. Cosa ritorna?
 	public void creaGiocatore(String nome, Strada posizione) {}
 	private void mossaPossibile(TipoMossa mossaDaEffettuare) {}
