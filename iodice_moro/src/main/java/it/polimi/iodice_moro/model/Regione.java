@@ -95,37 +95,22 @@ public class Regione extends VerticeGrafo{
 
 	/**
 	 * Diminuisce numero pecore della regione di un'unità.
-	 * @throws Exception se numero di pecore della regione è <=0.
 	 */
-	public void removePecora() throws Exception {
-		if(numPecore>0) {
+	public void removePecora() {
 			numPecore--;
-		}
-		else 
-			throw new Exception();
-			System.out.println("Non ci sono pecore da muovere");
 	}
 
-
-
-	public void removePecoraNera() throws Exception {
-		if(pecoraNera==true) {
-			setPecoraNera(false);
-		}
-		else {
-			System.out.println("Non è presente una pecora nera");
-			throw new Exception();			
-		}
+	/**
+	 * Rimuovere pecora nera dalla regione.
+	 */
+	public void removePecoraNera() {
+		setPecoraNera(false);
 	}
 	
-	public void addPecoraNera() throws Exception {
-		if(pecoraNera==false) {
-			setPecoraNera(true);
-		}
-		else {
-			System.out.println("E' già presente una pecora nera");
-			throw new Exception();			
-	}
-		
+	/**
+	 * Aggiunge pecora nera.
+	 */
+	public void addPecoraNera() {
+		setPecoraNera(true);	
 	}
 }
