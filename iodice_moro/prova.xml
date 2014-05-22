@@ -1,0 +1,54 @@
+<graph>
+	
+	<!--Regioni -->
+	<regione id="1" tipo="pianura" />
+	<regione id="2" tipo="sabbia" />
+	<regione id="3" tipo="paludi" />
+	<regione id="4" tipo="bosco" />
+	<regione id="5" tipo="sheepsburg" />
+	
+	<!--Strade -->
+	<strada id="101" ncasella="1" />
+	<strada id="102" ncasella="3" />
+	<strada id="103" ncasella="2" />
+	<strada id="104" ncasella="6" />
+	<strada id="105" ncasella="3" />
+	<strada id="106" ncasella="1" />
+	<strada id="107" ncasella="2" />
+	<strada id="108" ncasella="1" />
+    
+	
+	<!--
+		Collegamenti Strade/Strade (formato 1xx/1yy) e Strade/Regioni (formato 1xx/yy)
+	-->
+	
+	<arco source="101" dest="1" />
+	<arco source="101" dest="2" />
+	<arco source="101" dest="102" />
+	<arco source="101" dest="104" />
+	<arco source="102" dest="1" />
+	<arco source="102" dest="5" />
+	<arco source="102" dest="104" />
+	<arco source="102" dest="103" />
+	<arco source="103" dest="1" />
+	<arco source="103" dest="4" />
+	<arco source="103" dest="105" />
+	<arco source="104" dest="2" />
+	<arco source="104" dest="5" />
+	<arco source="104" dest="105" />
+	<arco source="104" dest="101" />
+	<arco source="105" dest="2" />
+	<arco source="105" dest="3" />
+	<arco source="105" dest="106" />
+	<arco source="105" dest="107" />
+	<arco source="106" dest="2" />
+	<arco source="106" dest="4" />
+	<arco source="106" dest="107" />
+	<arco source="107" dest="3" />
+	<arco source="107" dest="5" />
+	<arco source="107" dest="108" />
+	<arco source="107" dest="102" />
+	<arco source="108" dest="4" />
+	<arco source="108" dest="5" />
+</graph>
+	

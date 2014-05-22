@@ -470,4 +470,18 @@ public class StatoPartita {
 		costo++;
 		tessere.put(tessera.toString(), costo);
 	}
+	
+	/**
+	 * @return Elenco delle strade
+	 */
+	public ArrayList<Strada> getStrade(){
+		return strade;
+	}
+	
+	/**
+	 * @return Elenco delle regioni
+	 */
+	public ArrayList<Regione> getRegioni(){
+		return regioni;
+	}
 }
