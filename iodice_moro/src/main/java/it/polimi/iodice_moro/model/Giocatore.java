@@ -62,7 +62,7 @@ public class Giocatore {
 	 */
 	private void initTessere(){
 		for(TipoTerreno t: TipoTerreno.values()){
-			if(!t.toString().equals("sheepsburg")){
+			if(t.toString()!="sheepsburg"){
 				tesserePossedute.put(t.toString(), 0);
 			}
 		}

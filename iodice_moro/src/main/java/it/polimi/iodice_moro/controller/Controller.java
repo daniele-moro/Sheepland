@@ -11,6 +11,7 @@ import it.polimi.iodice_moro.model.TipoTerreno;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Random;
 
 public class Controller {
@@ -36,10 +37,12 @@ public class Controller {
 	 * @param strada Strada sulla quale aggiungere il recinto.
 	 */
 	private void aggiungiRecinto(Strada strada) {
-		if(statopartita.getNumRecinti()>0) 
+		if(statopartita.getNumRecinti()>0) {
 			strada.setRecinto(true);
-		else 
+		}
+		else {
 			statopartita.setTurnoFinale();
+		}
 	}
 	
 	/**
@@ -89,8 +92,9 @@ public class Controller {
 	public void acquistaTessera(TipoTerreno tipo) throws Exception {
 		Giocatore giocatore=statopartita.getGiocatoreCorrente();
 		int costoTessera=statopartita.getCostoTessera(tipo);
-		if (costoTessera > giocatore.getSoldi() )
+		if (costoTessera > giocatore.getSoldi() ){
 			throw new Exception();
+		}
 		else {
 			giocatore.decrSoldi(statopartita.getCostoTessera(tipo));
 			giocatore.addTessera(tipo);
@@ -142,7 +146,7 @@ public class Controller {
 		List<Strada> stradeConfini=statopartita.getStradeConfini(posNera);
 		for(Strada strada : stradeConfini) {
 			if(strada.getnCasella()==valoreDado) {
-				if(strada.isRecinto()==false) {
+				if(!strada.isRecinto()) {
 					Regione nuovaRegionePecora=statopartita.getAltraRegione(posNera, strada);
 					spostaPecoraNera(posNera, nuovaRegionePecora);
 				}
@@ -159,7 +163,9 @@ public class Controller {
 		return random.nextInt(7);		
 	}
 	
-	private HashMap<Giocatore, Integer> calcolaPunteggio() {return null;} //Calcola punteggio. Cosa ritorna?
+	//Calcola punteggio. Cosa ritorna?
+	private Map<Giocatore, Integer> calcolaPunteggio() {return null;} 
+	
 	public void creaGiocatore(String nome, Strada posizione) {}
 	private void mossaPossibile(TipoMossa mossaDaEffettuare) {}
 	

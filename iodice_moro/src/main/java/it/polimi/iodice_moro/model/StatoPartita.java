@@ -117,7 +117,7 @@ public class StatoPartita {
 	 */
 	private void initTessere(){
 		for(TipoTerreno t: TipoTerreno.values()){
-			if(!t.toString().equals("sheepsburg")){
+			if(t.toString()!="sheepsburg"){
 				tessere.put(t.toString(), 0);
 			}
 		}
@@ -253,14 +253,14 @@ public class StatoPartita {
 			 * se è una strada la memorizzo nell'array delle starde adiacenti
 			 */
 			VerticeGrafo destArco = mappa.getEdgeSource(arc);
-			if(!destArco.isRegione() && destArco!=strada){
+			if(!destArco.isRegione() && !destArco.equals(strada)){
 				stradeAdiacenti.add((Strada) destArco);
 			}
 			/*
 			 * stesso ragionamento di prima solo per la destinazione dell'arco
 			 */
 			destArco = mappa.getEdgeTarget(arc);
-			if(!destArco.isRegione() && destArco!=strada){
+			if(!destArco.isRegione() && !destArco.equals(strada)){
 				stradeAdiacenti.add((Strada)destArco);
 			}	
 		}
@@ -323,11 +323,13 @@ public class StatoPartita {
 		 */
 		for(DefaultEdge arc : archi){
 			VerticeGrafo destArco=mappa.getEdgeSource(arc);
-			if(destArco.isRegione() && destArco!=regione)
+			if(destArco.isRegione() && !destArco.equals(regione)){
 				return (Regione) destArco;
+			}
 			destArco = mappa.getEdgeTarget(arc);
-			if(destArco.isRegione() && destArco!=regione)
+			if(destArco.isRegione() && !destArco.equals(regione)){
 				return (Regione) destArco;
+			}
 		}
 		/*
 		 * se non trovo nessuna regione, torno null per segnalare che non ci sono regioni 
