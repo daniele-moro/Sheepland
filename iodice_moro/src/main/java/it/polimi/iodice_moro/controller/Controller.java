@@ -92,9 +92,7 @@ public class Controller {
 	public void acquistaTessera(TipoTerreno tipo) throws Exception {
 		Giocatore giocatore=statopartita.getGiocatoreCorrente();
 		int costoTessera=statopartita.getCostoTessera(tipo);
-		if (costoTessera > giocatore.getSoldi() ){
-			throw new Exception();
-		}
+		if (costoTessera > giocatore.getSoldi() ) {throw new Exception();}
 		else {
 			giocatore.decrSoldi(statopartita.getCostoTessera(tipo));
 			giocatore.addTessera(tipo);
@@ -137,20 +135,38 @@ public class Controller {
 	
 	/**
 	 * Metodo avviato all'inizio del turno per valutare se la pecora nera deve essere
-	 * spostata, e chiama il metodo {@link #spostaPecoraNera(Regione, Regione)} per
-	 * effettuarlo in caso di risposta positiva.
+	 * spostata, e chiama il metodo {@link #checkSpostamentoPecoraNera(int, Regione, Strada)}
+	 * e verifica per ogni regione se ha i requisiti per spostargli la pecora.
 	 */
-	private void checkSpostamentoNera() {
+	private void checkDado() {
 		int valoreDado = lanciaDado();
+		
 		Regione posNera=statopartita.getPosPecoraNera();
 		List<Strada> stradeConfini=statopartita.getStradeConfini(posNera);
+		
 		for(Strada strada : stradeConfini) {
-			if(strada.getnCasella()==valoreDado) {
-				if(!strada.isRecinto()) {
-					Regione nuovaRegionePecora=statopartita.getAltraRegione(posNera, strada);
-					spostaPecoraNera(posNera, nuovaRegionePecora);
-				}
-				else return;
+			checkSpostamentoPecoraNera(valoreDado, posNera, strada);
+		}
+	}
+
+
+	/**
+	 * Verifica se deve spostare la pecora nella regione che confina 
+	 * con la strada data come parametro e non contiene già la pecora
+	 * nera.
+	 * @param valoreDado Risultato del lancio del dado.
+	 * @param posNera Regione dove si trova le pecora.
+	 * @param strada Strada confinante con la regione da verifica se rispetta i requisiti.
+	 */
+	private void checkSpostamentoPecoraNera(int valoreDado, Regione posNera,
+			Strada strada) {
+		if(strada.getnCasella()==valoreDado && !strada.isRecinto()) {
+			Regione nuovaRegionePecora=statopartita.getAltraRegione(posNera, strada);
+			try {
+				spostaPecoraNera(posNera, nuovaRegionePecora);
+			}
+			catch (Exception e) {
+				e.printStackTrace(System.out);
 			}
 		}
 	}
