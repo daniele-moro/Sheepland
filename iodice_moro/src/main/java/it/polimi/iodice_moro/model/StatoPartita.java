@@ -117,7 +117,7 @@ public class StatoPartita {
 	 */
 	private void initTessere(){
 		for(TipoTerreno t: TipoTerreno.values()){
-			if(t.toString()!="sheepsburg"){
+			if(!t.toString().equals("sheepsburg")){
 				tessere.put(t.toString(), 0);
 			}
 		}
@@ -236,12 +236,12 @@ public class StatoPartita {
 	 * @param strada Strada di cui si vuole trovare le strade adiacenti
 	 * @return Ritorna le Strade adiacenti
 	 */
-	public ArrayList<Strada> getStradeAdiacenti(Strada strada){
+	public List<Strada> getStradeAdiacenti(Strada strada){
 		/*
 		 * Prelevo tutti gli archi che partono dalla strada di cui devo trovare le adiacenti
 		 */
 		Set<DefaultEdge> archi =mappa.edgesOf(strada);
-		ArrayList<Strada> stradeAdiacenti = new ArrayList<Strada>();
+		List<Strada> stradeAdiacenti = new ArrayList<Strada>();
 		
 		/*
 		 * itero sugli archi ottenuti
@@ -272,12 +272,12 @@ public class StatoPartita {
 	 * @param regione Regione di cui trovare le strade confinanti
 	 * @return Lista di strade che confinano con la regione passata
 	 */
-	public ArrayList<Strada> getStradeConfini(Regione regione){
+	public List<Strada> getStradeConfini(Regione regione){
 		/*
 		 * Prelevo tutti gli archi che partono dalla regione di cui devo trovare le strade confinanti
 		 */
 		Set<DefaultEdge> archi = mappa.edgesOf(regione);
-		ArrayList<Strada> stradeConfini = new ArrayList<Strada>();
+		List<Strada> stradeConfini = new ArrayList<Strada>();
 		/*
 		 * itero sugli archi ottenuti
 		 */
@@ -345,12 +345,12 @@ public class StatoPartita {
 	 * @param regione Regione di cui trovare le regioni che confinano con essa
 	 * @return Elenco delle regioni che confinano con il parametro passato
 	 */
-	public ArrayList<Regione> getRegioniAdiacenti(Regione regione){
+	public List<Regione> getRegioniAdiacenti(Regione regione){
 		/*
 		 * Prelevo tutti gli archi che partono dalla regione di cui devo trovare le regioni adiacenti
 		 */
-		ArrayList<Strada> stradeConfini = getStradeConfini(regione);
-		ArrayList<Regione> regioniConfini = new ArrayList<Regione>();
+		List<Strada> stradeConfini = getStradeConfini(regione);
+		List<Regione> regioniConfini = new ArrayList<Regione>();
 		
 		for(Strada str : stradeConfini){
 			regioniConfini.add(getAltraRegione(regione, str));
@@ -457,9 +457,11 @@ public class StatoPartita {
 	 * @param tessera {@link TipoTerreno} del terreno di cui voglio incrementare il costo
 	 */
 	public void incCostoTessera(TipoTerreno tessera){
-		int costo=tessere.get(tessera.toString());
-		costo++;
-		tessere.put(tessera.toString(), costo);
+		if(tessera.compareTo(TipoTerreno.SHEEPSBURG)!=0){
+			int costo=tessere.get(tessera.toString());
+			costo++;
+			tessere.put(tessera.toString(), costo);
+		}
 	}
 	
 	/**

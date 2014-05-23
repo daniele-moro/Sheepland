@@ -180,7 +180,8 @@ public class TestStatoPartita {
 		
 		assertEquals(statoPartitaT.getRegioniAdiacenti(regioni.get(0)).size(),regioniAdiacenti.size());
 		List<Regione> regad= statoPartitaT.getRegioniAdiacenti(regioni.get(0));
-		assertTrue(regad.containsAll(regioniAdiacenti));
+		assertEquals(regad,regioniAdiacenti);
+		//assertTrue(regad.containsAll(regioniAdiacenti));
 	}
 	
 	@Test
@@ -217,13 +218,17 @@ public class TestStatoPartita {
 		//Controlliamo che addGiocatore funzioni correttamente
 		Giocatore gamer1 = new Giocatore("Prova1");
 		Giocatore gamer2 = new Giocatore("Prova2");
-		List<Giocatore> listaGamer=new ArrayList<Giocatore>();
-		listaGamer.add(gamer1);
-		listaGamer.add(gamer2);
+		List<Giocatore> listaGamers=new ArrayList<Giocatore>();
+		
+		listaGamers.add(gamer1);
+		listaGamers.add(gamer2);
+		
 		statoPartitaT.addGiocatore(gamer1);
 		statoPartitaT.addGiocatore(gamer2);
-		assertEquals(statoPartitaT.numGiocatori(),listaGamer.size());
-		assertTrue(statoPartitaT.getGiocatori().containsAll(listaGamer));
+		
+		assertEquals(statoPartitaT.numGiocatori(),listaGamers.size());
+		assertEquals(statoPartitaT.getGiocatori(),listaGamers);
+		//assertTrue(statoPartitaT.getGiocatori().containsAll(listaGamer));
 	}
 	
 	@Test
@@ -234,10 +239,9 @@ public class TestStatoPartita {
 		
 		statoPartitaT.incCostoTessera(TipoTerreno.COLTIVAZIONI);
 		assertEquals(statoPartitaT.getCostoTessera(TipoTerreno.COLTIVAZIONI),1);
+		
+		statoPartitaT.incCostoTessera(TipoTerreno.SHEEPSBURG);
+		assertEquals(statoPartitaT.getCostoTessera(TipoTerreno.SHEEPSBURG),null);
 
 	}
-	
-	
-	
-	
 }

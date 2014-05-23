@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class Giocatore {
 
-	private static final int SOLDI_INIT = 20;
+	public static final int SOLDI_INIT = 20;
 	//ATTRIBUTI
 	private String nome;
 	private int soldi;
@@ -47,6 +47,7 @@ public class Giocatore {
 		ultimaMossa=TipoMossa.NO_MOSSA;
 		soldi=SOLDI_INIT;
 		initTessere();
+		position=null;
 	}
 	
 	/**
@@ -62,7 +63,7 @@ public class Giocatore {
 	 */
 	private void initTessere(){
 		for(TipoTerreno t: TipoTerreno.values()){
-			if(t.toString()!="sheepsburg"){
+			if(!t.toString().equals("sheepsburg")){
 				tesserePossedute.put(t.toString(), 0);
 			}
 		}
@@ -170,9 +171,11 @@ public class Giocatore {
 	 * @param tessera Tessera del terreno che si è comperato
 	 */
 	public void addTessera(TipoTerreno tessera) {
-		int num=tesserePossedute.get(tessera.toString());
-		num++;
-		tesserePossedute.put(tessera.toString(), num);
+		if(tessera.compareTo(TipoTerreno.SHEEPSBURG)!=0){
+			Integer num=tesserePossedute.get(tessera.toString());
+			num++;
+			tesserePossedute.put(tessera.toString(), num);
+		}
 	}
 
 	
