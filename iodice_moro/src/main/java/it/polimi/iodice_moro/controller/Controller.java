@@ -19,7 +19,7 @@ public class Controller {
 	/**
 	 * Istanza del model di StatoPartita.
 	 */
-	private StatoPartita statopartita;	
+	private StatoPartita statoPartita;	
 	
 	
 	/**
@@ -28,7 +28,7 @@ public class Controller {
 	 * @param giocatore Istanza del giocatore gestito.
 	 */
 	public Controller(StatoPartita statopartita) {
-		this.statopartita = statopartita;
+		this.statoPartita = statopartita;
 	}
 
 	
@@ -37,11 +37,11 @@ public class Controller {
 	 * @param strada Strada sulla quale aggiungere il recinto.
 	 */
 	private void aggiungiRecinto(Strada strada) {
-		if(statopartita.getNumRecinti()>0) {
+		if(statoPartita.getNumRecinti()>0) {
 			strada.setRecinto(true);
 		}
 		else {
-			statopartita.setTurnoFinale();
+			statoPartita.setTurnoFinale();
 		}
 	}
 	
@@ -51,38 +51,36 @@ public class Controller {
 	 * Utilizza {@link StatoPartita#getAltraRegione} per ottenere l'altra regione adiacente.
 	 * @param Regionepecora regione in cui si trova la pecora.
 	 * @param Stradagiocatore strada in cui si trova il giocatore.
-	 * 
+	 * @throws Exception Se non ci sono pecore da spostare.
 	 */
-	public void spostaPecora(Regione regionePecora) {
-		Giocatore giocatore = statopartita.getGiocatoreCorrente();
-		Regione regAdiacente = statopartita.getAltraRegione(regionePecora, giocatore.getPosition());
-		try {
+	public void spostaPecora(Regione regionePecora) throws Exception {
+		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
+		Regione regAdiacente = statoPartita.getAltraRegione(regionePecora, giocatore.getPosition());
+
+		if(regionePecora.getNumPecore()>0) {
 			regionePecora.removePecora();
 			regAdiacente.addPecora();
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Non ci sono pecore da spostare");
-		}
+		else throw new Exception();
+
 	}
 	
 	/**
 	 * Sposta pecora nera.
 	 * @param regionePecora Regione dove si trova la pecora.
 	 * @param regAdiacente Regione dove deve essere spostata le pecora.
+	 * @throws Exception se non ci sono pecore nere da spostare.
 	 * @see #checkSpostamentoNera
 	 */
-	public void spostaPecoraNera(Regione regionePecora, Regione regAdiacente) {
-		try {
+	public void spostaPecoraNera(Regione regionePecora, Regione regAdiacente) throws Exception {
+		if(regionePecora.isPecoraNera()==true) {
 			regionePecora.removePecoraNera();
 			regAdiacente.addPecoraNera();
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Non ci sono pecore da spostare");
-		}
+		else throw new Exception();
 	}
-	
+
+
 	/**
 	 * Giocatore compra la tessera, decrementando i suoi soldi di un valore pari
 	 * al costo attuale della tessera che compra.
@@ -90,11 +88,11 @@ public class Controller {
 	 * @throws Exception Se il costo della tessera è maggiore dei soldi del giocatore.
 	 */
 	public void acquistaTessera(TipoTerreno tipo) throws Exception {
-		Giocatore giocatore=statopartita.getGiocatoreCorrente();
-		int costoTessera=statopartita.getCostoTessera(tipo);
+		Giocatore giocatore=statoPartita.getGiocatoreCorrente();
+		int costoTessera=statoPartita.getCostoTessera(tipo);
 		if (costoTessera > giocatore.getSoldi() ) {throw new Exception();}
 		else {
-			giocatore.decrSoldi(statopartita.getCostoTessera(tipo));
+			giocatore.decrSoldi(statoPartita.getCostoTessera(tipo));
 			giocatore.addTessera(tipo);
 		}
 	}
@@ -106,7 +104,7 @@ public class Controller {
 	 * @throws Exception Se non ha abbastanza soldi per muoversi.
 	 */
 	public void spostaPedina (Strada nuovastrada) throws Exception {
-		Giocatore giocatore = statopartita.getGiocatoreCorrente();
+		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
 		if(nuovastrada.isRecinto()) {
 			throw new Exception();
 		}
@@ -130,43 +128,28 @@ public class Controller {
 	 * @return Ritorna true se la strada è contenuta.
 	 */
 	private boolean pagaSpostamento(Strada strada, Giocatore giocatore) {
-		return !statopartita.getStradeAdiacenti(giocatore.getPosition()).contains(strada);
+		return !statoPartita.getStradeAdiacenti(giocatore.getPosition()).contains(strada);
 	}
 	
 	/**
 	 * Metodo avviato all'inizio del turno per valutare se la pecora nera deve essere
-	 * spostata, e chiama il metodo {@link #checkSpostamentoPecoraNera(int, Regione, Strada)}
-	 * e verifica per ogni regione se ha i requisiti per spostargli la pecora.
+	 * spostata.
 	 */
-	private void checkDado() {
+	private void checkSpostaPecoraNera() {
 		int valoreDado = lanciaDado();
-		
-		Regione posNera=statopartita.getPosPecoraNera();
-		List<Strada> stradeConfini=statopartita.getStradeConfini(posNera);
-		
+
+		Regione posNera=statoPartita.getPosPecoraNera();
+		List<Strada> stradeConfini=statoPartita.getStradeConfini(posNera);
+
 		for(Strada strada : stradeConfini) {
-			checkSpostamentoPecoraNera(valoreDado, posNera, strada);
-		}
-	}
-
-
-	/**
-	 * Verifica se deve spostare la pecora nella regione che confina 
-	 * con la strada data come parametro e non contiene già la pecora
-	 * nera.
-	 * @param valoreDado Risultato del lancio del dado.
-	 * @param posNera Regione dove si trova le pecora.
-	 * @param strada Strada confinante con la regione da verifica se rispetta i requisiti.
-	 */
-	private void checkSpostamentoPecoraNera(int valoreDado, Regione posNera,
-			Strada strada) {
-		if(strada.getnCasella()==valoreDado && !strada.isRecinto()) {
-			Regione nuovaRegionePecora=statopartita.getAltraRegione(posNera, strada);
-			try {
-				spostaPecoraNera(posNera, nuovaRegionePecora);
-			}
-			catch (Exception e) {
-				e.printStackTrace(System.out);
+			if(strada.getnCasella()==valoreDado && !strada.isRecinto()) {
+				Regione nuovaRegionePecora=statoPartita.getAltraRegione(posNera, strada);
+				try {
+					spostaPecoraNera(posNera, nuovaRegionePecora);
+				}
+				catch (Exception e) {
+					e.printStackTrace(System.out);
+				}
 			}
 		}
 	}
