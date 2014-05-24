@@ -10,9 +10,10 @@ import it.polimi.iodice_moro.model.TipoTerreno;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Controller {
 	
@@ -20,6 +21,8 @@ public class Controller {
 	 * Istanza del model di StatoPartita.
 	 */
 	private StatoPartita statoPartita;	
+	
+	public static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.controller");
 	
 	
 	/**
@@ -76,6 +79,7 @@ public class Controller {
 		if(regionePecora.isPecoraNera()==true) {
 			regionePecora.removePecoraNera();
 			regAdiacente.addPecoraNera();
+			statoPartita.setPosPecoraNera(regAdiacente);
 		}
 		else throw new Exception();
 	}
@@ -148,7 +152,7 @@ public class Controller {
 					spostaPecoraNera(posNera, nuovaRegionePecora);
 				}
 				catch (Exception e) {
-					e.printStackTrace(System.out);
+					logger.log(Level.SEVERE, "Non ci sono pecore da spostare", e);
 				}
 			}
 		}
@@ -162,11 +166,59 @@ public class Controller {
 		return random.nextInt(7);		
 	}
 	
-	//Calcola punteggio. Cosa ritorna?
-	private Map<Giocatore, Integer> calcolaPunteggio() {return null;} 
+	/**
+	 * Calcola punteggi associati ad ogni giocatore.
+	 * @return Ritorna una tabella hash con il punteggio relativo ad ogni giocatore.
+	 */
+	private Map<Giocatore, Integer> calcolaPunteggio() {
+		List<Giocatore>listaGiocatori=statoPartita.getGiocatori();
+		Map<Giocatore, Integer> punteggi = new HashMap<Giocatore , Integer>();
+		
+		for(Giocatore giocatore : listaGiocatori) {
+			Map<String, Integer> tesserePossedute = giocatore.getTesserePossedute();
+			Integer punteggio = 0;
+			
+			for(Map.Entry<String, Integer> elemento : tesserePossedute.entrySet()) {
+				String nomeTessera = elemento.getKey();
+				Integer numeroTessere = elemento.getValue();
+				//Nota: precondizione è che a ogni tipo di tessera corrisponda una regione.
+				Regione regione = statoPartita.getRegioneByString(nomeTessera);
+				punteggio=punteggio + numeroTessere*regione.getNumPecore();
+				if(regione.isPecoraNera()) {
+					punteggio=punteggio+2*numeroTessere;
+				}
+			}
+			punteggi.put(giocatore, punteggio);
+		}
+		return punteggi;
+	}
+	/**
+	 * Crea nuovo giocatore.
+	 * @param nome Nome del giocatore.
+	 * @param posizione Strada su cui dovrà essere posizionato.
+	 */
+	public void creaGiocatore(String nome, Strada posizione) {
+		Giocatore nuovoGiocatore = new Giocatore(nome, posizione);
+		statoPartita.addGiocatore(nuovoGiocatore);
+	}
 	
-	public void creaGiocatore(String nome, Strada posizione) {}
-	private void mossaPossibile(TipoMossa mossaDaEffettuare) {}
+	/**
+	 * Stabilisce se una mossa può essere effettuata.
+	 * @param mossaDaEffettuare Mossa che il giocatore vuole effettuare.
+	 * @return Ritorna true in caso positivo, false altrimenti.
+	 */
+	private boolean mossaPossibile(TipoMossa mossaDaEffettuare) {
+		Giocatore giocatoreCorrente=statoPartita.getGiocatoreCorrente();
+		TipoMossa ultimaMossa=giocatoreCorrente.getUltimaMossa();
+		boolean pastoreSpostato = giocatoreCorrente.isPastoreSpostato();
+		if(!ultimaMossa.equals(mossaDaEffettuare)&&!mossaDaEffettuare.equals(TipoMossa.SPOSTA_PASTORE)) {
+			return false;
+		}
+		if(!mossaDaEffettuare.equals(TipoMossa.SPOSTA_PASTORE)&&giocatoreCorrente.getNumMosse()==2&&!pastoreSpostato) {
+			return false;
+		}
+		else return true;
+	}
 	
 	/*
 	 * Cambia l'ultima mossa nel giocatore corrente. Incremente numero mosse giocatore corrente.
