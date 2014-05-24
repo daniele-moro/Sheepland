@@ -479,13 +479,14 @@ public class StatoPartita {
 	 * @param nomeregione Nome della regione di cui si vuole avere il riferimento.
 	 * @return Riferimento regione il cui tipo corrisponde alla stringa in ingresso.
 	 */
-	public Regione getRegioneByString(String nomeregione) {
+	public List<Regione> getRegioniByString(String nomeregione) {
+		List<Regione> listaRegioni = new ArrayList<Regione>();
 		for(Regione regione : getRegioni()) {
 			String tipoRegione = regione.getTipo().toString();
 			if(tipoRegione.equals(nomeregione)) {
-				return regione;
+				listaRegioni.add(regione);
 			}
 		}
-		return null;
+		return listaRegioni;
 	}
 }

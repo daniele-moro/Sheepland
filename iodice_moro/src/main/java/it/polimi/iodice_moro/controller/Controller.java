@@ -33,8 +33,15 @@ public class Controller {
 	public Controller(StatoPartita statopartita) {
 		this.statoPartita = statopartita;
 	}
-
 	
+	/**
+	 * @return Ritorna riferimento a StatoPartita.
+	 */
+	public StatoPartita getStatoPartita() {
+		return statoPartita;
+	}
+
+
 	/**
 	 * Aggiunge un recinto alla strada, se sono disponibili.
 	 * @param strada Strada sulla quale aggiungere il recinto.
@@ -173,23 +180,26 @@ public class Controller {
 	private Map<Giocatore, Integer> calcolaPunteggio() {
 		List<Giocatore>listaGiocatori=statoPartita.getGiocatori();
 		Map<Giocatore, Integer> punteggi = new HashMap<Giocatore , Integer>();
-		
+
 		for(Giocatore giocatore : listaGiocatori) {
 			Map<String, Integer> tesserePossedute = giocatore.getTesserePossedute();
 			Integer punteggio = 0;
-			
+
 			for(Map.Entry<String, Integer> elemento : tesserePossedute.entrySet()) {
 				String nomeTessera = elemento.getKey();
 				Integer numeroTessere = elemento.getValue();
 				//Nota: precondizione è che a ogni tipo di tessera corrisponda una regione.
-				Regione regione = statoPartita.getRegioneByString(nomeTessera);
-				punteggio=punteggio + numeroTessere*regione.getNumPecore();
-				if(regione.isPecoraNera()) {
-					punteggio=punteggio+2*numeroTessere;
+				List<Regione> regioniByTipo = statoPartita.getRegioniByString(nomeTessera);
+				for(Regione regioneTipoX : regioniByTipo) {
+					punteggio = punteggio + numeroTessere*regioneTipoX.getNumPecore();
+					if(regioneTipoX.isPecoraNera()) {
+						punteggio=punteggio+2*numeroTessere;
+					}
 				}
 			}
 			punteggi.put(giocatore, punteggio);
 		}
+
 		return punteggi;
 	}
 	/**
