@@ -146,7 +146,7 @@ public class TestGiocatore {
 		assertEquals(gamerTest.getTesserePossedute().get(TipoTerreno.SABBIA.toString()),Integer.valueOf(1));
 		
 		gamerTest.addTessera(TipoTerreno.SHEEPSBURG);
-		assertEquals(gamerTest.getTesserePossedute().get(TipoTerreno.SHEEPSBURG.toString()),null);
+		assertEquals(gamerTest.getTesserePossedute().get(TipoTerreno.SHEEPSBURG.toString()),Integer.valueOf(1));
 		
 	}
 

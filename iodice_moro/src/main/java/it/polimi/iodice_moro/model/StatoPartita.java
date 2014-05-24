@@ -117,10 +117,8 @@ public class StatoPartita {
 	 */
 	private void initTessere(){
 		for(TipoTerreno t: TipoTerreno.values()){
-			if(!t.toString().equals("sheepsburg")){
-				tessere.put(t.toString(), 0);
-			}
-		}
+			tessere.put(t.toString(), 0);
+				}
 	}
 
 	/**
@@ -457,11 +455,9 @@ public class StatoPartita {
 	 * @param tessera {@link TipoTerreno} del terreno di cui voglio incrementare il costo
 	 */
 	public void incCostoTessera(TipoTerreno tessera){
-		if(tessera.compareTo(TipoTerreno.SHEEPSBURG)!=0){
-			int costo=tessere.get(tessera.toString());
-			costo++;
-			tessere.put(tessera.toString(), costo);
-		}
+		int costo=tessere.get(tessera.toString());
+		costo++;
+		tessere.put(tessera.toString(), costo);
 	}
 	
 	/**
