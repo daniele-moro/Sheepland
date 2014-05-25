@@ -144,7 +144,8 @@ public class Controller {
 	}
 
 	/**
-	 * Controlla se la strada è contenuta nelle strada adiacenti alla posizione corrente 
+	 * Controlla se il giocatore deve pagare lo spamento. Cioè controlla
+	 * se la strada è contenuta nelle strada adiacenti alla posizione corrente 
 	 * del giocatore.
 	 * @param strada Strada da controllare se è contenuta.
 	 * @param giocatore Giocatore corrente.

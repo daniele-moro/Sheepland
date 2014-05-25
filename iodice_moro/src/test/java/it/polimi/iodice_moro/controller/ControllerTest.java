@@ -37,7 +37,7 @@ public class ControllerTest {
 		regione1=listaRegioni.get(1);
 		regione2=listaRegioni.get(2);
 		regione3=listaRegioni.get(3);
-		regione4=listaRegioni.get(4);
+		regione4=listaRegioni.get(15);
 		
 		strada0=listaStrade.get(0);
 		strada1=listaStrade.get(1);
@@ -160,9 +160,52 @@ public class ControllerTest {
 	
 
 	@Test
-	public void testSpostaPedina() {
-		fail("Not yet implemented");
+	public void testSpostaPedina() throws Exception {
+		Strada giocatorePositionBefore = giocatoreTest.getPosition();
+		Strada giocatorePositionAfterFirst = statoPartitaT.getStradeAdiacenti(giocatorePositionBefore).get(0);
+		int soldiBefore = giocatoreTest.getSoldi();
+		controllerTest.spostaPedina(giocatorePositionAfterFirst);
+		//Controllo che recinto sia statto messo, posizione del giocatore sia quella giusta
+		//e che soldi non siano diminuiti.
+		assertTrue(giocatorePositionBefore.isRecinto());
+		assertEquals(giocatorePositionAfterFirst, giocatoreTest.getPosition());
+		assertEquals(soldiBefore, giocatoreTest.getSoldi());
+		
+		
+		Strada giocatorePositionAfterSecond = statoPartitaT.getStradeConfini(regione4).get(0);
+		controllerTest.spostaPedina(giocatorePositionAfterSecond);
+		//Controllo che recinto sia statto messo, posizione del giocatore sia quella giusta
+		//e che soldi siano diminuiti.
+		assertTrue(giocatorePositionAfterFirst.isRecinto());
+		assertEquals(giocatorePositionAfterSecond, giocatoreTest.getPosition());
+		assertEquals(soldiBefore-1, giocatoreTest.getSoldi());
+		
 	}
+
+	@Test
+	public void TestaSpostaPedinaWithException() {
+		Strada giocatorePositionBefore = giocatoreTest.getPosition();
+		Strada giocatorePositionAfterFirst = statoPartitaT.getStradeAdiacenti(giocatorePositionBefore).get(0);
+		giocatorePositionAfterFirst.setRecinto(true);
+		try {
+			controllerTest.spostaPedina(giocatorePositionAfterFirst);
+			fail("Should have caught exception");
+		}
+		catch (Exception e) {
+			
+		}
+		
+		giocatoreTest.decrSoldi((giocatoreTest.getSoldi()));
+		Strada giocatorePositionAfterSecond = statoPartitaT.getStradeConfini(regione4).get(0);
+		try {
+			controllerTest.spostaPedina(giocatorePositionAfterSecond);
+			fail("Should have caught the second exception");
+		}
+		catch (Exception e){
+			
+		}
+		
+	}	
 
 	@Test
 	public void testCreaGiocatore() {
@@ -171,8 +214,10 @@ public class ControllerTest {
 		assertEquals(strada0, statoPartitaT.getGiocatori().get(0).getPosition());		
 	}
 	
-	
-	
+	@Test
+	public void testCheckSpostamentoNera() {
+		
+	}	
 	
 	
 }
