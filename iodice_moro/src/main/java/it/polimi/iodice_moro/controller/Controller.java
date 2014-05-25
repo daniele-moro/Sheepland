@@ -61,12 +61,18 @@ public class Controller {
 	 * Utilizza {@link StatoPartita#getAltraRegione} per ottenere l'altra regione adiacente.
 	 * @param Regionepecora regione in cui si trova la pecora.
 	 * @param Stradagiocatore strada in cui si trova il giocatore.
-	 * @throws Exception Se non ci sono pecore da spostare.
+	 * @throws Exception Se il giocatore non si trova in una strada confinante
+	 * alla posizione della pecora da spostare o se non ci sono pecore da spostare.
 	 */
 	public void spostaPecora(Regione regionePecora) throws Exception {
 		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
+		
+		if(!statoPartita.getStradeConfini(regionePecora).contains(giocatore.getPosition())) {
+			throw new Exception();
+		}
+		
 		Regione regAdiacente = statoPartita.getAltraRegione(regionePecora, giocatore.getPosition());
-
+		
 		if(regionePecora.getNumPecore()>0) {
 			regionePecora.removePecora();
 			regAdiacente.addPecora();
@@ -101,10 +107,16 @@ public class Controller {
 	public void acquistaTessera(TipoTerreno tipo) throws Exception {
 		Giocatore giocatore=statoPartita.getGiocatoreCorrente();
 		int costoTessera=statoPartita.getCostoTessera(tipo);
-		if (costoTessera > giocatore.getSoldi() ) {throw new Exception();}
+		if(costoTessera>4) {
+			throw new Exception("Le tessere di questo tipo sono finite");
+		}
+		if (costoTessera > giocatore.getSoldi() || giocatore.getSoldi()==0) {
+			throw new Exception("Non abbastanza soldi");
+		}
 		else {
 			giocatore.decrSoldi(statoPartita.getCostoTessera(tipo));
 			giocatore.addTessera(tipo);
+			statoPartita.incCostoTessera(tipo);
 		}
 	}
 	

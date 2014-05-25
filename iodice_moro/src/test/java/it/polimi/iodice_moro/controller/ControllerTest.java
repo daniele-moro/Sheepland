@@ -1,20 +1,23 @@
 package it.polimi.iodice_moro.controller;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import it.polimi.iodice_moro.model.Giocatore;
 import it.polimi.iodice_moro.model.Regione;
 import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.Strada;
+import it.polimi.iodice_moro.model.TipoTerreno;
+
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class ControllerTest {
 
-	final static String PROVA_XML = new String("prova.xml");
 	StatoPartita statoPartitaT;
 	Giocatore giocatoreTest;
 	Controller controllerTest;
@@ -24,26 +27,28 @@ public class ControllerTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		statoPartitaT= new StatoPartita(PROVA_XML);
+		statoPartitaT= new StatoPartita();
 		controllerTest = new Controller(statoPartitaT);
-		giocatoreTest = new Giocatore("Test");
 		
 		List<Regione> listaRegioni = statoPartitaT.getRegioni();
 		List<Strada> listaStrade = statoPartitaT.getStrade();
 		
 		regione0=listaRegioni.get(0);
-		Regione regione1=listaRegioni.get(1);
-		Regione regione2=listaRegioni.get(2);
-		Regione regione3=listaRegioni.get(3);
-		Regione regione4=listaRegioni.get(4);
+		regione1=listaRegioni.get(1);
+		regione2=listaRegioni.get(2);
+		regione3=listaRegioni.get(3);
+		regione4=listaRegioni.get(4);
 		
 		strada0=listaStrade.get(0);
-		Strada strada1=listaStrade.get(1);
-		Strada strada2=listaStrade.get(2);
-		Strada strada3=listaStrade.get(3);
-		Strada strada4=listaStrade.get(4);
+		strada1=listaStrade.get(1);
+		strada2=listaStrade.get(2);
+		strada3=listaStrade.get(3);
+		strada4=listaStrade.get(4);
 		
-		statoPartitaT.setGiocatoreCorrente(giocatoreTest);
+		controllerTest.creaGiocatore("Prova", statoPartitaT.getStradeConfini(regione1).get(0));
+		statoPartitaT.setGiocatoreCorrente(statoPartitaT.getGiocatori().get(0));
+		giocatoreTest=statoPartitaT.getGiocatoreCorrente();
+		regione1.setNumPecore(2);
 	}
 
 	@Test
@@ -51,33 +56,108 @@ public class ControllerTest {
 		assertSame(statoPartitaT, controllerTest.getStatoPartita());
 	}
 	
-	/*
+	
 	
 	@Test
-	public void testSpostaPecora() {
-		giocatoreTest.setPosition(position);
+	public void testSpostaPecora() throws Exception {
+		
+		int numOfPecoreBefore=regione1.getNumPecore();
+		controllerTest.spostaPecora(regione1);
+		assertEquals(numOfPecoreBefore-1, regione1.getNumPecore());
+		assertEquals(1, statoPartitaT.getAltraRegione(regione1, giocatoreTest.getPosition()).getNumPecore());
+
+		controllerTest.spostaPecora(statoPartitaT.getAltraRegione(regione1, giocatoreTest.getPosition()));
+		assertEquals(numOfPecoreBefore, regione1.getNumPecore());
+		assertEquals(0, statoPartitaT.getAltraRegione(regione1, giocatoreTest.getPosition()).getNumPecore());
+	}
+	
+	@Test
+	public void testSpostaPecoraWithException() {
+		giocatoreTest.setPosition(statoPartitaT.getStradeConfini(regione4).get(0));
 		try {
 			controllerTest.spostaPecora(regione1);
-			assertEquals(2, regione1.getNumPecore());
-			assertEquals(1, statoPartita.getAltraRegione(regione1, giocatore.getPosition()).getNumPecore());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			fail("Should have thrown exception");
+		}
+		
+		catch (Exception e) {
+			
+		}
+	}
+
+	@Test
+	public void testSpostaPecoraNera() throws Exception {
+		statoPartitaT.setPosPecoraNera(regione1);
+		regione1.addPecoraNera();
+		assertTrue(regione1.isPecoraNera());
+		assertEquals(regione1, statoPartitaT.getPosPecoraNera());
+		
+		controllerTest.spostaPecoraNera(regione1, statoPartitaT.getRegioniAdiacenti(regione1).get(0));
+		assertFalse(regione1.isPecoraNera());
+		assertTrue(statoPartitaT.getRegioniAdiacenti(regione1).get(0).isPecoraNera());
+		
+		controllerTest.spostaPecoraNera(statoPartitaT.getRegioniAdiacenti(regione1).get(0), regione1);
+		assertFalse(statoPartitaT.getRegioniAdiacenti(regione1).get(0).isPecoraNera());
+		assertTrue(regione1.isPecoraNera());
+		
+	}
+	
+	@Test
+	
+	public void testSpostaPecoraNeraWithException() {
+		try {
+			controllerTest.spostaPecoraNera(regione1, regione1);
+			fail("Should have thrown an exception");
+		}
+		
+		catch (Exception e) {
+			
+		}
+	}
+	
+
+	@Test
+	public void testAcquistaTessera() throws Exception {
+		TipoTerreno tipo1=regione1.getTipo();
+		int soldiIniziali=giocatoreTest.getSoldi();
+		
+		assertEquals(0, statoPartitaT.getCostoTessera(tipo1));
+		controllerTest.acquistaTessera(tipo1);
+		assertEquals(soldiIniziali, giocatoreTest.getSoldi());
+		
+		controllerTest.acquistaTessera(tipo1);
+		controllerTest.acquistaTessera(tipo1);
+		assertEquals(soldiIniziali-1-2,giocatoreTest.getSoldi());
+	}
+	
+	@Test
+	public void testAcquistaTesseraWithNotEnoughMoneyException() {
+		TipoTerreno tipo1=regione1.getTipo();
+		giocatoreTest.decrSoldi(giocatoreTest.getSoldi());
+		try {
+			controllerTest.acquistaTessera(tipo1);
+			fail("Should have thrown exception");
+		}
+		catch (Exception e) {
+			
+		}
+	}
+	
+	@Test
+	public void testAcquistaTesseraWhichCantBeBought() {
+		TipoTerreno tipo1=regione1.getTipo();
+		for(int i=0; i<5; i++) {
+			statoPartitaT.incCostoTessera(tipo1);
+		}
+		try {
+			controllerTest.acquistaTessera(tipo1);
+			fail("Should have thrown exception");
+		}
+		catch (Exception e) {
+			
 		}
 		
 	}
 	
-	
-	
-	@Test
-	public void testSpostaPecoraNera() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testAcquistaTessera() {
-		fail("Not yet implemented");
-	}
 
 	@Test
 	public void testSpostaPedina() {
@@ -91,6 +171,8 @@ public class ControllerTest {
 		assertEquals(strada0, statoPartitaT.getGiocatori().get(0).getPosition());		
 	}
 	
-	*/
+	
+	
+	
 	
 }
