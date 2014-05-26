@@ -242,7 +242,5 @@ public class TestStatoPartita {
 		
 		statoPartitaT.incCostoTessera(TipoTerreno.SHEEPSBURG);
 		assertEquals(statoPartitaT.getCostoTessera(TipoTerreno.SHEEPSBURG),1);
-		
-
 	}
 }

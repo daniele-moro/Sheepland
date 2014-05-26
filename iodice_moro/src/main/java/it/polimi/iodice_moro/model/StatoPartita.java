@@ -479,14 +479,27 @@ public class StatoPartita {
 	 * @param nomeregione Nome della regione di cui si vuole avere il riferimento.
 	 * @return Riferimento regione il cui tipo corrisponde alla stringa in ingresso.
 	 */
-	public List<Regione> getRegioniByString(String nomeregione) {
+	public List<Regione> getRegioniByString(TipoTerreno terrenoRegione) {
 		List<Regione> listaRegioni = new ArrayList<Regione>();
 		for(Regione regione : getRegioni()) {
-			String tipoRegione = regione.getTipo().toString();
-			if(tipoRegione.equals(nomeregione)) {
+			//String tipoRegione = regione.getTipo().toString();
+			if(regione.getTipo().equals(terrenoRegione)) {
 				listaRegioni.add(regione);
 			}
 		}
 		return listaRegioni;
 	}
+	
+	/** Metodo per trovare l'indice del giocatore nella lista dei giocatori,
+	 * usato per semplificare il codice nel controller
+	 * @param giocatore Giocatore di cui trovare l'indice nella lista dei giocatori
+	 * @return Indice del giocatore passato per parametro
+	 */
+	public int getIndex(Giocatore giocatore) {
+		/*
+		 * trovo l'indice del giocatore corrente all'interno della lista dei giocatori
+		 */
+		return giocatori.indexOf(giocatore);
+	}
+
 }

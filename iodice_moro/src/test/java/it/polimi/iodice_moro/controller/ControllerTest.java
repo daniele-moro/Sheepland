@@ -84,7 +84,7 @@ public class ControllerTest {
 		}
 	}
 
-	@Test
+	/*@Test
 	public void testSpostaPecoraNera() throws Exception {
 		statoPartitaT.setPosPecoraNera(regione1);
 		regione1.addPecoraNera();
@@ -112,7 +112,7 @@ public class ControllerTest {
 		catch (Exception e) {
 			
 		}
-	}
+	}*/
 	
 
 	@Test
