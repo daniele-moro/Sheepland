@@ -309,5 +309,83 @@ public class ControllerTest {
 		assertEquals(null, provaGiocatore);
 	}
 	
+
+	
+	@Test
+	public void testCheckSpostaPecoraNera() {
+		regione1.setPecoraNera(true);
+		statoPartitaT.setPosPecoraNera(regione1);
+		controllerTest.checkSpostaPecoraNera();
+		boolean pecoraInRegione1;
+		boolean pecoraInRegioniAdiacenti=false;
+		//Controllo se la pecora è ancora nella regione d'origine o meno.
+		if(regione1.isPecoraNera()) {
+			pecoraInRegione1 = true;
+		} else {
+			pecoraInRegione1 = false;
+		}
+		
+		//Controllo se la pecora nera è in una delle regioni adiacenti a quella
+		//della pecora nera.
+		List <Regione> regioniAdiacenti = statoPartitaT.getRegioniAdiacenti(regione1);
+		for(Regione regione: regioniAdiacenti) {
+			if (regione.isPecoraNera()) {
+				pecoraInRegioniAdiacenti = true;
+			}
+		}
+		//Se la pecora è sia nella regione d'origine che nelle regioni adiacenti
+		//test fallisce
+		if(pecoraInRegione1 && pecoraInRegioniAdiacenti) {
+			fail();		
+		}
+		//Se la pecora nera non è né nella regione d'origine né in quelle adiacenti,
+		//il test fallisce.
+		if(!pecoraInRegione1 && !pecoraInRegioniAdiacenti) {
+			fail();
+		}
+		
+	}
+	
+	public void testMossaPossibile() throws Exception {
+		//Testo alcune delle mosse limite.
+		//Muovere il pastore 3 volte
+		Strada stradaAdiacente = statoPartitaT.getStradeAdiacenti(giocatoreTest.getPosition()).get(0);
+		controllerTest.aggiornaTurno(TipoMossa.SPOSTA_PECORA);
+		controllerTest.aggiornaTurno(TipoMossa.SPOSTA_PECORA);
+		assertTrue(controllerTest.mossaPossibile(TipoMossa.SPOSTA_PASTORE));
+		giocatoreTest.azzeraTurno();
+		
+		//Muovere 1 pecora, comprare 1 tessera, quindi muovere il pastore.
+		controllerTest.aggiornaTurno(TipoMossa.SPOSTA_PASTORE);
+		controllerTest.aggiornaTurno(TipoMossa.COMPRA_TESSERA);
+		assertTrue(controllerTest.mossaPossibile(TipoMossa.SPOSTA_PASTORE));
+		
+		//Comprare 1 tessera Terreno, Muovere il Pastore, comprare tessera.
+		controllerTest.aggiornaTurno(TipoMossa.COMPRA_TESSERA);
+		controllerTest.aggiornaTurno(TipoMossa.SPOSTA_PASTORE);
+		assertTrue(controllerTest.mossaPossibile(TipoMossa.COMPRA_TESSERA));
+		
+		//Muovere il pastore 2 volte, quindi comprare una tessera.
+		controllerTest.aggiornaTurno(TipoMossa.SPOSTA_PASTORE);
+		controllerTest.aggiornaTurno(TipoMossa.SPOSTA_PASTORE);
+		assertTrue(controllerTest.mossaPossibile(TipoMossa.COMPRA_TESSERA));
+		
+		//Ora testo condizioni che devono essere false.
+		//Compra 2 tessere terreno e poi muovere il pastore.
+		controllerTest.aggiornaTurno(TipoMossa.COMPRA_TESSERA);
+		controllerTest.aggiornaTurno(TipoMossa.COMPRA_TESSERA);
+		assertFalse(controllerTest.mossaPossibile(TipoMossa.SPOSTA_PASTORE));
+
+		//Muovere il Pastore, quindi Muovere una Pecora per due volte.
+		controllerTest.aggiornaTurno(TipoMossa.SPOSTA_PASTORE);
+		controllerTest.aggiornaTurno(TipoMossa.SPOSTA_PECORA);
+		assertFalse(controllerTest.mossaPossibile(TipoMossa.SPOSTA_PECORA));
+		
+		//Muovere 1 Pecora, Comprare 1 tessera Terreno, quindi di nuovo Muovere 1 Pecora.
+		controllerTest.aggiornaTurno(TipoMossa.SPOSTA_PECORA);
+		controllerTest.aggiornaTurno(TipoMossa.COMPRA_TESSERA);
+		assertFalse(controllerTest.mossaPossibile(TipoMossa.SPOSTA_PECORA));
+	}
+	
 	
 }
