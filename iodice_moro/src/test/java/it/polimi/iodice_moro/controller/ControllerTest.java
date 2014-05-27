@@ -64,9 +64,12 @@ public class ControllerTest {
 		
 		int numOfPecoreBefore=regione1.getNumPecore();
 		controllerTest.spostaPecora(regione1);
+		//Controllo che numero di pecore sia diminuito nella regione d'origine.
 		assertEquals(numOfPecoreBefore-1, regione1.getNumPecore());
+		//Controllo che numero di pecore sia aumentato nella regione d'arrivo.
 		assertEquals(1, statoPartitaT.getAltraRegione(regione1, giocatoreTest.getPosition()).getNumPecore());
 
+		//Faccio l'operazione contraria e controllo se numero di pecore è quello d'origine.
 		controllerTest.spostaPecora(statoPartitaT.getAltraRegione(regione1, giocatoreTest.getPosition()));
 		assertEquals(numOfPecoreBefore, regione1.getNumPecore());
 		assertEquals(0, statoPartitaT.getAltraRegione(regione1, giocatoreTest.getPosition()).getNumPecore());
@@ -75,6 +78,8 @@ public class ControllerTest {
 	@Test
 	public void testSpostaPecoraWithException() {
 		giocatoreTest.setPosition(statoPartitaT.getStradeConfini(regione4).get(0));
+		//Giocatore è in posizione dove non può spostare pecora (non adiacente alla regione)
+		//Deve essere lanciata eccezione.
 		try {
 			controllerTest.spostaPecora(regione1);
 			fail("Should have thrown exception");
@@ -92,10 +97,13 @@ public class ControllerTest {
 		assertTrue(regione1.isPecoraNera());
 		assertEquals(regione1, statoPartitaT.getPosPecoraNera());
 		
+		//Controllo che nella regione d'origine non c'è pecora nera e controllo
+		//che nella regione d'arrivo non c'è.
 		controllerTest.spostaPecoraNera(regione1, statoPartitaT.getRegioniAdiacenti(regione1).get(0));
 		assertFalse(regione1.isPecoraNera());
 		assertTrue(statoPartitaT.getRegioniAdiacenti(regione1).get(0).isPecoraNera());
 		
+		//Faccio il contrario.
 		controllerTest.spostaPecoraNera(statoPartitaT.getRegioniAdiacenti(regione1).get(0), regione1);
 		assertFalse(statoPartitaT.getRegioniAdiacenti(regione1).get(0).isPecoraNera());
 		assertTrue(regione1.isPecoraNera());
@@ -106,7 +114,10 @@ public class ControllerTest {
 	
 	public void testSpostaPecoraNeraWithException() {
 		try {
-			controllerTest.spostaPecoraNera(regione1, regione1);
+			//Provo a spostare una pecora nera in una regione che non c'è.
+			//Dovrebbe lanciare eccezione.
+			regione1.setPecoraNera(false);
+			controllerTest.spostaPecoraNera(regione1, regione4);
 			fail("Should have thrown an exception");
 		}
 		
@@ -121,12 +132,17 @@ public class ControllerTest {
 		TipoTerreno tipo1=regione1.getTipo();
 		int soldiIniziali=giocatoreTest.getSoldi();
 		
+		//Controllo che se nessuna tessera è stata acquistata il costo è zero.
 		assertEquals(0, statoPartitaT.getCostoTessera(tipo1));
 		controllerTest.acquistaTessera(tipo1);
+		//Controllo che comprando una tessera il cui costo è zero i soldi del 
+		//giocatore non diminuiscano.
 		assertEquals(soldiIniziali, giocatoreTest.getSoldi());
 		
 		controllerTest.acquistaTessera(tipo1);
 		controllerTest.acquistaTessera(tipo1);
+		//Controllo che i soldi del giocatore siano diminuiti di un valore pari al
+		//costo delle tessere acquistate.
 		assertEquals(soldiIniziali-1-2,giocatoreTest.getSoldi());
 	}
 	
@@ -134,6 +150,7 @@ public class ControllerTest {
 	public void testAcquistaTesseraWithNotEnoughMoneyException() {
 		TipoTerreno tipo1=regione1.getTipo();
 		giocatoreTest.decrSoldi(giocatoreTest.getSoldi());
+		//Provo ad acquistare tessere quando il giocatore non ha abbastanza soldi.
 		try {
 			controllerTest.acquistaTessera(tipo1);
 			fail("Should have thrown exception");
@@ -149,6 +166,7 @@ public class ControllerTest {
 		for(int i=0; i<5; i++) {
 			statoPartitaT.incCostoTessera(tipo1);
 		}
+		//Provo ad acquistare un tipo di tessera che è già esaurito.
 		try {
 			controllerTest.acquistaTessera(tipo1);
 			fail("Should have thrown exception");
@@ -192,6 +210,7 @@ public class ControllerTest {
 		Strada giocatorePositionBefore = giocatoreTest.getPosition();
 		Strada giocatorePositionAfterFirst = statoPartitaT.getStradeAdiacenti(giocatorePositionBefore).get(0);
 		giocatorePositionAfterFirst.setRecinto(true);
+		//Provo a spostare pastore in una strada occupata da recinto. 
 		try {
 			controllerTest.spostaPedina(giocatorePositionAfterFirst);
 			fail("Should have caught exception");
@@ -202,6 +221,8 @@ public class ControllerTest {
 		
 		giocatoreTest.decrSoldi((giocatoreTest.getSoldi()));
 		Strada giocatorePositionAfterSecond = statoPartitaT.getStradeConfini(regione4).get(0);
+		//Provo a spostare pastore in una strada non adiacente alla posizione del
+		//giocatore, quando il giocatore non ha soldi.
 		try {
 			controllerTest.spostaPedina(giocatorePositionAfterSecond);
 			fail("Should have caught the second exception");
@@ -223,18 +244,55 @@ public class ControllerTest {
 	public void testAggiornaTurno() {
 		int numMossePrima = giocatoreTest.getNumMosse();
 		controllerTest.aggiornaTurno(TipoMossa.COMPRA_TESSERA);
+		//Controllo che dopo aver comprato la tessera si sia aggiornato l'attributo 
+		//ultima mossa, sia aumentato il numero delle mosse fatte di uno e che
+		//si sia aggiornato l'attributo del pastore spostare durante il turno.
 		assertEquals(TipoMossa.COMPRA_TESSERA, giocatoreTest.getUltimaMossa());
 		assertEquals(numMossePrima+1, giocatoreTest.getNumMosse());
 		assertFalse(giocatoreTest.isPastoreSpostato());
 		
 		giocatoreTest.azzeraTurno();
 		controllerTest.aggiornaTurno(TipoMossa.SPOSTA_PASTORE);
+		//Stesse prova di prima, stavolta con la mossa "Sposta Pastore".
 		assertEquals(TipoMossa.SPOSTA_PASTORE, giocatoreTest.getUltimaMossa());
 		assertEquals(numMossePrima+1, giocatoreTest.getNumMosse());
 		assertTrue(giocatoreTest.isPastoreSpostato());	
 		
 	}	
 	
+	@Test
+	public void testCheckTurnoGiocatore() {
+		controllerTest.creaGiocatore("Giocatore2", strada2);
+		Giocatore secondoGiocatore = statoPartitaT.getGiocatori().get(1);
+		Giocatore provaGiocatore = controllerTest.checkTurnoGiocatore(TipoMossa.COMPRA_TESSERA);
+		//Controllo che se il giocatore può fare altre mosse venga ritornato
+		//ancora il giocatore corrente.
+		assertEquals(giocatoreTest, provaGiocatore);
+		
+		//Controllo che ritorni il prossimo giocatore.
+		giocatoreTest.incNumMosse();
+		giocatoreTest.incNumMosse();
+		giocatoreTest.incNumMosse();
+		provaGiocatore = controllerTest.checkTurnoGiocatore(TipoMossa.COMPRA_TESSERA);
+		assertEquals(provaGiocatore, statoPartitaT.getGiocatoreCorrente());
+		assertEquals(provaGiocatore, secondoGiocatore);
+		
+		//Controllo che se è l'ultimo giocatore, ritorna il primo.
+		provaGiocatore.incNumMosse();
+		provaGiocatore.incNumMosse();
+		provaGiocatore.incNumMosse();
+		provaGiocatore = controllerTest.checkTurnoGiocatore(TipoMossa.COMPRA_TESSERA);
+		assertEquals(provaGiocatore, statoPartitaT.getGiocatoreCorrente());
+		assertEquals(provaGiocatore, statoPartitaT.getGiocatori().get(0));
+		
+		secondoGiocatore.incNumMosse();
+		secondoGiocatore.incNumMosse();
+		secondoGiocatore.incNumMosse();
+		statoPartitaT.setGiocatoreCorrente(secondoGiocatore);
+		statoPartitaT.setTurnoFinale();
+		provaGiocatore = controllerTest.checkTurnoGiocatore(TipoMossa.SPOSTA_PASTORE);
+		assertEquals(null, provaGiocatore);
+	}
 	
 	
 }
