@@ -184,4 +184,17 @@ public class Giocatore {
 		ultimaMossa=TipoMossa.NO_MOSSA;
 		pastoreSpostato=false;
 	}
+	
+	/**
+	 * Controlla se il numero di mosse è pari a 3
+	 * @return true: Numero di mosse uguale a 3 false: Numero di mosse diverso da 3
+	 */
+	public boolean treMosse(){
+		if(numMosse==3){
+			return true;
+		} else{
+			return false;
+		}
+	}
+	
 }

@@ -501,5 +501,19 @@ public class StatoPartita {
 		 */
 		return giocatori.indexOf(giocatore);
 	}
+	
+	/**
+	 * Calcola chi è il giocatore del prossimo turno, prelevando il giocatore nell'array circolare dei giocatori
+	 * @return Prossimo giocatore
+	 */
+	public Giocatore getNextGamer() {
+		int indice=getIndex(giocatoreCorrente);
+		/*
+		 * Incremento l'indice a cui si trova il giocatore facendone il modulo rispetto alla lunghezza della
+		 * lista di giocatori
+		 */
+		indice=(indice+1)%giocatori.size();
+		return giocatori.get(indice);
+	}
 
 }

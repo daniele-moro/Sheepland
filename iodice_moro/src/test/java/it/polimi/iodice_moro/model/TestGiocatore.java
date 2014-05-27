@@ -17,7 +17,7 @@ public class TestGiocatore {
 	}
 
 	@Test
-	public final void testGiocatoreString() {
+	public void testGiocatoreString() {
 		//Test cotruttore Giocatore(String nome)
 		Giocatore gamerTestI= new Giocatore("prova");
 		
@@ -38,7 +38,7 @@ public class TestGiocatore {
 	}
 
 	@Test
-	public final void testGiocatoreStringStrada() {
+	public void testGiocatoreStringStrada() {
 		//TestCostruttore Giocatore(String nome, Strada strada)
 		Strada pos= new Strada(0);
 		Giocatore gamerTestI = new Giocatore("prova2",pos);
@@ -61,7 +61,7 @@ public class TestGiocatore {
 	}
 
 	@Test
-	public final void testDecrSoldi() {
+	public void testDecrSoldi() {
 		//Test decrSoldi()
 		gamerTest.decrSoldi();
 		assertEquals(gamerTest.getSoldi(),Giocatore.SOLDI_INIT-1);
@@ -72,7 +72,7 @@ public class TestGiocatore {
 	}
 
 	@Test
-	public final void testDecrSoldiInt() {
+	public void testDecrSoldiInt() {
 		//Test decrSoldi(int)
 		gamerTest.decrSoldi(3);
 		assertEquals(gamerTest.getSoldi(),Giocatore.SOLDI_INIT-3);
@@ -81,7 +81,7 @@ public class TestGiocatore {
 	}
 
 	@Test
-	public final void testSetUltimaMossa() {
+	public void testSetUltimaMossa() {
 		//Test setUltimaMossa(TipoMossa mossa)
 		gamerTest.setUltimaMossa(TipoMossa.COMPRA_TESSERA);
 		assertEquals(gamerTest.getUltimaMossa(), TipoMossa.COMPRA_TESSERA);
@@ -92,7 +92,7 @@ public class TestGiocatore {
 	}
 
 	@Test
-	public final void testIncNumMosse() {
+	public void testIncNumMosse() {
 		//Test incNumMosse()
 		gamerTest.incNumMosse();
 		assertEquals(gamerTest.getNumMosse(),1);
@@ -103,7 +103,7 @@ public class TestGiocatore {
 	}
 
 	@Test
-	public final void testSetPastoreSpostato() {
+	public void testSetPastoreSpostato() {
 		//Test setSpastoreSpostato()
 		gamerTest.setPastoreSpostato(true);
 		assertEquals(gamerTest.isPastoreSpostato(),true);
@@ -120,7 +120,7 @@ public class TestGiocatore {
 	}
 
 	@Test
-	public final void testSetPosition() {
+	public void testSetPosition() {
 		//Test setPosition(Strada str)
 		//Variabili di test
 		Strada pos1= new Strada(1);
@@ -134,7 +134,7 @@ public class TestGiocatore {
 	}
 
 	@Test
-	public final void testAddTessera() {
+	public void testAddTessera() {
 		//Test addTessera()
 		gamerTest.addTessera(TipoTerreno.COLTIVAZIONI);
 		assertEquals(gamerTest.getTesserePossedute().get(TipoTerreno.COLTIVAZIONI.toString()),Integer.valueOf(1));
@@ -148,6 +148,33 @@ public class TestGiocatore {
 		gamerTest.addTessera(TipoTerreno.SHEEPSBURG);
 		assertEquals(gamerTest.getTesserePossedute().get(TipoTerreno.SHEEPSBURG.toString()),Integer.valueOf(1));
 		
+	}
+	
+	@Test
+	public void testAzzeraTurno(){
+		//Test azzeraTurno()
+		gamerTest.incNumMosse();
+		gamerTest.setUltimaMossa(TipoMossa.COMPRA_TESSERA);
+		gamerTest.setPastoreSpostato(true);
+		gamerTest.azzeraTurno();
+		assertEquals(gamerTest.getNumMosse(),0);
+		assertEquals(gamerTest.getUltimaMossa(),TipoMossa.NO_MOSSA);
+		assertFalse(gamerTest.isPastoreSpostato());
+		
+	}
+	
+	@Test
+	public void testTreMosse(){
+		//Controllo che all'inizio, quando non ha fatto mosse, sia il metod.o torni false
+		assertFalse(gamerTest.treMosse());
+		gamerTest.incNumMosse();
+		//Controllo che dopo la prima mossa torni ancora false
+		assertFalse(gamerTest.treMosse());
+		
+		gamerTest.incNumMosse();
+		gamerTest.incNumMosse();
+		//Dopo tre mosse il metod.o torna true
+		assertTrue(gamerTest.treMosse());
 	}
 
 }

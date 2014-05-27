@@ -10,17 +10,20 @@ import org.junit.Test;
 
 public class TestStatoPartita {
 	final static String PROVA_XML = new String("prova.xml");
-	StatoPartita statoPartitaT;
-	
+	StatoPartita statoPartita;
+
 	@Before
 	public void setUp() throws Exception {
-		statoPartitaT= new StatoPartita(PROVA_XML);
+		statoPartita= new StatoPartita(PROVA_XML);
+		statoPartita.addGiocatore(new Giocatore("G1"));
+		statoPartita.addGiocatore(new Giocatore("G2"));
+		statoPartita.addGiocatore(new Giocatore("G3"));
 	}
 
 	@Test
 	public void testCostruttore() {
 		
-		statoPartitaT= new StatoPartita(PROVA_XML);
+		StatoPartita statoPartitaT= new StatoPartita(PROVA_XML);
 		//Controlliamo che il costruttore abbia inizializzato ai valori di default gli attributi della classe
 		assertEquals(statoPartitaT.getNumRecinti(),StatoPartita.NUM_RECINTI_MAX);
 		assertEquals(statoPartitaT.getPosPecoraNera(),null);
@@ -157,29 +160,29 @@ public class TestStatoPartita {
 	@Test
 	public void testGetAltraRegione(){
 		//Controlliamo che il metodo getAltraRegione funzioni correttamente
-		Strada str=statoPartitaT.getStrade().get(0);
-		Regione regSorg=statoPartitaT.getRegioni().get(0);
-		Regione regDest=statoPartitaT.getRegioni().get(1);
+		Strada str=statoPartita.getStrade().get(0);
+		Regione regSorg=statoPartita.getRegioni().get(0);
+		Regione regDest=statoPartita.getRegioni().get(1);
 		
 		//Controlliamo che l'altra regione che stiamo cercando sia quella giusta
-		assertEquals(statoPartitaT.getAltraRegione(regSorg, str),regDest);
+		assertEquals(statoPartita.getAltraRegione(regSorg, str),regDest);
 		
 		//Controlliamo che l'altra regione che stiamo cercando non sia quella che usiamo come parametro
-		assertFalse(statoPartitaT.getAltraRegione(regSorg, str).equals(regSorg));	
+		assertFalse(statoPartita.getAltraRegione(regSorg, str).equals(regSorg));	
 	}
 	
 	@Test
 	public void testGetRegioniAdiacenti(){
 		//Controlliamo che il metodo getRegioniAdiacenti funzioni correttamente
 		List<Regione> regioniAdiacenti= new ArrayList<Regione>();
-		List<Regione> regioni=statoPartitaT.getRegioni();
+		List<Regione> regioni=statoPartita.getRegioni();
 		//Ci costruiamo l'array con le presunte regioni adiacenti alla regione id=1
 		regioniAdiacenti.add(regioni.get(1));
 		regioniAdiacenti.add(regioni.get(4));
 		regioniAdiacenti.add(regioni.get(3));
 		
-		assertEquals(statoPartitaT.getRegioniAdiacenti(regioni.get(0)).size(),regioniAdiacenti.size());
-		List<Regione> regad= statoPartitaT.getRegioniAdiacenti(regioni.get(0));
+		assertEquals(statoPartita.getRegioniAdiacenti(regioni.get(0)).size(),regioniAdiacenti.size());
+		List<Regione> regad= statoPartita.getRegioniAdiacenti(regioni.get(0));
 		assertEquals(regad,regioniAdiacenti);
 		//assertTrue(regad.containsAll(regioniAdiacenti));
 	}
@@ -187,30 +190,30 @@ public class TestStatoPartita {
 	@Test
 	public void testDecNumRecinti(){
 		//Controlliamo che decNumRecinti funzioni correttamente
-		statoPartitaT.decNumRecinti();
-		assertEquals(statoPartitaT.getNumRecinti(),StatoPartita.NUM_RECINTI_MAX-1);
+		statoPartita.decNumRecinti();
+		assertEquals(statoPartita.getNumRecinti(),StatoPartita.NUM_RECINTI_MAX-1);
 	}
 	
 	@Test
 	public void testSetTurnoFinale(){
 		//Controlliamo che setTurnoFinale funzioni correttamente
-		statoPartitaT.setTurnoFinale();
-		assertEquals(statoPartitaT.isTurnoFinale(),true);
+		statoPartita.setTurnoFinale();
+		assertEquals(statoPartita.isTurnoFinale(),true);
 	}
 	
 	@Test
 	public void testSetPosPecoraNera(){
 		//Controlliamo che setPosPecoraNera funzioni correttamente
-		statoPartitaT.setPosPecoraNera(statoPartitaT.getRegioni().get(0));
-		assertEquals(statoPartitaT.getPosPecoraNera(),statoPartitaT.getRegioni().get(0));
+		statoPartita.setPosPecoraNera(statoPartita.getRegioni().get(0));
+		assertEquals(statoPartita.getPosPecoraNera(),statoPartita.getRegioni().get(0));
 	}
 	
 	@Test
 	public void testSetGiocatoreCorrente(){
 		//Controlliamo che setGiocatoreCorrente funzioni correttamente
 		Giocatore gamer= new Giocatore("Prova");
-		statoPartitaT.setGiocatoreCorrente(gamer);
-		assertEquals(statoPartitaT.getGiocatoreCorrente(),gamer);
+		statoPartita.setGiocatoreCorrente(gamer);
+		assertEquals(statoPartita.getGiocatoreCorrente(),gamer);
 	}
 	
 	@Test
@@ -218,29 +221,57 @@ public class TestStatoPartita {
 		//Controlliamo che addGiocatore funzioni correttamente
 		Giocatore gamer1 = new Giocatore("Prova1");
 		Giocatore gamer2 = new Giocatore("Prova2");
-		List<Giocatore> listaGamers=new ArrayList<Giocatore>();
+		List<Giocatore> listaGamers=statoPartita.getGiocatori();
 		
 		listaGamers.add(gamer1);
 		listaGamers.add(gamer2);
 		
-		statoPartitaT.addGiocatore(gamer1);
-		statoPartitaT.addGiocatore(gamer2);
+		statoPartita.addGiocatore(gamer1);
+		statoPartita.addGiocatore(gamer2);
 		
-		assertEquals(statoPartitaT.numGiocatori(),listaGamers.size());
-		assertEquals(statoPartitaT.getGiocatori(),listaGamers);
+		assertEquals(statoPartita.numGiocatori(),listaGamers.size());
+		assertEquals(statoPartita.getGiocatori(),listaGamers);
 		//assertTrue(statoPartitaT.getGiocatori().containsAll(listaGamer));
 	}
 	
 	@Test
 	public void testIncCostoTessera(){
 		//Controlliamo che incCostoTessera funzioni correttamente
-		statoPartitaT.incCostoTessera(TipoTerreno.BOSCO);
-		assertEquals(statoPartitaT.getCostoTessera(TipoTerreno.BOSCO),1);
+		statoPartita.incCostoTessera(TipoTerreno.BOSCO);
+		assertEquals(statoPartita.getCostoTessera(TipoTerreno.BOSCO),1);
 		
-		statoPartitaT.incCostoTessera(TipoTerreno.COLTIVAZIONI);
-		assertEquals(statoPartitaT.getCostoTessera(TipoTerreno.COLTIVAZIONI),1);
+		statoPartita.incCostoTessera(TipoTerreno.COLTIVAZIONI);
+		assertEquals(statoPartita.getCostoTessera(TipoTerreno.COLTIVAZIONI),1);
 		
-		statoPartitaT.incCostoTessera(TipoTerreno.SHEEPSBURG);
-		assertEquals(statoPartitaT.getCostoTessera(TipoTerreno.SHEEPSBURG),1);
+		statoPartita.incCostoTessera(TipoTerreno.SHEEPSBURG);
+		assertEquals(statoPartita.getCostoTessera(TipoTerreno.SHEEPSBURG),1);
+	}
+	
+	
+	@Test
+	public void testGetIndex(){
+		//Controlliamo che getIndex() funzioni correttamente
+		List<Giocatore> gamer =statoPartita.getGiocatori();
+		assertEquals(1,statoPartita.getIndex(gamer.get(1)));
+	}
+	
+	@Test
+	public void testNextGamer(){
+		//Controlliamo che nextGamer() torni il prossimo giocatore
+		List<Giocatore> gamers= statoPartita.getGiocatori();
+		statoPartita.setGiocatoreCorrente(statoPartita.getGiocatori().get(0));
+		
+		Giocatore nextGamer=statoPartita.getNextGamer();
+		assertEquals(gamers.get(1),nextGamer);
+		statoPartita.setGiocatoreCorrente(nextGamer);
+		
+		nextGamer=statoPartita.getNextGamer();
+		assertEquals(gamers.get(2),nextGamer);
+		statoPartita.setGiocatoreCorrente(nextGamer);
+		
+		nextGamer=statoPartita.getNextGamer();
+		assertEquals(gamers.get(0),nextGamer);
+		statoPartita.setGiocatoreCorrente(nextGamer);
+		
 	}
 }

@@ -110,7 +110,6 @@ public class Controller {
 		else throw new Exception();
 	}
 
-
 	/**
 	 * Giocatore compra la tessera, decrementando i suoi soldi di un valore pari
 	 * al costo attuale della tessera che compra.
@@ -277,13 +276,23 @@ public class Controller {
 	 */
 	public Giocatore checkTurnoGiocatore(TipoMossa mossaFatta) {
 		/*
-		 * Controllo se il giocatore può ancora fare mossa
+		 * Controllo se il giocatore non può fare più mosse
 		 */
-		if(!otherMoves(statoPartita.getGiocatoreCorrente())){
+		if(statoPartita.getGiocatoreCorrente().treMosse()){
 			/*
 			 * controlliamo se è finita la partita e se il giocatore corrente è l'ultimo
 			 */
-			if(isPartitaFinita()){
+			int lengthGamers = statoPartita.getGiocatori().size();
+			if(
+					 //Controllo se è il turno finale
+					statoPartita.isTurnoFinale() 
+					 //Prelevo la lista dei giocatori
+					&& statoPartita.getGiocatori()
+					 //Prelevo l'ultimo giocatore della lista
+					.get(lengthGamers-1)
+					 //Controllo se il giocatore corrente è l'ultimo della lista
+					.equals(statoPartita.getGiocatoreCorrente()	)
+					){
 				finePartita();
 				return null;
 			}else{
@@ -291,52 +300,11 @@ public class Controller {
 				/*
 				 * Se la partita non è finita bisogna trovare il prossimo giocatore
 				 */
-				statoPartita.setGiocatoreCorrente(nextGamer());
+				statoPartita.setGiocatoreCorrente(statoPartita.getNextGamer());
 			}
 		}
 		return statoPartita.getGiocatoreCorrente();
 	} 
-	
-	private boolean isPartitaFinita(){
-		return statoPartita.isTurnoFinale() && isLast(statoPartita.getGiocatoreCorrente());
-	}
-	
-	/**MODEL??
-	 * Metodo per calcolare qual'è il giocatore del prossimo turno
-	 * @return Prossimo giocatore
-	 */
-	private Giocatore nextGamer() {
-		int indice=statoPartita.getIndex(statoPartita.getGiocatoreCorrente());
-		/*
-		 * Incremento l'indice a cui si trova il giocatore facendone il modulo rispetto alla lunghezza della
-		 * lista di giocatori
-		 */
-		indice=(indice+1)%statoPartita.getGiocatori().size();
-		return statoPartita.getGiocatori().get(indice);
-	}
-	
-	/**MODEL??
-	 * Metodo per verificare se il giocatore corrente è l'ultimo giocatore nell'ordine di gioco
-	 * @param giocatoreCorrente
-	 * @return
-	 */
-	private boolean isLast(Giocatore giocatoreCorrente) {
-		return statoPartita.getGiocatori().get(statoPartita.getGiocatori().size()-1).equals(giocatoreCorrente);
-	}
-
-
-	/**
-	 * Metodo che controlla se il giocatore può ancora effettuare mosse
-	 * @param giocatore Giocatore di cui controllare se è possibile effettuare mosse
-	 * @return Valore che indica se può o meno effettuare ancora mosse
-	 */
-	private boolean otherMoves(Giocatore giocatore) {
-		if(giocatore.getNumMosse()>=3){
-			return false;
-		} else{
-			return true;
-		}
-	}
 
 	/**
 	 * Aggiorna le variabili del turno del giocatore corrente che ha appena fatto la mossa
@@ -353,56 +321,9 @@ public class Controller {
 	}
 	
 	/**
-	 * Metodo inovocato alla fine della partita, dovrà aggioranre la view
+	 * Metodo inovocato alla fine della partita, dovrà aggiornare la view
 	 */
 	private void finePartita(){
 		//TODO
 	}
-	
-	
-	
-//______________________________________________________________________________________________________________
-	/*
-	 * SERVE??? o si gestisce tutto da view, la view quindi chiamera il metodo corretto per eseguire la mossa
-	 * e una volta eseguita eseguira il checkTurnoGiocatore,inoltre prima di fare la mossa esegue il mossaPOssibile,
-	 * per controllare se la mossa che deve essere fatta è possibile
-	 * inoltre la view si occuperà anche di avviare ad inizio turno il metodo checkSpostaNera
-	 *
-	/**
-	 * Metodo per gestire le mosse da fare nel turno del giocatore corrente
-	 * @param mossa Mossa che deve essere compiuta
-	 * @param obj Oggetto che rappresenta a secoda della mossa che deve fare, un TipoTerreno, una Strada o una Regione
-	 * @throws Exception
-	 *
-	public void gestisciTurno(TipoMossa mossa, Object obj) throws Exception{
-		if(!mossaPossibile(mossa)){return;}
-		switch(mossa){
-		
-		case COMPRA_TESSERA:
-			if(obj instanceof TipoTerreno){
-				this.acquistaTessera((TipoTerreno)obj);
-			} else{
-				throw new ClassCastException("Oggetto non è un istanza di TipoTerreno");
-			}
-			break;
-		case SPOSTA_PASTORE:
-			if(obj instanceof Strada){
-				this.spostaPedina((Strada)obj);
-			} else{
-				throw new ClassCastException("Oggetto non è un istanza di Strada");
-			}
-			break;
-		case SPOSTA_PECORA:
-			if(obj instanceof Regione){
-				this.spostaPecora((Regione)obj);
-			} else{
-				throw new ClassCastException("Oggetto non è un istanza di Regione");
-			}
-			break;
-		case NO_MOSSA:
-		default:
-			break;
-		}
-		this.checkTurnoGiocatore(mossa);
-	}*/
 }

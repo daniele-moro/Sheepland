@@ -149,8 +149,22 @@ public class ControllerTest {
 	@Test
 	public void testAcquistaTesseraWithNotEnoughMoneyException() {
 		TipoTerreno tipo1=regione1.getTipo();
-		giocatoreTest.decrSoldi(giocatoreTest.getSoldi());
-		//Provo ad acquistare tessere quando il giocatore non ha abbastanza soldi.
+		//Forzo l'incremento del costo della tessera
+		controllerTest.getStatoPartita().incCostoTessera(tipo1);
+		controllerTest.getStatoPartita().incCostoTessera(tipo1);
+		
+		giocatoreTest.decrSoldi(giocatoreTest.getSoldi()-1);
+		//Provo ad acquistare tessere quando il giocatore non ha abbastanza soldi per comprare la tessera
+		try {
+			controllerTest.acquistaTessera(tipo1);
+			fail("Should have thrown exception");
+		}
+		catch (Exception e) {
+			
+		}
+		
+		giocatoreTest.decrSoldi(1);
+		//Provo ad acquistare tessere quando il giocatore ha 0 soldi
 		try {
 			controllerTest.acquistaTessera(tipo1);
 			fail("Should have thrown exception");
@@ -190,6 +204,7 @@ public class ControllerTest {
 		assertEquals(giocatorePositionAfterFirst, giocatoreTest.getPosition());
 		assertEquals(soldiBefore, giocatoreTest.getSoldi());
 		
+		//Test per verificare che quando finiscono i recinti, viene settato il turnoFinale
 		int numRec=statoPartitaT.getNumRecinti();
 		for(int i=1; i<numRec; i++){
 			statoPartitaT.decNumRecinti();
