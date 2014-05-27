@@ -22,7 +22,7 @@ public class Controller {
 	 */
 	private StatoPartita statoPartita;	
 	
-	public static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.controller");
+	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.controller");
 	
 	
 	/**
@@ -89,8 +89,9 @@ public class Controller {
 		if(regionePecora.getNumPecore()>0) {
 			regionePecora.removePecora();
 			regAdiacente.addPecora();
+		} else {
+			throw new Exception();
 		}
-		else throw new Exception();
 
 	}
 	
@@ -102,12 +103,13 @@ public class Controller {
 	 * @see #checkSpostamentoNera
 	 */
 	public void spostaPecoraNera(Regione regionePecora, Regione regAdiacente) throws Exception {
-		if(regionePecora.isPecoraNera()==true) {
+		if(regionePecora.isPecoraNera()) {
 			regionePecora.removePecoraNera();
 			regAdiacente.addPecoraNera();
 			statoPartita.setPosPecoraNera(regAdiacente);
+		} else {
+			throw new Exception();
 		}
-		else throw new Exception();
 	}
 
 	/**
@@ -124,8 +126,7 @@ public class Controller {
 		}
 		if (costoTessera > giocatore.getSoldi() || giocatore.getSoldi()==0) {
 			throw new Exception("Non abbastanza soldi");
-		}
-		else {
+		} else {
 			giocatore.decrSoldi(statoPartita.getCostoTessera(tipo));
 			giocatore.addTessera(tipo);
 			statoPartita.incCostoTessera(tipo);
@@ -146,8 +147,7 @@ public class Controller {
 		if(pagaSpostamento(nuovastrada, giocatore)) {
 			if(giocatore.getSoldi()==0) {
 				throw new Exception();
-			}
-			else {
+			} else {
 				giocatore.decrSoldi();
 			}
 		}
@@ -190,8 +190,7 @@ public class Controller {
 				try {
 					spostaPecoraNera(posNera, nuovaRegionePecora);
 					return;
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					logger.log(Level.SEVERE, "Non ci sono pecore da spostare", e);
 				}
 			}
@@ -263,7 +262,9 @@ public class Controller {
 		if(!mossaDaEffettuare.equals(TipoMossa.SPOSTA_PASTORE)&&giocatoreCorrente.getNumMosse()==2&&!pastoreSpostato) {
 			return false;
 		}
-		else return true;
+		else {
+			return true;
+		}
 	}
 	
 //___________________________________________________________________________________________________________________

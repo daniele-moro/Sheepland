@@ -25,7 +25,7 @@ import org.jgrapht.graph.SimpleGraph;
  */
 public class StatoPartita {
 	
-	public static Logger logger_model =  Logger.getLogger("it.polimi.iodice_moro.model");
+	private final static Logger logger_model =  Logger.getLogger("it.polimi.iodice_moro.model");
 	
 	//--------------------------ATTRIBUTI------------------------------------------
 	/**
@@ -129,11 +129,17 @@ public class StatoPartita {
 	private void caricaMappa(String path){
 		try {
 			parseMappaXML(path);
-		} catch (JDOMException | IOException e) {
+		} catch (JDOMException e)  {
 			/*
 			 * L'eccezione viene loggata nel logger del model
 			 */
 			logger_model.log(Level.SEVERE, e.getMessage());
+		} catch(IOException e){
+			/*
+			 * L'eccezione viene loggata nel logger del model
+			 */
+			logger_model.log(Level.SEVERE, e.getMessage());
+			
 		}
 	}
 	
@@ -224,8 +230,8 @@ public class StatoPartita {
 		}
 
 		//DEBUG DEL GRAFO
-		System.out.println(mappa.toString());
-		System.out.println(mappa.edgesOf(nodi.get(1)).toString());
+		//System.out.println(mappa.toString());
+		//System.out.println(mappa.edgesOf(nodi.get(1)).toString());
 
 	}
 
@@ -247,7 +253,7 @@ public class StatoPartita {
 		for(DefaultEdge arc : archi){
 			/*
 			 * Per ogni arco prelevo la sorgente dell'arco e 
-			 * controllo che il vertice sia una strada e non sia la strada che ho come parametro; 
+			 * controllo che il vertice sia una strada e non sia la strada che ho come parametro,
 			 * se è una strada la memorizzo nell'array delle starde adiacenti
 			 */
 			VerticeGrafo destArco = mappa.getEdgeSource(arc);
@@ -282,7 +288,7 @@ public class StatoPartita {
 		for(DefaultEdge arc : archi){
 			/*
 			 *per ogni arco prelevo la sorgente dell'arco e 
-			 * controllo che il vertice sia una strada; 
+			 * controllo che il vertice sia una strada,
 			 * se è una strada la memorizzo nell'array delle starde adiacenti
 			 */
 			VerticeGrafo destArco = mappa.getEdgeSource(arc);
@@ -355,12 +361,6 @@ public class StatoPartita {
 		}
 		return regioniConfini;
 		
-	}
-	
-	public static void main(String[] args){
-		//Test per verificare il caricamento della mappa da XML e il prelievo delle strade adiacenti
-		StatoPartita stato = new StatoPartita();
-		System.out.println("Adiacenze"+stato.getStradeAdiacenti(stato.strade.get(0)).toString());
 	}
 	
 	//------------------------GETTERS & SETTERS----------------------------------
