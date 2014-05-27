@@ -172,6 +172,10 @@ public class ControllerTest {
 		assertEquals(giocatorePositionAfterFirst, giocatoreTest.getPosition());
 		assertEquals(soldiBefore, giocatoreTest.getSoldi());
 		
+		int numRec=statoPartitaT.getNumRecinti();
+		for(int i=1; i<numRec; i++){
+			statoPartitaT.decNumRecinti();
+		}
 		
 		Strada giocatorePositionAfterSecond = statoPartitaT.getStradeConfini(regione4).get(0);
 		controllerTest.spostaPedina(giocatorePositionAfterSecond);
@@ -180,7 +184,7 @@ public class ControllerTest {
 		assertTrue(giocatorePositionAfterFirst.isRecinto());
 		assertEquals(giocatorePositionAfterSecond, giocatoreTest.getPosition());
 		assertEquals(soldiBefore-1, giocatoreTest.getSoldi());
-		
+		assertTrue(statoPartitaT.isTurnoFinale());
 	}
 
 	@Test

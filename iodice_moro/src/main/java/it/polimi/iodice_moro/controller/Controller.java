@@ -56,7 +56,8 @@ public class Controller {
 			 * Se ci sono recinti disponibili, uso il recinto e decremento il numero di recinti in StatoPartita
 			 */
 			statoPartita.decNumRecinti();
-		}else{
+		}
+		if(statoPartita.getNumRecinti()<=0){
 			statoPartita.setTurnoFinale();
 		}
 
