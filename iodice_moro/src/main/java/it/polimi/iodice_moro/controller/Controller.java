@@ -100,7 +100,7 @@ public class Controller {
 	 * @throws Exception se non ci sono pecore nere da spostare.
 	 * @see #checkSpostamentoNera
 	 */
-	private void spostaPecoraNera(Regione regionePecora, Regione regAdiacente) throws Exception {
+	public void spostaPecoraNera(Regione regionePecora, Regione regAdiacente) throws Exception {
 		if(regionePecora.isPecoraNera()==true) {
 			regionePecora.removePecoraNera();
 			regAdiacente.addPecoraNera();
@@ -257,7 +257,7 @@ public class Controller {
 		Giocatore giocatoreCorrente=statoPartita.getGiocatoreCorrente();
 		TipoMossa ultimaMossa=giocatoreCorrente.getUltimaMossa();
 		boolean pastoreSpostato = giocatoreCorrente.isPastoreSpostato();
-		if(!ultimaMossa.equals(mossaDaEffettuare)&&!mossaDaEffettuare.equals(TipoMossa.SPOSTA_PASTORE)) {
+		if(ultimaMossa.equals(mossaDaEffettuare)&&!mossaDaEffettuare.equals(TipoMossa.SPOSTA_PASTORE)) {
 			return false;
 		}
 		if(!mossaDaEffettuare.equals(TipoMossa.SPOSTA_PASTORE)&&giocatoreCorrente.getNumMosse()==2&&!pastoreSpostato) {
@@ -268,7 +268,6 @@ public class Controller {
 	
 //___________________________________________________________________________________________________________________
 	/*
-	 * Cambia l'ultima mossa nel giocatore corrente. Incremente numero mosse giocatore corrente.
 	 * Controlla se il giocatore corrente può fare ancora mosse (n. mosse): se non può farle
 	 * azzera le variabili di turno (fineturno() ) nel giocatore corrente e trova
 	 * il prossimo giocatore (modifica il StatoPartita.giocatoreCorrente ).
@@ -276,10 +275,6 @@ public class Controller {
 	 * Ritorna il prossimo giocatore.
 	 */
 	public Giocatore checkTurnoGiocatore(TipoMossa mossaFatta) {
-		/*
-		 * Aggiornamento variabili di turno
-		 */
-		aggiornaTurno(mossaFatta);
 		/*
 		 * Controllo se il giocatore può ancora fare mossa
 		 */
@@ -291,6 +286,7 @@ public class Controller {
 				finePartita();
 				return null;
 			}else{
+				statoPartita.getGiocatoreCorrente().azzeraTurno();
 				/*
 				 * Se la partita non è finita bisogna trovare il prossimo giocatore
 				 */
@@ -346,7 +342,7 @@ public class Controller {
 	 * @param giocatore Giocatore corrente che ha appena finito la sua mossa
 	 * @param mossaFatta Mossa che ha appena effettuato il giocatore
 	 */
-	private void aggiornaTurno(TipoMossa mossaFatta){
+	public void aggiornaTurno(TipoMossa mossaFatta){
 		Giocatore giocatore= statoPartita.getGiocatoreCorrente();
 		giocatore.setUltimaMossa(mossaFatta);
 		giocatore.incNumMosse();

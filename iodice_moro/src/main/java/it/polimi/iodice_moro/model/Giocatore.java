@@ -175,11 +175,13 @@ public class Giocatore {
 	}
 
 	
-	
-	//Metodo chiamato alla fine del turno del giocatore per azzerare gli attributi usati per la gestione del turno
-	/*public void fineTurno(){
+	/**
+	 * Metodo chiamato alla fine del turno del giocatore per azzerare
+	 * gli attributi usati per la gestione del turno.
+	 */
+	public void azzeraTurno(){
 		numMosse=0;
-		ultimaMossa=-1;
+		ultimaMossa=TipoMossa.NO_MOSSA;
 		pastoreSpostato=false;
-	}*/
+	}
 }

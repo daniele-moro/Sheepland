@@ -9,6 +9,7 @@ import it.polimi.iodice_moro.model.Giocatore;
 import it.polimi.iodice_moro.model.Regione;
 import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.Strada;
+import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
 
 import java.util.List;
@@ -84,7 +85,7 @@ public class ControllerTest {
 		}
 	}
 
-	/*@Test
+	@Test
 	public void testSpostaPecoraNera() throws Exception {
 		statoPartitaT.setPosPecoraNera(regione1);
 		regione1.addPecoraNera();
@@ -112,7 +113,7 @@ public class ControllerTest {
 		catch (Exception e) {
 			
 		}
-	}*/
+	}
 	
 
 	@Test
@@ -215,9 +216,21 @@ public class ControllerTest {
 	}
 	
 	@Test
-	public void testCheckSpostamentoNera() {
+	public void testAggiornaTurno() {
+		int numMossePrima = giocatoreTest.getNumMosse();
+		controllerTest.aggiornaTurno(TipoMossa.COMPRA_TESSERA);
+		assertEquals(TipoMossa.COMPRA_TESSERA, giocatoreTest.getUltimaMossa());
+		assertEquals(numMossePrima+1, giocatoreTest.getNumMosse());
+		assertFalse(giocatoreTest.isPastoreSpostato());
+		
+		giocatoreTest.azzeraTurno();
+		controllerTest.aggiornaTurno(TipoMossa.SPOSTA_PASTORE);
+		assertEquals(TipoMossa.SPOSTA_PASTORE, giocatoreTest.getUltimaMossa());
+		assertEquals(numMossePrima+1, giocatoreTest.getNumMosse());
+		assertTrue(giocatoreTest.isPastoreSpostato());	
 		
 	}	
+	
 	
 	
 }
