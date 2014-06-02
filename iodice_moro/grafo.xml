@@ -1,69 +1,69 @@
 <graph>
 	
 	<!--Regioni -->
-	<regione id="1" tipo="pianura" />
-	<regione id="2" tipo="pianura" />
-	<regione id="3" tipo="pianura" />
-	<regione id="4" tipo="coltivazioni" />
-	<regione id="5" tipo="coltivazioni" />
-	<regione id="6" tipo="coltivazioni" />
-	<regione id="7" tipo="montagna" />
-	<regione id="8" tipo="montagna" />
-	<regione id="9" tipo="montagna" />
-	<regione id="10" tipo="sabbia" />
-	<regione id="11" tipo="sabbia" />
-	<regione id="12" tipo="sabbia" />
-	<regione id="13" tipo="paludi" />
-	<regione id="14" tipo="paludi" />
-	<regione id="15" tipo="paludi" />
-	<regione id="16" tipo="bosco" />
-	<regione id="17" tipo="bosco" />
-	<regione id="18" tipo="bosco" />
-	<regione id="19" tipo="sheepsburg" />
+	<regione id="1" colore="ffd20000" x="52" y="170" tipo="pianura" />
+	<regione id="2" colore="ff7c48ad" x="103" y="307" tipo="pianura" />
+	<regione id="3" colore="ff005473" x="173" y="383" tipo="pianura" />
+	<regione id="4" colore="ffff2323" x="174" y="144" tipo="coltivazioni" />
+	<regione id="5" colore="ffbf23ff" x="170" y="255" tipo="coltivazioni" />
+	<regione id="6" colore="ffff2357" x="282" y="100" tipo="coltivazioni" />
+	<regione id="7" colore="ffe323ff" x="258" y="210" tipo="montagna" />
+	<regione id="8" colore="ffff23aa" x="348" y="148" tipo="montagna" />
+	<regione id="9" colore="ff27007f" x="403" y="193" tipo="montagna" />
+	<regione id="10" colore="ff000373" x="323" y="267" tipo="sabbia" />
+	<regione id="11" colore="ff009dd7" x="400" y="305" tipo="sabbia" />
+	<regione id="12" colore="ff00c679" x="383" y="432" tipo="sabbia" />
+	<regione id="13" colore="ff00d7cb" x="332" y="375" tipo="paludi" />
+	<regione id="14" colore="ff39efa9" x="324" y="527" tipo="paludi" />
+	<regione id="15" colore="ff75e8a1" x="229" y="582" tipo="paludi" />
+	<regione id="16" colore="ff96e875" x="247" y="459" tipo="bosco" />
+	<regione id="17" colore="ff007b0e" x="164" y="512" tipo="bosco" />
+	<regione id="18" colore="ff18d111" x="82" y="440" tipo="bosco" />
+	<regione id="19" colore="ff002e73" x="233" y="310" tipo="sheepsburg" />
 	
 	<!--Strade -->
-	<strada id="101" ncasella="1" />
-	<strada id="102" ncasella="3" />
-	<strada id="103" ncasella="2" />
-	<strada id="104" ncasella="2" />
-	<strada id="105" ncasella="3" />
-	<strada id="106" ncasella="4" />
-	<strada id="107" ncasella="2" />
-	<strada id="108" ncasella="1" />
-	<strada id="109" ncasella="4" />
-	<strada id="110" ncasella="3" />
-	<strada id="111" ncasella="2" />
-	<strada id="112" ncasella="1" />
-	<strada id="113" ncasella="5" />
-	<strada id="114" ncasella="2" />
-	<strada id="115" ncasella="1" />
-	<strada id="116" ncasella="6" />
-	<strada id="117" ncasella="5" />
-	<strada id="118" ncasella="4" />
-	<strada id="119" ncasella="5" />
-	<strada id="120" ncasella="2" />
-	<strada id="121" ncasella="6" />
-	<strada id="122" ncasella="1" />
-	<strada id="123" ncasella="3" />
-	<strada id="124" ncasella="2" />
-	<strada id="125" ncasella="1" />
-	<strada id="126" ncasella="5" />
-	<strada id="127" ncasella="3" />
-	<strada id="128" ncasella="3" />
-	<strada id="129" ncasella="2" />
-	<strada id="130" ncasella="6" />
-	<strada id="131" ncasella="4" />
-	<strada id="132" ncasella="5" />
-	<strada id="133" ncasella="4" />
-	<strada id="134" ncasella="1" />
-	<strada id="135" ncasella="1" />
-	<strada id="136" ncasella="6" />
-	<strada id="137" ncasella="1" />
-	<strada id="138" ncasella="6" />
-	<strada id="139" ncasella="2" />
-	<strada id="140" ncasella="3" />
-	<strada id="141" ncasella="4" />
-	<strada id="142" ncasella="5" />
+	<strada id="101" colore="ff3c00ff" ncasella="1" />
+	<strada id="102" colore="ffb4808e" ncasella="3" />
+	<strada id="103" colore="fffb8f9b" ncasella="2" />
+	<strada id="104" colore="ff96ff00" ncasella="2" />
+	<strada id="105" colore="ff5d644e" ncasella="3" />
+	<strada id="106" colore="ff74815c" ncasella="4" />
+	<strada id="107" colore="ff4d6105" ncasella="2" />
+	<strada id="108" colore="ffd24a00" ncasella="1" />
+	<strada id="109" colore="ffff5c03" ncasella="4" />
+	<strada id="110" colore="ffffa16e" ncasella="3" />
+	<strada id="111" colore="ff273119" ncasella="2" />
+	<strada id="112" colore="ffd27f52" ncasella="1" />
+	<strada id="113" colore="ffd2721c" ncasella="5" />
+	<strada id="114" colore="ff7f6d09" ncasella="2" />
+	<strada id="115" colore="ffd0b833" ncasella="1" />
+	<strada id="116" colore="ffad971a" ncasella="6" />
+	<strada id="117" colore="ffd5f85a" ncasella="5" />
+	<strada id="118" colore="ffecd763" ncasella="4" />
+	<strada id="119" colore="fffbde3b" ncasella="5" />
+	<strada id="120" colore="ffffd800" ncasella="2" />
+	<strada id="121" colore="ff06c75c" ncasella="6" />
+	<strada id="122" colore="ff7b886a" ncasella="1" />
+	<strada id="123" colore="ff06c7b3" ncasella="3" />
+	<strada id="124" colore="ff03417f" ncasella="2" />
+	<strada id="125" colore="ff3688db" ncasella="1" />
+	<strada id="126" colore="ff63bdb3" ncasella="5" />
+	<strada id="127" colore="ff036f7f" ncasella="3" />
+	<strada id="128" colore="ff534649" ncasella="3" />
+	<strada id="129" colore="ff6a94bf" ncasella="2" />
+	<strada id="130" colore="fb9b378b" ncasella="6" />
+	<strada id="131" colore="ffce0a21" ncasella="4" />
+	<strada id="132" colore="ff7a1a33" ncasella="5" />
+	<strada id="133" colore="ff037f72" ncasella="4" />
+	<strada id="134" colore="fffff600" ncasella="1" />
+	<strada id="135" colore="ffc6ff00" ncasella="1" />
+	<strada id="136" colore="ff839e26" ncasella="6" />
+	<strada id="137" colore="ff39471e" ncasella="1" />
+	<strada id="138" colore="ff94eea1" ncasella="6" />
+	<strada id="139" colore="ffbddac1" ncasella="2" />
+	<strada id="140" colore="ffc6ff00" ncasella="3" />
+	<strada id="141" colore="ffb9d654" ncasella="4" />
+	<strada id="142" colore="ff68ae45" ncasella="5" />
 	
 	
 	<!--
@@ -228,4 +228,3 @@
 	<arco source="142" dest="19" />
 	
 </graph>
-	
