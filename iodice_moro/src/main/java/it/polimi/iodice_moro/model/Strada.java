@@ -16,6 +16,8 @@ public class Strada extends VerticeGrafo {
 	 */
 	private boolean recinto;
 	
+	private String colore;
+	
 	//Costruttore usato per l'inizializzazione della mappa caricata da XML
 	/**
 	 * Costruttore che inizializza la classe, verrà chiamato all'inizializzazione della partita
@@ -25,9 +27,19 @@ public class Strada extends VerticeGrafo {
 		this.nCasella=nCasella;
 		this.recinto=false;
 	}
+	public Strada(int nCasella, String colore){
+		this.nCasella=nCasella;
+		this.recinto=false;
+		this.colore=colore;
+	}
 
 	
 	//GETTER & SETTER degli attributi
+	
+	public String getColore(){
+		return colore;
+	}
+	
 	/**
 	 * @return Ritorna la presenza o meno del recinto
 	 */

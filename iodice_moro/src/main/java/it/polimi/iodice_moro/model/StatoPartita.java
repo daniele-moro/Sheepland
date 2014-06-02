@@ -1,5 +1,6 @@
 package it.polimi.iodice_moro.model;
 
+import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -177,10 +178,14 @@ public class StatoPartita {
 			 */
 			int id= Integer.parseInt(i.getAttributeValue("id"));
 			String tipo = i.getAttributeValue("tipo");
+			String colore = i.getAttributeValue("colore");
+			int posx = Integer.parseInt(i.getAttributeValue("x"));
+			int posy = Integer.parseInt(i.getAttributeValue("y"));
+			Point posizione = new Point(posx,posy);
 			/*
 			 * Istanzio la nuova classe Regione
 			 */
-			Regione nuovaReg= new Regione(tipo);
+			Regione nuovaReg= new Regione(tipo, colore, posizione);
 			/*
 			 * Aggiugo l'istanza alla HashMap dei nodi e al vettore delle regioni
 			 */
@@ -200,8 +205,9 @@ public class StatoPartita {
 			 */
 			int id= Integer.parseInt(i.getAttributeValue("id"));
 			int ncas = Integer.parseInt(i.getAttributeValue("ncasella"));
+			String colore = i.getAttributeValue("colore");
 
-			Strada nuovaStr= new Strada(ncas);
+			Strada nuovaStr= new Strada(ncas, colore);
 			nodi.put(id,nuovaStr);
 			strade.add(nuovaStr);
 			mappa.addVertex(nuovaStr);
@@ -514,6 +520,62 @@ public class StatoPartita {
 		 */
 		indice=(indice+1)%giocatori.size();
 		return giocatori.get(indice);
+	}
+	
+	
+	//AGGIUNTE!!!!
+	/**
+	 * Ritorna le regioni adiacenti ad una strada data
+	 * @param strada Strada di cui cercare le regioni adiacenti
+	 * @return Lista di regioni che sono adiacenti alla strada passata come parametro
+	 */
+	public List<Regione> getRegioniADStrada(Strada strada){
+		Set<DefaultEdge> archi = mappa.edgesOf(strada);
+		/*
+		 * itero sugli archi che partono dalla strada passata come parametro
+		 * per ogni arco dovrò vedere la destinazione e source e verificare se è una regione e se lo è,
+		 * che sia diversa da quella passata come parametro
+		 */
+		List<Regione> reg = new ArrayList<Regione>();
+		for(DefaultEdge arc : archi){
+			VerticeGrafo destArco=mappa.getEdgeSource(arc);
+			if(destArco.isRegione()){
+				reg.add((Regione) destArco);
+			}
+			destArco = mappa.getEdgeTarget(arc);
+			if(destArco.isRegione()){
+				reg.add((Regione) destArco);
+			}
+		}
+		return reg;
+	}
+	
+	/**
+	 * Ritorna la regione corrispondente all'ID passato come parametro
+	 * @param id ID della Regione che si sta cercando
+	 * @return Istanza della regione che si sta cercando
+	 */
+	public Regione getRegioneByID(String id){
+		for(Regione r:regioni){
+			if(r.getColore().equals(id)){
+				return r;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Ritorna la strada corrispondente all'ID passato come parametro
+	 * @param id ID della strada che si sta cercando
+	 * @return Istanza della strada che si sta cercando
+	 */
+	public Strada getStradaByID(String id){
+		for(Strada s: strade){
+			if(s.getColore().equals(id)){
+				return s;
+			}
+		}
+		return null;
 	}
 
 }

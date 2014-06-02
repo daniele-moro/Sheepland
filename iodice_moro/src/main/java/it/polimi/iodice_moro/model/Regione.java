@@ -1,4 +1,7 @@
 package it.polimi.iodice_moro.model;
+
+import java.awt.Point;
+
 /**
  * La classe regione estende la classe astratta {@link VerticeGrafo},
  * contiene tutti i dati che riguardano la regione
@@ -22,6 +25,12 @@ public class Regione extends VerticeGrafo{
 	 */
 	private final TipoTerreno tipo;
 	
+	
+	
+	private String colore;
+	
+	private Point posizione;
+	
 	//Costruttore per l'inizializzazione della mappa nel caricamento da XML
 	/**
 	 * Costruttore che inizializza la classe, verrà chiamato all'inizializzazione della partita
@@ -32,10 +41,27 @@ public class Regione extends VerticeGrafo{
 		this.numPecore=0;
 		this.pecoraNera=false;
 	}
+	
+	public Regione(String tipo, String colore, Point posizione){
+		this.tipo=TipoTerreno.parseInput(tipo);
+		this.colore=colore;
+		this.posizione=posizione;
+		this.numPecore=1;
+		this.pecoraNera=false;
+	}
 
 	
 	
 	//GETTER & SETTER degli attributi
+	
+	public String getColore(){
+		return colore;
+	}
+	public Point getPosizione(){
+		return posizione;
+	}
+	
+	
 	/**
 	 * @return Presenza o meno della PecoraNera
 	 */
