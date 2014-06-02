@@ -206,8 +206,11 @@ public class StatoPartita {
 			int id= Integer.parseInt(i.getAttributeValue("id"));
 			int ncas = Integer.parseInt(i.getAttributeValue("ncasella"));
 			String colore = i.getAttributeValue("colore");
+			int posx = Integer.parseInt(i.getAttributeValue("x"));
+			int posy = Integer.parseInt(i.getAttributeValue("y"));
+			Point posizione = new Point(posx,posy);
 
-			Strada nuovaStr= new Strada(ncas, colore);
+			Strada nuovaStr= new Strada(ncas, colore, posizione);
 			nodi.put(id,nuovaStr);
 			strade.add(nuovaStr);
 			mappa.addVertex(nuovaStr);

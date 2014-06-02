@@ -1,5 +1,7 @@
 package it.polimi.iodice_moro.model;
 
+import java.awt.Point;
+
 /**
  * La classe strada estende la classe astratta {@link VerticeGrafo},
  * contiene tutti i dati che riguardano la strada
@@ -18,6 +20,8 @@ public class Strada extends VerticeGrafo {
 	
 	private String colore;
 	
+	private Point posizione;
+	
 	//Costruttore usato per l'inizializzazione della mappa caricata da XML
 	/**
 	 * Costruttore che inizializza la classe, verrà chiamato all'inizializzazione della partita
@@ -27,10 +31,11 @@ public class Strada extends VerticeGrafo {
 		this.nCasella=nCasella;
 		this.recinto=false;
 	}
-	public Strada(int nCasella, String colore){
+	public Strada(int nCasella, String colore, Point posizione){
 		this.nCasella=nCasella;
 		this.recinto=false;
 		this.colore=colore;
+		this.posizione=posizione;
 	}
 
 	
@@ -38,6 +43,10 @@ public class Strada extends VerticeGrafo {
 	
 	public String getColore(){
 		return colore;
+	}
+	
+	public Point getPosizione(){
+		return posizione;
 	}
 	
 	/**

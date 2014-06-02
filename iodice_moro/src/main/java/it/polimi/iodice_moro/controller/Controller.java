@@ -362,6 +362,15 @@ public class Controller {
 		}
 		return posRegioni;
 	}
+	
+	public Map<String, Point> getPosStrade() {
+		Map<String,Point> posStrade = new HashMap<String,Point>();
+		for(Strada s: statoPartita.getStrade()){
+			posStrade.put(s.getColore(),s.getPosizione());
+		}
+		return posStrade;
+	}
+
 
 	/**
 	 * Ritorna gli ID delle due regioni adiacenti alla strada in cui si trova il pastore
