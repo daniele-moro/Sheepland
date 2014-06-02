@@ -22,48 +22,48 @@
 	<regione id="19" colore="ff002e73" x="233" y="310" tipo="sheepsburg" />
 	
 	<!--Strade -->
-	<strada id="101" colore="ff3c00ff" ncasella="1" />
-	<strada id="102" colore="ffb4808e" ncasella="3" />
-	<strada id="103" colore="fffb8f9b" ncasella="2" />
-	<strada id="104" colore="ff96ff00" ncasella="2" />
-	<strada id="105" colore="ff5d644e" ncasella="3" />
-	<strada id="106" colore="ff74815c" ncasella="4" />
-	<strada id="107" colore="ff4d6105" ncasella="2" />
-	<strada id="108" colore="ffd24a00" ncasella="1" />
-	<strada id="109" colore="ffff5c03" ncasella="4" />
-	<strada id="110" colore="ffffa16e" ncasella="3" />
-	<strada id="111" colore="ff273119" ncasella="2" />
-	<strada id="112" colore="ffd27f52" ncasella="1" />
-	<strada id="113" colore="ffd2721c" ncasella="5" />
-	<strada id="114" colore="ff7f6d09" ncasella="2" />
-	<strada id="115" colore="ffd0b833" ncasella="1" />
-	<strada id="116" colore="ffad971a" ncasella="6" />
-	<strada id="117" colore="ffd5f85a" ncasella="5" />
-	<strada id="118" colore="ffecd763" ncasella="4" />
-	<strada id="119" colore="fffbde3b" ncasella="5" />
-	<strada id="120" colore="ffffd800" ncasella="2" />
-	<strada id="121" colore="ff06c75c" ncasella="6" />
-	<strada id="122" colore="ff7b886a" ncasella="1" />
-	<strada id="123" colore="ff06c7b3" ncasella="3" />
-	<strada id="124" colore="ff03417f" ncasella="2" />
-	<strada id="125" colore="ff3688db" ncasella="1" />
-	<strada id="126" colore="ff63bdb3" ncasella="5" />
-	<strada id="127" colore="ff036f7f" ncasella="3" />
-	<strada id="128" colore="ff534649" ncasella="3" />
-	<strada id="129" colore="ff6a94bf" ncasella="2" />
-	<strada id="130" colore="fb9b378b" ncasella="6" />
-	<strada id="131" colore="ffce0a21" ncasella="4" />
-	<strada id="132" colore="ff7a1a33" ncasella="5" />
-	<strada id="133" colore="ff037f72" ncasella="4" />
-	<strada id="134" colore="fffff600" ncasella="1" />
-	<strada id="135" colore="ffc6ff00" ncasella="1" />
-	<strada id="136" colore="ff839e26" ncasella="6" />
-	<strada id="137" colore="ff39471e" ncasella="1" />
-	<strada id="138" colore="ff94eea1" ncasella="6" />
-	<strada id="139" colore="ffbddac1" ncasella="2" />
-	<strada id="140" colore="ffc6ff00" ncasella="3" />
-	<strada id="141" colore="ffb9d654" ncasella="4" />
-	<strada id="142" colore="ff68ae45" ncasella="5" />
+	<strada id="101" colore="ff3c00ff" x="71" y="246" ncasella="1" />
+	<strada id="102" colore="ffb4808e" x="142" y="215" ncasella="3" />
+	<strada id="103" colore="fffb8f9b" x="113" y="167" ncasella="2" />
+	<strada id="104" colore="ff96ff00" x="144" y="276" ncasella="2" />
+	<strada id="105" colore="ff5d644e" x="142" y="342" ncasella="3" />
+	<strada id="106" colore="ff74815c" x="105" y="376" ncasella="4" />
+	<strada id="107" colore="ff4d6105" x="148" y="414" ncasella="2" />
+	<strada id="108" colore="ffd24a00" x="112" y="523" ncasella="1" />
+	<strada id="109" colore="ffff5c03" x="180" y="461" ncasella="4" />
+	<strada id="110" colore="ffffa16e" x="218" y="483" ncasella="3" />
+	<strada id="111" colore="ff273119" x="178" y="582" ncasella="2" />
+	<strada id="112" colore="ffd27f52" x="254" y="503" ncasella="1" />
+	<strada id="113" colore="ffd2721c" x="290" y="556" ncasella="5" />
+	<strada id="114" colore="ff7f6d09" x="292" y="475" ncasella="2" />
+	<strada id="115" colore="ffd0b833" x="366" y="496" ncasella="1" />
+	<strada id="116" colore="ffad971a" x="321" y="449" ncasella="6" />
+	<strada id="117" colore="ffd5f85a" x="292" y="399" ncasella="5" />
+	<strada id="118" colore="ffecd763" x="362" y="405" ncasella="4" />
+	<strada id="119" colore="fffbde3b" x="425" y="379" ncasella="5" />
+	<strada id="120" colore="ffffd800" x="375" y="336" ncasella="2" />
+	<strada id="121" colore="ff06c75c" x="379" y="283" ncasella="6" />
+	<strada id="122" colore="ff7b886a" x="436" y="246" ncasella="1" />
+	<strada id="123" colore="ff06c7b3" x="386" y="229" ncasella="3" />
+	<strada id="124" colore="ff03417f" x="405" y="164" ncasella="2" />
+	<strada id="125" colore="ff3688db" x="338" y="111" ncasella="1" />
+	<strada id="126" colore="ff63bdb3" x="348" y="211" ncasella="5" />
+	<strada id="127" colore="ff036f7f" x="318" y="187" ncasella="3" />
+	<strada id="128" colore="ff534649" x="246" y="106" ncasella="3" />
+	<strada id="129" colore="ff6a94bf" x="283" y="159" ncasella="2" />
+	<strada id="130" colore="fb9b378b" x="242" y="172" ncasella="6" />
+	<strada id="131" colore="ffce0a21" x="193" y="197" ncasella="4" />
+	<strada id="132" colore="ff7a1a33" x="231" y="227" ncasella="5" />
+	<strada id="133" colore="ff037f72" x="301" y="238" ncasella="4" />
+	<strada id="134" colore="fffff600" x="251" y="262" ncasella="1" />
+	<strada id="135" colore="ffc6ff00" x="331" y="322" ncasella="1" />
+	<strada id="136" colore="ff839e26" x="220" y="412" ncasella="6" />
+	<strada id="137" colore="ff39471e" x="177" y="318" ncasella="1" />
+	<strada id="138" colore="ff94eea1" x="210" y="287" ncasella="6" />
+	<strada id="139" colore="ffbddac1" x="288" y="288" ncasella="2" />
+	<strada id="140" colore="ffc6ff00" x="293" y="338" ncasella="3" />
+	<strada id="141" colore="ffb9d654" x="257" y="365" ncasella="4" />
+	<strada id="142" colore="ff68ae45" x="213" y="340" ncasella="5" />
 	
 	
 	<!--
