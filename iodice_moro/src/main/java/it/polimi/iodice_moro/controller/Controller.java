@@ -8,6 +8,8 @@ import it.polimi.iodice_moro.model.Strada;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
 
+import java.awt.Point;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,6 +97,11 @@ public class Controller {
 
 	}
 	
+	public void spostaPecora(String idRegione) throws Exception{
+		spostaPecora(statoPartita.getRegioneByID(idRegione));
+	}
+	
+	
 	/**
 	 * Metodo che sposta la pecora nera dala regione in cui si trova alla regione adiacente
 	 * @param regionePecora Regione dove si trova la pecora.
@@ -110,6 +117,12 @@ public class Controller {
 		} else {
 			throw new Exception();
 		}
+	}
+	
+	public void spostaPecoraNera(String idRegPecoraNera) throws Exception{
+		Regione regionePecora=statoPartita.getRegioneByID(idRegPecoraNera);
+		Regione regAdiacente=statoPartita.getAltraRegione(regionePecora, statoPartita.getGiocatoreCorrente().getPosition());
+		spostaPecoraNera(regionePecora,regAdiacente);
 	}
 
 	/**
@@ -133,6 +146,10 @@ public class Controller {
 		}
 	}
 	
+	public void acquistaTessera(String idRegione) throws Exception{
+		acquistaTessera(statoPartita.getRegioneByID(idRegione).getTipo());
+	}
+	
 	/**
 	 * Cambia la posizione corrente del giocatore.
 	 * @param nuovastrada Nuova posizione.
@@ -153,6 +170,10 @@ public class Controller {
 		}
 		this.aggiungiRecinto(giocatore.getPosition());
 		giocatore.setPosition(nuovastrada);
+	}
+	
+	public void spostaPedina(String idStrada) throws Exception{
+		spostaPedina(statoPartita.getStradaByID(idStrada));
 	}
 
 	/**
@@ -327,4 +348,40 @@ public class Controller {
 	private void finePartita(){
 		//TODO
 	}
+	
+	//AGGIUNTE!!!
+	//TODO
+	/**
+	 * Ritorna l'elenco delle posizioni di tutte le regioni, con i colori loro assegnati
+	 * @return
+	 */
+	public Map<String, Point> getPosRegioni() {
+		Map<String,Point> posRegioni = new HashMap<String,Point>();
+		for(Regione r: statoPartita.getRegioni()){
+			posRegioni.put(r.getColore(),r.getPosizione());
+		}
+		return posRegioni;
+	}
+
+	/**
+	 * Ritorna gli ID delle due regioni adiacenti alla strada in cui si trova il pastore
+	 * @return Ritorna la lista di ID delle regioni adiacenti alla strada in cui si trova il pastore (giocatore corrente)
+	 */
+	public List<String >getIDRegioniAd(){
+		List<String> regAD = new ArrayList<String>();
+		List<Regione> reg=statoPartita.getRegioniADStrada(statoPartita.getGiocatoreCorrente().getPosition());
+		if(reg.size()>0 && reg.size()<=2){
+			regAD.add(reg.get(0).getColore());
+			regAD.add(reg.get(1).getColore());
+		}
+		return regAD;
+	}
+
+	/*	public Map<String, Point> getPosStrade() {
+			Map<String,Point> posRegioni = new HashMap<String,Point>();
+			for(Strada s: statoPartita.getStrade()){
+				posRegioni.put(s.getColore(),s.getPosizione());
+			}
+			return posRegioni;
+		}*/
 }
