@@ -101,6 +101,7 @@ public class Controller {
 		} else {
 			throw new Exception();
 		}
+		statoPartita.getGiocatoreCorrente().setUltimaMossa(TipoMossa.SPOSTA_PECORA);
 
 	}
 	
@@ -176,6 +177,9 @@ public class Controller {
 	 */
 	public void spostaPedina (Strada nuovastrada) throws Exception {
 		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
+		if(nuovastrada==giocatore.getPosition()){
+			throw new Exception();
+		}
 		if(nuovastrada.isRecinto()) {
 			throw new Exception();
 		}
@@ -188,10 +192,17 @@ public class Controller {
 		}
 		this.aggiungiRecinto(giocatore.getPosition());
 		giocatore.setPosition(nuovastrada);
+		giocatore.setUltimaMossa(TipoMossa.SPOSTA_PASTORE);
 	}
 	
 	public void spostaPedina(String idStrada) throws Exception{
+		Strada oldStreet = statoPartita.getGiocatoreCorrente().getPosition();
 		spostaPedina(statoPartita.getStradaByID(idStrada));
+		if(!statoPartita.isTurnoFinale()){
+			view.addCancelloNormale(oldStreet.getColore());
+		} else{
+			view.addCancelloFinale(oldStreet.getColore());
+		}
 	}
 
 	/**
@@ -426,7 +437,7 @@ public class Controller {
 /*	public Map<TipoTerreno, Integer> getPrezzoRegAdiacenti(){
 		List<Regione> regAD= statoPartita.getRegioniADStrada(statoPartita.getGiocatoreCorrente().getPosition());
 		Map<TipoTerreno, Integer> prezzi = new HashMap<TipoTerreno, Integer>();
-		prezzi.put(regAD.get(0).ge\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\, value)statoPartita.getCostoTessera(regAD.get(0));
+	//	prezzi.put(regAD.get(0).ge\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\, value)statoPartita.getCostoTessera(regAD.get(0));
 		
 		
 	}*/
