@@ -268,6 +268,11 @@ public class Controller {
 		statoPartita.addGiocatore(nuovoGiocatore);
 	}
 	
+	public void creaGiocatore(String nome, Strada posizione, Strada posizione2) {
+		Giocatore nuovoGiocatore = new Giocatore(nome, posizione, posizione2);
+		statoPartita.addGiocatore(nuovoGiocatore);
+	}
+	
 	/**
 	 * Stabilisce se una mossa può essere effettuata.
 	 * @param mossaDaEffettuare Mossa che il giocatore vuole effettuare.

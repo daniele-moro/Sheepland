@@ -30,6 +30,8 @@ public class Giocatore {
 	 */
 	private Strada position;
 	
+	private Strada position2;
+	
 	/**
 	 * Tabella hash con l'elenco delle tessere e il relativo
 	 * numero di tessere possedute.
@@ -56,6 +58,11 @@ public class Giocatore {
 	public Giocatore (String nome, Strada position) {
 		this(nome);
 		this.position=position;
+	}
+	
+	public Giocatore (String nome, Strada position, Strada position2) {
+		this(nome, position);
+		this.position2=position2;
 	}
 	
 	/**
@@ -154,6 +161,29 @@ public class Giocatore {
 	 */
 	public void setPosition(Strada position) {
 		this.position = position;
+	}
+	
+	/**
+	 * Cambia la posizione del giocatore.
+	 * @param position Nuova posizione giocatore.
+	 * @param position2 Seconda nuova posizione del giocatore.
+	 */
+	public void setPosition(Strada position, Strada position2) {
+		this.setPosition(position);
+		this.position2=position2;
+	}
+	
+	/**
+	 * Cambia la posizione in uso dal giocatore. 
+	 * Postcondizione è che se la posizione passata per parametro non è una di quelle del
+	 * giocatore, il metodo non funziona come dovrebbe.
+	 * @param pos Nuova posizione corrente.
+	 */
+	public void setPosizioneTurno(Strada pos) {
+		if(!(position==pos)&&position2==pos) {
+			position2=position;
+			position=pos;
+		}
 	}
 
 	/**
