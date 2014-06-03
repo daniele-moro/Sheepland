@@ -71,7 +71,7 @@ class AzioniMouse extends  MouseAdapter{
 						}
 						//controller.spostaPecora(Integer.toHexString(color));
 					} catch (Exception e1) {
-						JOptionPane.showMessageDialog(view.getFrame(), "Non ci sono pecore in questa regione");
+						view.getLBLOutput().setText("Non ci sono pecore in questa regione");
 					}
 				//	setRegioni("","");
 					break;

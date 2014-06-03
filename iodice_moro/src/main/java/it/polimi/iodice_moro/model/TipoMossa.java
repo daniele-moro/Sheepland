@@ -19,5 +19,12 @@ public enum TipoMossa {
 	public String toString(){
 		return super.toString().toLowerCase();
 	}
+	public static TipoMossa parseInput(String input){
+		/*
+		 * Porto la stringa di input in maiuscolo, il metodo valueOf confronta il secondo parametro con tutte le possibili istanze dell'enumeratore,
+		 * se non matcha con nessuna della possibilita mi torna un eccezione di tipo IllegalArgumentException
+		 */
+		return Enum.valueOf(TipoMossa.class,  input.toUpperCase());  
+	}
 
 }
