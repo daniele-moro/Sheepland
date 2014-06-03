@@ -8,15 +8,15 @@
 	<regione id="5" colore="ffbf23ff" x="170" y="255" tipo="coltivazioni" />
 	<regione id="6" colore="ffff2357" x="282" y="100" tipo="coltivazioni" />
 	<regione id="7" colore="ffe323ff" x="258" y="210" tipo="montagna" />
-	<regione id="8" colore="ffff23aa" x="348" y="148" tipo="montagna" />
-	<regione id="9" colore="ff27007f" x="403" y="193" tipo="montagna" />
+	<regione id="8" colore="ffff23aa" x="370" y="120" tipo="montagna" />
+	<regione id="9" colore="ff27007f" x="420" y="205" tipo="montagna" />
 	<regione id="10" colore="ff000373" x="323" y="267" tipo="sabbia" />
 	<regione id="11" colore="ff009dd7" x="400" y="305" tipo="sabbia" />
 	<regione id="12" colore="ff00c679" x="383" y="432" tipo="sabbia" />
 	<regione id="13" colore="ff00d7cb" x="332" y="375" tipo="paludi" />
 	<regione id="14" colore="ff39efa9" x="324" y="527" tipo="paludi" />
 	<regione id="15" colore="ff75e8a1" x="229" y="582" tipo="paludi" />
-	<regione id="16" colore="ff96e875" x="247" y="459" tipo="bosco" />
+	<regione id="16" colore="ff96e875" x="243" y="450" tipo="bosco" />
 	<regione id="17" colore="ff007b0e" x="164" y="512" tipo="bosco" />
 	<regione id="18" colore="ff18d111" x="82" y="440" tipo="bosco" />
 	<regione id="19" colore="ff002e73" x="233" y="310" tipo="sheepsburg" />
