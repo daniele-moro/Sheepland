@@ -7,6 +7,8 @@ import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.Strada;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
+import it.polimi.iodice_moro.view.View;
+import it.polimi.iodice_moro.view.ThreadAnimazione;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -26,14 +28,19 @@ public class Controller {
 	
 	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.controller");
 	
+	private View view;
 	
 	/**
 	 * Costruttore del controller del giocatore.
 	 * @param statopartita Istanza statopartita.
 	 * @param giocatore Istanza del giocatore gestito.
 	 */
-	public Controller(StatoPartita statopartita) {
-		this.statoPartita = statopartita;
+	public Controller(View view) {
+		this.statoPartita = new StatoPartita();
+		this.view=view;
+	}
+	public Controller(StatoPartita statoPartita){
+		this.statoPartita= statoPartita;
 	}
 	
 	/**
@@ -98,7 +105,18 @@ public class Controller {
 	}
 	
 	public void spostaPecora(String idRegione) throws Exception{
+		Regione regSorg=statoPartita.getRegioneByID(idRegione);
+		System.out.println("Sposta pecora controller");
 		spostaPecora(statoPartita.getRegioneByID(idRegione));
+	
+		String idregD=statoPartita.getAltraRegione(regSorg, statoPartita.getGiocatoreCorrente().getPosition()).getColore();
+		System.out.println("Sposta pecora animazione");
+		ThreadAnimazione r = new ThreadAnimazione(view, idRegione,idregD);
+		Thread t = new Thread(r);
+		t.start();
+		view.modificaQtaPecora(idRegione, regSorg.getNumPecore());
+		view.modificaQtaPecora(idregD, statoPartita.getRegioneByID(idregD).getNumPecore());
+		//view.spostaPecoraBianca(idRegione, statoPartita.getAltraRegione(regSorg, statoPartita.getGiocatoreCorrente().getPosition()).getColore());
 	}
 	
 	
@@ -268,6 +286,11 @@ public class Controller {
 		statoPartita.addGiocatore(nuovoGiocatore);
 	}
 	
+	public void creaGiocatore(String nome, String idStrada){
+		Strada str= statoPartita.getStradaByID(idStrada);
+		creaGiocatore(nome,str);
+	}
+	
 	public void creaGiocatore(String nome, Strada posizione, Strada posizione2) {
 		Giocatore nuovoGiocatore = new Giocatore(nome, posizione, posizione2);
 		statoPartita.addGiocatore(nuovoGiocatore);
@@ -354,6 +377,11 @@ public class Controller {
 		//TODO
 	}
 	
+	
+	public void iniziaPartita(){
+		statoPartita.setGiocatoreCorrente(statoPartita.getGiocatori().get(0));
+	}
+	
 	//AGGIUNTE!!!
 	//TODO
 	/**
@@ -390,6 +418,18 @@ public class Controller {
 		}
 		return regAD;
 	}
+	public void setView(View view2) {
+		this.view=view2;
+		
+	}
+	
+/*	public Map<TipoTerreno, Integer> getPrezzoRegAdiacenti(){
+		List<Regione> regAD= statoPartita.getRegioniADStrada(statoPartita.getGiocatoreCorrente().getPosition());
+		Map<TipoTerreno, Integer> prezzi = new HashMap<TipoTerreno, Integer>();
+		prezzi.put(regAD.get(0).ge\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\, value)statoPartita.getCostoTessera(regAD.get(0));
+		
+		
+	}*/
 
 	/*	public Map<String, Point> getPosStrade() {
 			Map<String,Point> posRegioni = new HashMap<String,Point>();
