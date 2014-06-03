@@ -52,6 +52,7 @@ public class View {
 						break;
 					case SPOSTA_PASTORE:
 						lblOutput.setText("SPOSTA PASTORE");
+						mossaAttuale=TipoMossa.SPOSTA_PASTORE;
 						break;
 					case SPOSTA_PECORA:
 						lblOutput.setText("SPOSTA PECORA");
@@ -144,9 +145,9 @@ public class View {
 		mappa.setLayout(null);
 		
 		//TEMPORANEA: visualizzazione di tutti i cancelli
-		for(String s:posizioniCancelli.keySet()){
+		/*for(String s:posizioniCancelli.keySet()){
 			addCancelloNormale(s);
-		}
+		}*/
 		
 		//Visualizzo tutte le pecore
 		//File da passare al BackgroundedLabel per l'immagine di sfondo
@@ -434,6 +435,7 @@ public class View {
 		Point pos = posizioniCancelli.get(stradaID);
 		lblCancello.setBounds(pos.x, pos.y, imgCancello.getIconWidth(), imgCancello.getIconHeight());
 		mappa.add(lblCancello);
+		mappa.repaint();
 	}
 	
 	/**
@@ -524,6 +526,10 @@ public class View {
 	public void modQtaTessera(TipoTerreno tess, int num){
 		lblTessere.get(tess).setText(Integer.toString(num));
 	}
+	
+	public void modPrezzoTessera(TipoTerreno tess, int num){
+		
+	}
 
 	public Map<String,Point> getPosizioniRegioni() {
 		return posizioniRegioni;
@@ -540,6 +546,10 @@ public class View {
 
 	public void setMossaAttuale(TipoMossa mossa) {
 		mossaAttuale=mossa;	
+	}
+
+	public Map<String, Point> getPosizioniCancelli() {
+		return posizioniCancelli;
 	}
 
 }
