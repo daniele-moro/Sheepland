@@ -46,7 +46,7 @@ public class Regione extends VerticeGrafo{
 		this.tipo=TipoTerreno.parseInput(tipo);
 		this.colore=colore;
 		this.posizione=posizione;
-		this.numPecore=1;
+		this.numPecore=0;
 		this.pecoraNera=false;
 	}
 
