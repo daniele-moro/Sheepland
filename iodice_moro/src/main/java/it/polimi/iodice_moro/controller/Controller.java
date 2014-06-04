@@ -8,8 +8,9 @@ import it.polimi.iodice_moro.model.Strada;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
 import it.polimi.iodice_moro.view.ThreadAnimazionePastore;
+import it.polimi.iodice_moro.view.ThreadAnimazionePecoraNera;
 import it.polimi.iodice_moro.view.View;
-import it.polimi.iodice_moro.view.ThreadAnimazione;
+import it.polimi.iodice_moro.view.ThreadAnimazionePecoraBianca;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -91,7 +92,7 @@ public class Controller {
 		 * Controlliamo che la regione da cui prelevare la pecora sia vicino alla strada dove si trova il giocatore
 		 */
 		if(!statoPartita.getStradeConfini(regionePecora).contains(giocatore.getPosition())) {
-			throw new Exception();
+			throw new Exception("Non puoi spostare pecore da questa regione");
 		}
 		/*
 		 * Ora preleviamo la regione in cui spostare la pecora
@@ -104,7 +105,7 @@ public class Controller {
 			regionePecora.removePecora();
 			regAdiacente.addPecora();
 		} else {
-			throw new Exception();
+			throw new Exception("Non ci sono pecore da spostare!!");
 		}
 	}
 	
@@ -115,12 +116,12 @@ public class Controller {
 		aggiornaTurno(TipoMossa.SPOSTA_PECORA);
 		String idregD=statoPartita.getAltraRegione(regSorg, statoPartita.getGiocatoreCorrente().getPosition()).getColore();
 		System.out.println("Sposta pecora animazione");
-		ThreadAnimazione r = new ThreadAnimazione(view, idRegione,idregD);
+		ThreadAnimazionePecoraBianca r = new ThreadAnimazionePecoraBianca(view, idRegione,idregD);
 		Thread t = new Thread(r);
 		t.start();
 		view.modificaQtaPecora(idRegione, regSorg.getNumPecore());
 		view.modificaQtaPecora(idregD, statoPartita.getRegioneByID(idregD).getNumPecore());
-		checkTurnoGiocatore(TipoMossa.SPOSTA_PASTORE);
+		checkTurnoGiocatore(TipoMossa.SPOSTA_PECORA);
 	}
 	
 	
@@ -145,6 +146,12 @@ public class Controller {
 		Regione regionePecora=statoPartita.getRegioneByID(idRegPecoraNera);
 		Regione regAdiacente=statoPartita.getAltraRegione(regionePecora, statoPartita.getGiocatoreCorrente().getPosition());
 		spostaPecoraNera(regionePecora,regAdiacente);
+		aggiornaTurno(TipoMossa.SPOSTA_PECORA);
+		System.out.println("Sposta pecora animazione");
+		ThreadAnimazionePecoraNera r = new ThreadAnimazionePecoraNera(view, regionePecora.getColore(),regAdiacente.getColore());
+		Thread t = new Thread(r);
+		t.start();
+		checkTurnoGiocatore(TipoMossa.SPOSTA_PECORA);
 	}
 
 	/**
@@ -156,6 +163,18 @@ public class Controller {
 	public void acquistaTessera(TipoTerreno tipo) throws Exception {
 		Giocatore giocatore=statoPartita.getGiocatoreCorrente();
 		int costoTessera=statoPartita.getCostoTessera(tipo);
+		if(tipo.equals(TipoTerreno.SHEEPSBURG)){
+			throw new Exception("Non puoi acquistare tessere di sheepsburg");
+		}
+		boolean acquistoValido=false;
+		for(Regione r :statoPartita.getRegioniADStrada(giocatore.getPosition())){
+			if(r.getTipo()==tipo){
+				acquistoValido=true;
+			}
+		}
+		if(acquistoValido==false){
+			throw new Exception("Non puoi acquistate tessere di questo terreno!");
+		}
 		if(costoTessera>4) {
 			throw new Exception("Le tessere di questo tipo sono finite");
 		}
@@ -172,7 +191,10 @@ public class Controller {
 		acquistaTessera(statoPartita.getRegioneByID(idRegione).getTipo());
 		aggiornaTurno(TipoMossa.COMPRA_TESSERA);
 		view.modQtaTessera(statoPartita.getRegioneByID(idRegione).getTipo(), statoPartita.getGiocatoreCorrente().getTesserePossedute().get(statoPartita.getRegioneByID(idRegione).getTipo().toString()));
-		view.incPrezzoTessera(statoPartita.getRegioneByID(idRegione).getTipo());
+		if(statoPartita.getCostoTessera( statoPartita.getRegioneByID(idRegione).getTipo())<=4){
+			view.incPrezzoTessera(statoPartita.getRegioneByID(idRegione).getTipo());
+		}
+		
 		checkTurnoGiocatore(TipoMossa.COMPRA_TESSERA);
 	}
 	
@@ -187,22 +209,23 @@ public class Controller {
 		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
 		for(Giocatore g: statoPartita.getGiocatori()){
 			if(g.getPosition()==nuovastrada){
-				throw new Exception();
+				throw new Exception("Non puoi spostare qui il tuo pastore, strada occupata!");
 			}
 			if(g.getPosition2()==nuovastrada){
-				throw new Exception();
+				throw new Exception("Non puoi spostare qui il tuo pastore, strada occupata!");
 			}
 		}
 		if(nuovastrada.isRecinto()) {
-			throw new Exception();
+			throw new Exception("Non puoi sposare qui il tuo pastore, strada con recinto!");
 		}
 		if(pagaSpostamento(nuovastrada, giocatore)) {
 			if(giocatore.getSoldi()==0) {
-				throw new Exception();
+				throw new Exception("Non hai abbastanza soldi per sposatarti!!");
 			} else {
 				giocatore.decrSoldi();
 			}
 		}
+		//L'aggiunta del recinto viene fatta dal metodo chiamante!!
 		this.aggiungiRecinto(giocatore.getPosition());
 		giocatore.setPosition(nuovastrada);
 	}
@@ -213,12 +236,12 @@ public class Controller {
 		aggiornaTurno(TipoMossa.SPOSTA_PASTORE);
 		ThreadAnimazionePastore r = new ThreadAnimazionePastore(view, oldStreet.getColore(),idStrada, statoPartita.getGiocatoreCorrente().getColore());
 		Thread t = new Thread(r);
-		t.start();
 		if(!statoPartita.isTurnoFinale()){
 			view.addCancelloNormale(oldStreet.getColore());
 		} else{
 			view.addCancelloFinale(oldStreet.getColore());
 		}
+		t.start();
 		checkTurnoGiocatore(TipoMossa.SPOSTA_PASTORE);
 	}
 
@@ -329,8 +352,7 @@ public class Controller {
 		Strada strada = statoPartita.getStradaByID(idStrada);
 		for(Giocatore g: statoPartita.getGiocatori()){
 			if(g.getColore().equals(colore)){
-				for(Giocatore g2: statoPartita.getGiocatori())
-				{
+				for(Giocatore g2: statoPartita.getGiocatori()){
 					if(g2.getPosition()==strada|| g2.getPosition2()==strada){
 						throw new Exception("non puoi posizionare qui il tuo pastore!!");
 					}
@@ -344,7 +366,14 @@ public class Controller {
 				return;
 			}
 		}
+		//inizializzo la Mappa nella view
 		view.initMappa();
+		//inizializzo le tessere del giocatore corrente
+		for(String t:statoPartita.getGiocatoreCorrente().getTesserePossedute().keySet()){
+			if(!t.equals(TipoTerreno.SHEEPSBURG.toString())){
+				view.modQtaTessera(TipoTerreno.parseInput(t),statoPartita.getGiocatoreCorrente().getTesserePossedute().get(t));
+			}
+		}
 		view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
 	}
 	
@@ -420,7 +449,17 @@ public class Controller {
 				 * Se la partita non è finita bisogna trovare il prossimo giocatore
 				 */
 				statoPartita.setGiocatoreCorrente(statoPartita.getNextGamer());
-				view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
+				if(view!=null){
+					view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
+					for(String t:statoPartita.getGiocatoreCorrente().getTesserePossedute().keySet()){
+						System.out.println("QUI");
+						if(!t.equals(TipoTerreno.SHEEPSBURG.toString())){
+							view.modQtaTessera(TipoTerreno.parseInput(t),statoPartita.getGiocatoreCorrente().getTesserePossedute().get(t));
+						}
+					}
+				}
+				//checkSpostaPecoraNera();
+				
 			}
 		}
 		return statoPartita.getGiocatoreCorrente();
@@ -444,7 +483,11 @@ public class Controller {
 	 * Metodo inovocato alla fine della partita, dovrà aggiornare la view
 	 */
 	private void finePartita(){
-		//TODO
+		if(view!=null){
+			view.disattivaGiocatore();
+		}
+		
+		
 	}
 	
 	
@@ -478,8 +521,15 @@ public class Controller {
 		Collections.shuffle(tipoTessere);
 		
 		for(Giocatore g: statoPartita.getGiocatori()) {
-			g.getTesserePossedute().put(tipoTessere.get(statoPartita.getGiocatori().indexOf(g)).toString(), 1);
+			g.addTessera(tipoTessere.get(statoPartita.getGiocatori().indexOf(g)));
+			//g.getTesserePossedute().put(tipoTessere.get(statoPartita.getGiocatori().indexOf(g)).toString(), 1);
 		}
+		//inizializziamo le altre tessere dei giocatori a 0
+		/*for(Giocatore g: statoPartita.getGiocatori()){
+			for(TipoTerreno t:TipoTerreno.values()){
+				g.getTesserePossedute().get(TipoTerreno.BOSCO)
+			}
+		}*/
 		
 		//TODO
 		//Chiama il metodo della view per inizializzare l'interfaccia.

@@ -9,6 +9,7 @@ import it.polimi.iodice_moro.model.TipoTerreno;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
@@ -316,6 +317,10 @@ public class View {
 				lblNera.setIcon(pecNera);
 				lblNera.setBounds(p.x+10, p.y-20, pecNera.getIconWidth(), pecNera.getIconHeight());
 				mappa.add(lblNera);
+				pecoraNera=lblNera;
+				BackgroundedLabel lblPecora = new BackgroundedLabel(pecBianca);
+				lblPecora.setBounds(p.x, p.y, iconBianca.getIconWidth(), iconBianca.getIconHeight());
+				lblRegioni.put(s,lblPecora);
 			}else{
 				//Visualizzo le pecore bianche
 				BackgroundedLabel lblPecora = new BackgroundedLabel(pecBianca);
@@ -544,6 +549,7 @@ public class View {
 	 */
 	public void modQtaTessera(TipoTerreno tess, int num){
 		lblTessere.get(tess).setText(Integer.toString(num));
+		frame.repaint();
 	}
 	
 	public void incPrezzoTessera(TipoTerreno tess){
@@ -591,6 +597,14 @@ public class View {
 
 	public Color getGiocatoreCorrente() {
 		return giocatoreCorrente;
+	}
+
+	public JLabel getLBLPecoraNera() {
+		return pecoraNera;
+	}
+
+	public JFrame getFrame() {
+		return frame;
 	}
 	
 

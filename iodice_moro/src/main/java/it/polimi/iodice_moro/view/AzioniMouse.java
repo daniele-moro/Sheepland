@@ -5,6 +5,7 @@ import it.polimi.iodice_moro.model.TipoMossa;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -12,7 +13,10 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 class AzioniMouse extends MouseAdapter{
 	//Regioni da evidenziare
@@ -55,8 +59,7 @@ class AzioniMouse extends MouseAdapter{
 				controller.setStradaGiocatore(view.getGiocatoreCorrente(), Integer.toHexString(color));
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
-				view.getLBLOutput().setText("<html>" + e1+"</html>");
-				view.getLBLOutput().setMaximumSize(new Dimension(100,20));
+				view.getLBLOutput().setText( e1.getMessage());
 			}
 			
 		}
@@ -74,7 +77,7 @@ class AzioniMouse extends MouseAdapter{
 					try {
 						controller.acquistaTessera(Integer.toHexString(color));
 					} catch (Exception e2) {
-						view.getLBLOutput().setText("ERRORE nell'acquisto della tessera" + e2);
+						view.getLBLOutput().setText(e2.getMessage());
 					}
 					break;
 				case SPOSTA_PASTORE:
@@ -82,21 +85,49 @@ class AzioniMouse extends MouseAdapter{
 						System.out.println("S");
 						controller.spostaPedina(Integer.toHexString(color));
 					} catch (Exception e1) {
-						view.getLBLOutput().setText("Non puoi spostare qui il tuo pastore!!");
+						view.getLBLOutput().setText(e1.getMessage());
 					}
 					break;
 				case SPOSTA_PECORA:
 					try {
 						System.out.println("B");
-						if(Integer.toHexString(color).equals(reg1) || Integer.toHexString(color).equals(reg2))
+						//if(Integer.toHexString(color).equals(reg1) || Integer.toHexString(color).equals(reg2))
 						{
-							System.out.println("SPOSTAPECORA");
-							controller.spostaPecora(Integer.toHexString(color));
-							controller.checkTurnoGiocatore(TipoMossa.SPOSTA_PECORA);
-							
+							Point posPecoraNera=view.getLBLPecoraNera().getLocation();
+							if(image.getRGB((int)posPecoraNera.getX()+10,(int)posPecoraNera.getY()+10)==color){
+								System.out.println("PECORA NERA");
+								//In questo caso nel terreno c'è anche la pecora nera,
+								//quindi bisogna far scegliere all'utente cosa spostare
+								Object[] options = {new ImageIcon("immagini/pecora_bianca.png"),
+										new ImageIcon("immagini/pecora_nera.png")};
+								int n = JOptionPane.showOptionDialog(null,
+								    "Quale pecora vuoi spostare",
+								    "Spostamento Pecora",
+								    JOptionPane.YES_NO_CANCEL_OPTION,
+								    JOptionPane.QUESTION_MESSAGE,
+								    null,
+								    options,
+								    options[0]);
+								switch(n){
+								case 0:
+									//Pecora Bianca
+									controller.spostaPecora(Integer.toHexString(color));
+									controller.checkTurnoGiocatore(TipoMossa.SPOSTA_PECORA);
+									break;
+								case 1:
+									//Pecora Nera
+									controller.spostaPecoraNera(Integer.toHexString(color));
+									break;
+								}
+							}
+							else{
+								System.out.println("SPOSTAPECORA");
+								controller.spostaPecora(Integer.toHexString(color));
+								controller.checkTurnoGiocatore(TipoMossa.SPOSTA_PECORA);
+							}
 						}
 					} catch (Exception e1) {
-						view.getLBLOutput().setText("Non ci sono pecore in questa regione");
+						view.getLBLOutput().setText(""+e1.getMessage());
 					}
 					break;
 				default:
