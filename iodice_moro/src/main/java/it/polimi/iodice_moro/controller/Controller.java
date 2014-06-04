@@ -14,6 +14,7 @@ import it.polimi.iodice_moro.view.ThreadAnimazione;
 import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -170,7 +171,7 @@ public class Controller {
 	public void acquistaTessera(String idRegione) throws Exception{
 		acquistaTessera(statoPartita.getRegioneByID(idRegione).getTipo());
 		aggiornaTurno(TipoMossa.COMPRA_TESSERA);
-	//	view.modQtaTessera(statoPartita.getRegioneByID(idRegione).getTipo(), statoPartita.getGiocatoreCorrente().getTesserePossedute().get(statoPartita.getRegioneByID(idRegione).getTipo()));
+		view.modQtaTessera(statoPartita.getRegioneByID(idRegione).getTipo(), statoPartita.getGiocatoreCorrente().getTesserePossedute().get(statoPartita.getRegioneByID(idRegione).getTipo().toString()));
 		view.incPrezzoTessera(statoPartita.getRegioneByID(idRegione).getTipo());
 		checkTurnoGiocatore(TipoMossa.COMPRA_TESSERA);
 	}
@@ -439,13 +440,46 @@ public class Controller {
 	
 	
 	public void iniziaPartita(){
+		List<Regione> listaRegioni = statoPartita.getRegioni();
+		for(Regione regione : listaRegioni) {
+			if(!regione.getTipo().equals(TipoTerreno.SHEEPSBURG)) {
+				regione.setNumPecore(1);
+			} else {
+				regione.setPecoraNera(true);
+			}
+		}
+			
 		for(Giocatore g: statoPartita.getGiocatori()){
 			g.setColore(vettColori[statoPartita.getGiocatori().indexOf(g)]);
 		}
 		statoPartita.setGiocatoreCorrente(statoPartita.getGiocatori().get(0));
 		view.setGiocatoreCorrente(statoPartita.getGiocatoreCorrente().getColore());
+		
+		//Metto in una lista i possibili valori delle tessere iniziali e li mescolo in modo
+		//da assegnare in modo random e univoco la tessera iniziale ai giocatori.
+		List<TipoTerreno> tipoTessere = new ArrayList<TipoTerreno>();
+		tipoTessere.add(TipoTerreno.BOSCO);
+		tipoTessere.add(TipoTerreno.MONTAGNA);
+		tipoTessere.add(TipoTerreno.PALUDI);
+		tipoTessere.add(TipoTerreno.PIANURA);
+		tipoTessere.add(TipoTerreno.SABBIA);
+		tipoTessere.add(TipoTerreno.COLTIVAZIONI);
+		Collections.shuffle(tipoTessere);
+		
+		for(Giocatore g: statoPartita.getGiocatori()) {
+			g.getTesserePossedute().put(tipoTessere.get(statoPartita.getGiocatori().indexOf(g)).toString(), 1);
+		}
+		
+		//TODO
+		//Chiama il metodo della view per inizializzare l'interfaccia.
 	}
-	
+		
+		/*
+		List<Giocatore> listaGiocatori = statoPartita.getGiocatori();
+		for (int i = 0; i<listaGiocatori.size(); i++) {
+			listaGiocatori.get(i).setColore(colori[i]);
+		}
+		*/
 	//AGGIUNTE!!!
 	//TODO
 	/**

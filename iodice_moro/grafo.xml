@@ -23,8 +23,8 @@
 	
 	<!--Strade -->
 	<strada id="101" colore="ff3c00ff" x="71" y="246" ncasella="1" />
-	<strada id="102" colore="ffb4808e" x="142" y="215" ncasella="3" />
-	<strada id="103" colore="fffb8f9b" x="113" y="167" ncasella="2" />
+	<strada id="102" colore="fffb8f9b" x="142" y="215" ncasella="3" />
+	<strada id="103" colore="ffb4808e" x="113" y="167" ncasella="2" />
 	<strada id="104" colore="ff96ff00" x="144" y="276" ncasella="2" />
 	<strada id="105" colore="ff5d644e" x="142" y="342" ncasella="3" />
 	<strada id="106" colore="ff74815c" x="105" y="376" ncasella="4" />
