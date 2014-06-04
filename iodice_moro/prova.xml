@@ -1,21 +1,21 @@
 <graph>
 	
 	<!--Regioni -->
-	<regione id="1" tipo="pianura" />
-	<regione id="2" tipo="sabbia" />
-	<regione id="3" tipo="paludi" />
-	<regione id="4" tipo="bosco" />
-	<regione id="5" tipo="sheepsburg" />
+	<regione id="1" colore="ffd20000" x="52" y="170" tipo="pianura" />
+	<regione id="2" colore="ff7c48ad" x="103" y="307" tipo="sabbia" />
+	<regione id="3" colore="ff005473" x="173" y="383" tipo="paludi" />
+	<regione id="4" colore="ffff2323" x="174" y="144" tipo="bosco" />
+	<regione id="5" colore="ffbf23ff" x="170" y="255" tipo="sheepsburg" />
 	
 	<!--Strade -->
-	<strada id="101" ncasella="1" />
-	<strada id="102" ncasella="3" />
-	<strada id="103" ncasella="2" />
-	<strada id="104" ncasella="6" />
-	<strada id="105" ncasella="3" />
-	<strada id="106" ncasella="1" />
-	<strada id="107" ncasella="2" />
-	<strada id="108" ncasella="1" />
+	<strada id="101" colore="ff3c00ff" x="71" y="246" ncasella="1" />
+	<strada id="102" colore="ffb4808e" x="142" y="215" ncasella="3" />
+	<strada id="103" colore="fffb8f9b" x="113" y="167" ncasella="2" />
+	<strada id="104" colore="ff96ff00" x="144" y="276" ncasella="6" />
+	<strada id="105" colore="ff5d644e" x="142" y="342" ncasella="3" />
+	<strada id="106" colore="ff74815c" x="105" y="376" ncasella="1" />
+	<strada id="107" colore="ff4d6105" x="148" y="414" ncasella="2" />
+	<strada id="108" colore="ffd24a00" x="112" y="523" ncasella="1" />
     
 	
 	<!--
