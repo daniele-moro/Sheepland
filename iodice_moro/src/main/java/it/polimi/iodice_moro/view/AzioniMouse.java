@@ -14,7 +14,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-class AzioniMouse extends  MouseAdapter{
+class AzioniMouse extends MouseAdapter{
 	//Regioni da evidenziare
 	private String reg1;
 	private String reg2;
@@ -45,7 +45,9 @@ class AzioniMouse extends  MouseAdapter{
 		int color=image.getRGB(e.getX(),e.getY());
 		System.out.println("X:"+e.getX()+" Y:"+e.getY() + "  COLOR:0x"+ Integer.toHexString(color));
 
-		if(view.getPosizioniRegioni().keySet().contains(Integer.toHexString(color)) && view.getMossaAttuale()!=TipoMossa.NO_MOSSA){
+		if((view.getPosizioniRegioni().keySet().contains(Integer.toHexString(color))
+				|| view.getPosizioniCancelli().keySet().contains(Integer.toHexString(color)))
+				&& view.getMossaAttuale()!=TipoMossa.NO_MOSSA){
 			System.out.println("A");
 			if(controller.mossaPossibile(view.getMossaAttuale())){
 				System.out.println("B");
@@ -54,9 +56,11 @@ class AzioniMouse extends  MouseAdapter{
 					break;
 				case SPOSTA_PASTORE:
 					try {
-						//controller.spostaPedina(Integer.toHexString(color));
+						System.out.println("S");
+						controller.spostaPedina(Integer.toHexString(color));
+						controller.checkTurnoGiocatore(TipoMossa.SPOSTA_PASTORE);
 					} catch (Exception e1) {
-						e1.printStackTrace();
+						view.getLBLOutput().setText("Non puoi spostare qui il tuo pastore!!");
 					}
 					break;
 				case SPOSTA_PECORA:
@@ -66,14 +70,13 @@ class AzioniMouse extends  MouseAdapter{
 						{
 							System.out.println("SPOSTAPECORA");
 							controller.spostaPecora(Integer.toHexString(color));
-
-						//((View2) lbl.getParent()).modificaQtaPecora(Integer.toHexString(color), Integer.parseInt(lbl.getText())-1 );
+							controller.checkTurnoGiocatore(TipoMossa.SPOSTA_PECORA);
+							view.setMossaAttuale(TipoMossa.NO_MOSSA);
 						}
-						//controller.spostaPecora(Integer.toHexString(color));
 					} catch (Exception e1) {
 						view.getLBLOutput().setText("Non ci sono pecore in questa regione");
 					}
-				//	setRegioni("","");
+					setRegioni("","");
 					break;
 				default:
 					break;
