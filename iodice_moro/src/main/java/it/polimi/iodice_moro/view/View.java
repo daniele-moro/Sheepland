@@ -119,6 +119,7 @@ public class View {
 	
 	private Map<String,Point> posizioniRegioni = new HashMap<String,Point>();
 	private Map<Color,JLabel> giocatori = new HashMap<Color,JLabel>();
+	private Map<Color,JLabel> pedineGiocatori = new HashMap<Color, JLabel>();
 	private Map<String,JLabel> lblRegioni = new HashMap<String,JLabel>();
 	private Map<String,Point> posizioniCancelli = new HashMap<String, Point>();
 	private JLabel pecoraNera;
@@ -290,7 +291,7 @@ public class View {
 		c.gridx=0;
 		c.gridy=7;
 		c.anchor=GridBagConstraints.WEST;
-		leftPanel.add(lblOutput,c);
+		frame.add(lblOutput,BorderLayout.SOUTH);
 		
 		frame.add(leftPanel, BorderLayout.WEST);
 		
@@ -309,72 +310,43 @@ public class View {
 		ImageIcon pecNera = new ImageIcon("immagini/pecora_nera.png");
 		for(String s: posizioniRegioni.keySet()){
 			Point p = posizioniRegioni.get(s);
-			BackgroundedLabel lblPecora = new BackgroundedLabel(pecBianca);
-			lblPecora.setText("      1");
-			mappa.add(lblPecora);
-			lblPecora.setBounds(p.x, p.y, iconBianca.getIconWidth(), iconBianca.getIconHeight());
-			lblRegioni.put(s,lblPecora);
-
-			//POSIZIONE PROVA PECORA NERA
-			JLabel lblN = new JLabel();
-
-			lblN.setIcon(pecNera);
-			lblN.setBounds(p.x+10,p.y-20,pecNera.getIconWidth(),pecNera.getIconHeight());
-			//mappa.add(lblN);
+			if(s.equals("ff002e73")){
+				//devo posizionare la pecora nera perche sono in sheepsburg
+				JLabel lblNera = new JLabel();
+				lblNera.setIcon(pecNera);
+				lblNera.setBounds(p.x+10, p.y-20, pecNera.getIconWidth(), pecNera.getIconHeight());
+				mappa.add(lblNera);
+			}else{
+				//Visualizzo le pecore bianche
+				BackgroundedLabel lblPecora = new BackgroundedLabel(pecBianca);
+				lblPecora.setText("      1");
+				mappa.add(lblPecora);
+				lblPecora.setBounds(p.x, p.y, iconBianca.getIconWidth(), iconBianca.getIconHeight());
+				lblRegioni.put(s,lblPecora);
+			}
 		}
-		pecoraNera= new JLabel();
-		pecoraNera.setIcon(new ImageIcon("immagini/pecora_nera.png"));
-		pecoraNera.setBounds(281, 221, 30, 21);
-		mappa.add(pecoraNera);
 		
 		//Prelevo i giocatori dal controller e li visualizzo
+		Map<Color,String>gioc=controller.getGiocatori();
 		GridBagConstraints c = new GridBagConstraints();
-		Color coloreGiocatore = new Color(255,0,0);
-		c.gridwidth=2;
 		JLabel lbltemp2;
-		lbltemp2 = new JLabel();
-		lbltemp2.setText("giocatore 1 SOLDI: 20");
-		lbltemp2.setBackground(coloreGiocatore);
-		lbltemp2.setOpaque(true);
-		lbltemp2.setBorder(new MatteBorder(10,10,10,10, coloreGiocatore));
-		c.gridx=0;
-		c.gridy=3;
-		leftPanel.add(lbltemp2,c);
-		giocatori.put(coloreGiocatore,lbltemp2);
+		c.gridwidth=2;
+		int py=3;
+		for(Color colore:gioc.keySet()){
+			lbltemp2 = new JLabel();
+			lbltemp2.setText(gioc.get(colore)+" SOLDI: 20");
+			lbltemp2.setBackground(colore);
+			lbltemp2.setOpaque(true);
+			lbltemp2.setBorder(new MatteBorder(10,10,10,10, colore));
+			c.gridx=0;
+			c.gridy=py;
+			py++;
+			leftPanel.add(lbltemp2,c);
+			giocatori.put(colore,lbltemp2);
+			
+		}
 		
-		coloreGiocatore= new Color(0,255,0);
-		lbltemp2 = new JLabel();
-		lbltemp2.setText("giocatore 2 SOLDI: 20");
-		lbltemp2.setBackground(coloreGiocatore);
-		lbltemp2.setOpaque(true);
-		lbltemp2.setBorder(new MatteBorder(10,10,10,10, coloreGiocatore));
-		c.gridx=0;
-		c.gridy=4;
-		leftPanel.add(lbltemp2,c);
-		giocatori.put(coloreGiocatore,lbltemp2);
-		
-		coloreGiocatore= new Color(0,0,255);
-		lbltemp2 = new JLabel();
-		lbltemp2.setText("giocatore 3 SOLDI: 20");
-		lbltemp2.setOpaque(true);
-		lbltemp2.setBackground(coloreGiocatore);
-		lbltemp2.setBorder(new MatteBorder(10,10,10,10, coloreGiocatore));
-		c.gridx=0;
-		c.gridy=5;
-		leftPanel.add(lbltemp2,c);
-		giocatori.put(coloreGiocatore,lbltemp2);
-		
-		coloreGiocatore= new Color(255,255,0);
-		lbltemp2 = new JLabel();
-		lbltemp2.setText("giocatore 4 SOLDI: 20");
-		lbltemp2.setOpaque(true);
-		lbltemp2.setBackground(coloreGiocatore);
-		lbltemp2.setBorder(new MatteBorder(10,10,10,10, coloreGiocatore));
-		c.gridx=0;
-		c.gridy=6;
-		leftPanel.add(lbltemp2,c);
-		giocatori.put(coloreGiocatore,lbltemp2);
-		
+		mappa.repaint();
 		frame.pack();
 		mossaAttuale=TipoMossa.NO_MOSSA;
 		attivaGiocatore();
@@ -388,7 +360,6 @@ public class View {
 		Controller controller = new Controller(statopartita);
 		controller.creaGiocatore("prova");
 		controller.creaGiocatore("prova 2");
-		
 		
 		View view = new View(controller);
 		controller.setView(view);
@@ -521,7 +492,14 @@ public class View {
 		if(!s.equals("")){
 			spostaPecora(posizioniCancelli.get(s), posizioniCancelli.get(d), img);
 		}
-		mettiCancello(d, img);
+		JLabel pedGiocatore = pedineGiocatori.get(colore);
+		if(pedGiocatore == null){
+			pedGiocatore = new JLabel();
+			pedGiocatore.setIcon(img);
+			mappa.add(pedGiocatore);
+			pedineGiocatori.put(colore, pedGiocatore);
+		}
+		pedGiocatore.setBounds(posizioniCancelli.get(d).x, posizioniCancelli.get(d).y, img.getIconWidth(), img.getIconHeight());
 	}
 	
 	/**

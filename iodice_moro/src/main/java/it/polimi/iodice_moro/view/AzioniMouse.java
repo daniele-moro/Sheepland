@@ -4,6 +4,7 @@ import it.polimi.iodice_moro.controller.Controller;
 import it.polimi.iodice_moro.model.TipoMossa;
 
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -12,7 +13,6 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 
 class AzioniMouse extends MouseAdapter{
 	//Regioni da evidenziare
@@ -51,7 +51,13 @@ class AzioniMouse extends MouseAdapter{
 			//STO SELEZIONANDO LE POSIZIONI DEI PASTORI
 			System.out.println("SELEZPOSIZ");
 			view.spostaPastore("", Integer.toHexString(color), view.getGiocatoreCorrente());
-			controller.setStradaGiocatore(view.getGiocatoreCorrente(), Integer.toHexString(color));
+			try {
+				controller.setStradaGiocatore(view.getGiocatoreCorrente(), Integer.toHexString(color));
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				view.getLBLOutput().setText("<html>" + e1+"</html>");
+				view.getLBLOutput().setMaximumSize(new Dimension(100,20));
+			}
 			
 		}
 				
@@ -75,7 +81,6 @@ class AzioniMouse extends MouseAdapter{
 					try {
 						System.out.println("S");
 						controller.spostaPedina(Integer.toHexString(color));
-						view.setMossaAttuale(TipoMossa.NO_MOSSA);
 					} catch (Exception e1) {
 						view.getLBLOutput().setText("Non puoi spostare qui il tuo pastore!!");
 					}
@@ -88,17 +93,18 @@ class AzioniMouse extends MouseAdapter{
 							System.out.println("SPOSTAPECORA");
 							controller.spostaPecora(Integer.toHexString(color));
 							controller.checkTurnoGiocatore(TipoMossa.SPOSTA_PECORA);
-							view.setMossaAttuale(TipoMossa.NO_MOSSA);
+							
 						}
 					} catch (Exception e1) {
 						view.getLBLOutput().setText("Non ci sono pecore in questa regione");
 					}
-					setRegioni("","");
 					break;
 				default:
 					break;
 
 				}
+				view.setMossaAttuale(TipoMossa.NO_MOSSA);
+				setRegioni("","");
 			}
 			System.out.println("Presente");
 

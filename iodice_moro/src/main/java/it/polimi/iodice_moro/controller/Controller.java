@@ -323,11 +323,18 @@ public class Controller {
 	 * Setta la posizione del pastore dato il suo colore che lo identifica univocamente
 	 * @param colore
 	 * @param idStrada
+	 * @throws Exception 
 	 */
-	public void setStradaGiocatore(Color colore, String idStrada){
+	public void setStradaGiocatore(Color colore, String idStrada) throws Exception{
 		Strada strada = statoPartita.getStradaByID(idStrada);
 		for(Giocatore g: statoPartita.getGiocatori()){
 			if(g.getColore().equals(colore)){
+				for(Giocatore g2: statoPartita.getGiocatori())
+				{
+					if(g2.getPosition()==strada|| g2.getPosition2()==strada){
+						throw new Exception("non puoi posizionare qui il tuo pastore!!");
+					}
+				}
 				g.setPosition(strada);
 			}
 		}
@@ -338,6 +345,7 @@ public class Controller {
 			}
 		}
 		view.initMappa();
+		view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
 	}
 	
 	/**
@@ -412,6 +420,7 @@ public class Controller {
 				 * Se la partita non è finita bisogna trovare il prossimo giocatore
 				 */
 				statoPartita.setGiocatoreCorrente(statoPartita.getNextGamer());
+				view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
 			}
 		}
 		return statoPartita.getGiocatoreCorrente();
@@ -441,6 +450,7 @@ public class Controller {
 	
 	public void iniziaPartita(){
 		List<Regione> listaRegioni = statoPartita.getRegioni();
+		//Inizializzazione delle pecore nelle regioni
 		for(Regione regione : listaRegioni) {
 			if(!regione.getTipo().equals(TipoTerreno.SHEEPSBURG)) {
 				regione.setNumPecore(1);
@@ -448,7 +458,8 @@ public class Controller {
 				regione.setPecoraNera(true);
 			}
 		}
-			
+		
+		//Inizializzazione dei colori associati ai giocatori
 		for(Giocatore g: statoPartita.getGiocatori()){
 			g.setColore(vettColori[statoPartita.getGiocatori().indexOf(g)]);
 		}
@@ -518,6 +529,18 @@ public class Controller {
 	}
 	public void setView(View view2) {
 		this.view=view2;
+	}
+	
+	/**
+	 * Ritorna i colori dei giocatori e i loro nomi
+	 * @return
+	 */
+	public Map<Color, String> getGiocatori() {
+		Map<Color, String> gioc= new HashMap<Color,String>();
+		for(Giocatore g:statoPartita.getGiocatori()){
+			gioc.put(g.getColore(), g.getNome());
+		}
+		return gioc;
 	}
 	
 /*	public Map<TipoTerreno, Integer> getPrezzoRegAdiacenti(){
