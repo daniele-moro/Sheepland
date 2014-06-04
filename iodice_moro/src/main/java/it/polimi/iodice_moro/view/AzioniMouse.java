@@ -18,6 +18,7 @@ class AzioniMouse extends MouseAdapter{
 	//Regioni da evidenziare
 	private String reg1;
 	private String reg2;
+	private int cont;
 
 	View view;
 	Controller controller;
@@ -27,6 +28,7 @@ class AzioniMouse extends MouseAdapter{
 		super();
 		reg1="";
 		reg2="";
+		cont=0;
 		try {
 			this.image= ImageIO.read(image);
 		} catch (IOException e) {
@@ -44,21 +46,36 @@ class AzioniMouse extends MouseAdapter{
 		if(e.getX()< 0 || e.getY()<0 || e.getX()>image.getWidth() || e.getY()>image.getHeight()) return;
 		int color=image.getRGB(e.getX(),e.getY());
 		System.out.println("X:"+e.getX()+" Y:"+e.getY() + "  COLOR:0x"+ Integer.toHexString(color));
-
+		if(view.getMossaAttuale().equals(TipoMossa.SELEZ_POSIZ) 
+				&& view.getPosizioniCancelli().keySet().contains(Integer.toHexString(color))){
+			//STO SELEZIONANDO LE POSIZIONI DEI PASTORI
+			System.out.println("SELEZPOSIZ");
+			view.spostaPastore("", Integer.toHexString(color), view.getGiocatoreCorrente());
+			controller.setStradaGiocatore(view.getGiocatoreCorrente(), Integer.toHexString(color));
+			
+		}
+				
 		if((view.getPosizioniRegioni().keySet().contains(Integer.toHexString(color))
 				|| view.getPosizioniCancelli().keySet().contains(Integer.toHexString(color)))
-				&& view.getMossaAttuale()!=TipoMossa.NO_MOSSA){
+				&& view.getMossaAttuale()!=TipoMossa.NO_MOSSA
+				&& view.getMossaAttuale()!=TipoMossa.SELEZ_POSIZ){
 			System.out.println("A");
 			if(controller.mossaPossibile(view.getMossaAttuale())){
 				System.out.println("B");
 				switch(view.getMossaAttuale()){
 				case COMPRA_TESSERA:
+					System.out.println("COMPRA TESSERA");
+					try {
+						controller.acquistaTessera(Integer.toHexString(color));
+					} catch (Exception e2) {
+						view.getLBLOutput().setText("ERRORE nell'acquisto della tessera" + e2);
+					}
 					break;
 				case SPOSTA_PASTORE:
 					try {
 						System.out.println("S");
 						controller.spostaPedina(Integer.toHexString(color));
-						controller.checkTurnoGiocatore(TipoMossa.SPOSTA_PASTORE);
+						view.setMossaAttuale(TipoMossa.NO_MOSSA);
 					} catch (Exception e1) {
 						view.getLBLOutput().setText("Non puoi spostare qui il tuo pastore!!");
 					}

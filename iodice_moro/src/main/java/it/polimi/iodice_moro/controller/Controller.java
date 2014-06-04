@@ -7,9 +7,11 @@ import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.Strada;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
+import it.polimi.iodice_moro.view.ThreadAnimazionePastore;
 import it.polimi.iodice_moro.view.View;
 import it.polimi.iodice_moro.view.ThreadAnimazione;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +29,8 @@ public class Controller {
 	private StatoPartita statoPartita;	
 	
 	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.controller");
+
+	private static final Color[] vettColori = {new Color(255,0,0), new Color(0,255,0), new Color(0,0,255), new Color(255,255,0)};
 	
 	private View view;
 	
@@ -101,15 +105,13 @@ public class Controller {
 		} else {
 			throw new Exception();
 		}
-		statoPartita.getGiocatoreCorrente().setUltimaMossa(TipoMossa.SPOSTA_PECORA);
-
 	}
 	
 	public void spostaPecora(String idRegione) throws Exception{
 		Regione regSorg=statoPartita.getRegioneByID(idRegione);
 		System.out.println("Sposta pecora controller");
 		spostaPecora(statoPartita.getRegioneByID(idRegione));
-	
+		aggiornaTurno(TipoMossa.SPOSTA_PECORA);
 		String idregD=statoPartita.getAltraRegione(regSorg, statoPartita.getGiocatoreCorrente().getPosition()).getColore();
 		System.out.println("Sposta pecora animazione");
 		ThreadAnimazione r = new ThreadAnimazione(view, idRegione,idregD);
@@ -117,7 +119,7 @@ public class Controller {
 		t.start();
 		view.modificaQtaPecora(idRegione, regSorg.getNumPecore());
 		view.modificaQtaPecora(idregD, statoPartita.getRegioneByID(idregD).getNumPecore());
-		//view.spostaPecoraBianca(idRegione, statoPartita.getAltraRegione(regSorg, statoPartita.getGiocatoreCorrente().getPosition()).getColore());
+		checkTurnoGiocatore(TipoMossa.SPOSTA_PASTORE);
 	}
 	
 	
@@ -167,18 +169,28 @@ public class Controller {
 	
 	public void acquistaTessera(String idRegione) throws Exception{
 		acquistaTessera(statoPartita.getRegioneByID(idRegione).getTipo());
+		aggiornaTurno(TipoMossa.COMPRA_TESSERA);
+	//	view.modQtaTessera(statoPartita.getRegioneByID(idRegione).getTipo(), statoPartita.getGiocatoreCorrente().getTesserePossedute().get(statoPartita.getRegioneByID(idRegione).getTipo()));
+		view.incPrezzoTessera(statoPartita.getRegioneByID(idRegione).getTipo());
+		checkTurnoGiocatore(TipoMossa.COMPRA_TESSERA);
 	}
 	
 	/**
 	 * Cambia la posizione corrente del giocatore.
+	 * Controlla che la posizione di destinazione non sia già occupata da un recinto o da un'altra pedina
 	 * @param nuovastrada Nuova posizione.
 	 * @throws Exception Se nuova ìposizione è già occupata da un recinto.
 	 * @throws Exception Se non ha abbastanza soldi per muoversi.
 	 */
 	public void spostaPedina (Strada nuovastrada) throws Exception {
 		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
-		if(nuovastrada==giocatore.getPosition()){
-			throw new Exception();
+		for(Giocatore g: statoPartita.getGiocatori()){
+			if(g.getPosition()==nuovastrada){
+				throw new Exception();
+			}
+			if(g.getPosition2()==nuovastrada){
+				throw new Exception();
+			}
 		}
 		if(nuovastrada.isRecinto()) {
 			throw new Exception();
@@ -192,17 +204,21 @@ public class Controller {
 		}
 		this.aggiungiRecinto(giocatore.getPosition());
 		giocatore.setPosition(nuovastrada);
-		giocatore.setUltimaMossa(TipoMossa.SPOSTA_PASTORE);
 	}
 	
 	public void spostaPedina(String idStrada) throws Exception{
 		Strada oldStreet = statoPartita.getGiocatoreCorrente().getPosition();
 		spostaPedina(statoPartita.getStradaByID(idStrada));
+		aggiornaTurno(TipoMossa.SPOSTA_PASTORE);
+		ThreadAnimazionePastore r = new ThreadAnimazionePastore(view, oldStreet.getColore(),idStrada, statoPartita.getGiocatoreCorrente().getColore());
+		Thread t = new Thread(r);
+		t.start();
 		if(!statoPartita.isTurnoFinale()){
 			view.addCancelloNormale(oldStreet.getColore());
 		} else{
 			view.addCancelloFinale(oldStreet.getColore());
 		}
+		checkTurnoGiocatore(TipoMossa.SPOSTA_PASTORE);
 	}
 
 	/**
@@ -297,14 +313,47 @@ public class Controller {
 		statoPartita.addGiocatore(nuovoGiocatore);
 	}
 	
-	public void creaGiocatore(String nome, String idStrada){
-		Strada str= statoPartita.getStradaByID(idStrada);
-		creaGiocatore(nome,str);
+	
+	public void creaGiocatore(String nome){
+		statoPartita.addGiocatore(new Giocatore(nome));
 	}
 	
-	public void creaGiocatore(String nome, Strada posizione, Strada posizione2) {
-		Giocatore nuovoGiocatore = new Giocatore(nome, posizione, posizione2);
-		statoPartita.addGiocatore(nuovoGiocatore);
+	/**
+	 * Setta la posizione del pastore dato il suo colore che lo identifica univocamente
+	 * @param colore
+	 * @param idStrada
+	 */
+	public void setStradaGiocatore(Color colore, String idStrada){
+		Strada strada = statoPartita.getStradaByID(idStrada);
+		for(Giocatore g: statoPartita.getGiocatori()){
+			if(g.getColore().equals(colore)){
+				g.setPosition(strada);
+			}
+		}
+		for(Giocatore g: statoPartita.getGiocatori()){
+			if(g.getPosition()==null){
+				view.setGiocatoreCorrente(g.getColore());
+				return;
+			}
+		}
+		view.initMappa();
+	}
+	
+	/**
+	 * Metodo nel caso di due giocatori in cui ogni pastore ha due pedine
+	 * @param colore
+	 * @param idStrada
+	 * @param idStrada2
+	 */
+	public void setStradaGiocatore(Color colore, String idStrada, String idStrada2){
+		Strada strada = statoPartita.getStradaByID(idStrada);
+		Strada strada2 = statoPartita.getStradaByID(idStrada2);
+		for(Giocatore g: statoPartita.getGiocatori()){
+			if(g.getColore().equals(colore)){
+				g.setPosition(strada, strada2);
+			}
+			
+		}
 	}
 	
 	/**
@@ -390,7 +439,11 @@ public class Controller {
 	
 	
 	public void iniziaPartita(){
+		for(Giocatore g: statoPartita.getGiocatori()){
+			g.setColore(vettColori[statoPartita.getGiocatori().indexOf(g)]);
+		}
 		statoPartita.setGiocatoreCorrente(statoPartita.getGiocatori().get(0));
+		view.setGiocatoreCorrente(statoPartita.getGiocatoreCorrente().getColore());
 	}
 	
 	//AGGIUNTE!!!
@@ -431,7 +484,6 @@ public class Controller {
 	}
 	public void setView(View view2) {
 		this.view=view2;
-		
 	}
 	
 /*	public Map<TipoTerreno, Integer> getPrezzoRegAdiacenti(){

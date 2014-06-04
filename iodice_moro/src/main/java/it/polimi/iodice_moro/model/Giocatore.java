@@ -1,5 +1,6 @@
 package it.polimi.iodice_moro.model;
 
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +33,8 @@ public class Giocatore {
 	
 	private Strada position2;
 	
+	private Color colore;
+	
 	/**
 	 * Tabella hash con l'elenco delle tessere e il relativo
 	 * numero di tessere possedute.
@@ -50,6 +53,7 @@ public class Giocatore {
 		soldi=SOLDI_INIT;
 		initTessere();
 		position=null;
+		this.colore=null;
 	}
 	
 	/**
@@ -64,6 +68,10 @@ public class Giocatore {
 		this(nome, position);
 		this.position2=position2;
 	}
+	public Giocatore (String nome, Color colore) {
+		this(nome);
+		this.colore=colore;
+	}
 	
 	/**
 	 * Inizializza la tabella {@link Giocatore#tesserePossedute}.
@@ -74,6 +82,12 @@ public class Giocatore {
 			}
 	}
 
+	
+	public Color getColore(){
+		return colore;
+	}
+	
+	
 	/**
 	 * @return Ritorna nome del giocatore.
 	 */
@@ -154,6 +168,10 @@ public class Giocatore {
 	public Strada getPosition() {
 		return position;
 	}
+	
+	public Strada getPosition2(){
+		return position2;
+	}
 
 	/**
 	 * Cambia la posizione del giocatore.
@@ -225,6 +243,11 @@ public class Giocatore {
 		} else{
 			return false;
 		}
+	}
+
+	public void setColore(Color color) {
+		this.colore=color;
+		
 	}
 	
 }

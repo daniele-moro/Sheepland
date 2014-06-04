@@ -2,6 +2,7 @@ package it.polimi.iodice_moro.view;
 
 
 import it.polimi.iodice_moro.controller.Controller;
+import it.polimi.iodice_moro.model.Giocatore;
 import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
@@ -46,25 +47,37 @@ public class View {
 				TipoMossa mossa = TipoMossa.parseInput(e.getActionCommand());
 				
 				if(controller.mossaPossibile(mossa)){
+					List<String> reg;
 					switch(mossa){
 					case COMPRA_TESSERA:
 						lblOutput.setText("COMPRA TESSERA");
+						mossaAttuale=TipoMossa.COMPRA_TESSERA;
+						//Setto le due regini tra cui posso spostare la pecora.
+						reg=controller.getIDRegioniAd();
+						if(reg.size()>0 && reg.size()<=2){
+							mouse.setRegioni(reg.get(0), reg.get(1));
+						}
 						break;
 					case SPOSTA_PASTORE:
 						lblOutput.setText("SPOSTA PASTORE");
+						mouse.setRegioni("", "");
 						mossaAttuale=TipoMossa.SPOSTA_PASTORE;
 						break;
 					case SPOSTA_PECORA:
 						lblOutput.setText("SPOSTA PECORA");
 						mossaAttuale=TipoMossa.SPOSTA_PECORA;
 						//Setto le due regioni tra cui posso spostare la pecora, l'utente quando ci passerà sopra vedrà comparire la manina
-						List<String> reg=controller.getIDRegioniAd();
+						reg=controller.getIDRegioniAd();
 						if(reg.size()>0 && reg.size()<=2){
 							mouse.setRegioni(reg.get(0), reg.get(1));
+						}
 						break;
-					
-					}
-					
+					default:
+						lblOutput.setText("Non puoi effettuare questa mossa!!!");
+						mouse.setRegioni("", "");
+						mossaAttuale=TipoMossa.NO_MOSSA;
+						break;
+
 					}
 				} else{
 					lblOutput.setText("Non puoi effettuare questa mossa!!!");
@@ -98,14 +111,14 @@ public class View {
 	
 	private JLabel mappa;
 	private Map<TipoTerreno,JLabel> lblTessere = new HashMap<TipoTerreno,JLabel>();
-	private JLabel lblGiocatoreCorrente;
+	private Color giocatoreCorrente;
 	
 	private JButton btnSpostaPecora;
 	private JButton btnSpostaPastore;
 	private JButton btnCompraTessera;
 	
 	private Map<String,Point> posizioniRegioni = new HashMap<String,Point>();
-	private List<JLabel> giocatori = new ArrayList<JLabel>();
+	private Map<Color,JLabel> giocatori = new HashMap<Color,JLabel>();
 	private Map<String,JLabel> lblRegioni = new HashMap<String,JLabel>();
 	private Map<String,Point> posizioniCancelli = new HashMap<String, Point>();
 	private JLabel pecoraNera;
@@ -114,7 +127,7 @@ public class View {
 	private TipoMossa mossaAttuale;
 	private Controller controller;
 	
-	AzioniMouse mouse;
+	private AzioniMouse mouse;
 	
 	public View(Controller controller){
 		this.controller=controller;
@@ -144,38 +157,6 @@ public class View {
 		mappa.addMouseMotionListener(mouse);
 		mappa.setLayout(null);
 		
-		//TEMPORANEA: visualizzazione di tutti i cancelli
-		/*for(String s:posizioniCancelli.keySet()){
-			addCancelloNormale(s);
-		}*/
-		
-		//Visualizzo tutte le pecore
-		//File da passare al BackgroundedLabel per l'immagine di sfondo
-		File pecBianca = new File("immagini/pecora_bianca.png");
-		//Usata solo per sapere le dimensioni dell'immagine della pecora bianca
-		ImageIcon iconBianca = new ImageIcon("immagini/pecora_bianca.png");
-		ImageIcon pecNera = new ImageIcon("immagini/pecora_nera.png");
-		for(String s: posizioniRegioni.keySet()){
-			Point p = posizioniRegioni.get(s);
-			BackgroundedLabel lblPecora = new BackgroundedLabel(pecBianca);
-			lblPecora.setText("      1");
-			mappa.add(lblPecora);
-			lblPecora.setBounds(p.x, p.y, iconBianca.getIconWidth(), iconBianca.getIconHeight());
-			lblRegioni.put(s,lblPecora);
-			
-			//POSIZIONE PROVA PECORA NERA
-			JLabel lblN = new JLabel();
-			
-			lblN.setIcon(pecNera);
-			lblN.setBounds(p.x+10,p.y-20,pecNera.getIconWidth(),pecNera.getIconHeight());
-			//mappa.add(lblN);
-		}
-		pecoraNera= new JLabel();
-		pecoraNera.setIcon(new ImageIcon("immagini/pecora_nera.png"));
-		pecoraNera.setBounds(281, 221, 30, 21);
-		mappa.add(pecoraNera);
-
-		
 		frame.add(mappa, BorderLayout.CENTER);
 		
 		//RIGHTPANEL
@@ -194,6 +175,13 @@ public class View {
 		btnCompraTessera = new JButton("COMPRA TESSERA");
 		btnCompraTessera.setActionCommand(TipoMossa.COMPRA_TESSERA.toString());
 		btnCompraTessera.addActionListener(action);
+		
+		//Disattivo i bottoni che per ora non servono
+		btnSpostaPastore.setEnabled(false);
+		btnSpostaPecora.setEnabled(false);
+		btnCompraTessera.setEnabled(false);
+		
+		
 		rightPanel.add(btnSpostaPecora);
 		rightPanel.add(btnSpostaPastore);
 		rightPanel.add(btnCompraTessera);
@@ -213,8 +201,8 @@ public class View {
 		lbltext.setBackground(Color.RED);
 		lbltext.setBorder(new MatteBorder(1,5,1,5, Color.RED));
 		lbltext.setOpaque(true);
-		lbltemp.setLayout(new FlowLayout());
 		lbltemp.add(lbltext);
+		lbltext.setBounds(90, 90, 20, 20);
 		lblTessere.put(TipoTerreno.BOSCO, lbltext);
 		c.gridx=0;
 		c.gridy=0;
@@ -228,8 +216,8 @@ public class View {
 		lbltext.setBorder(new MatteBorder(1,5,1,5, Color.RED));
 		lbltext.setBackground(Color.RED);
 		lbltext.setOpaque(true);
-		lbltemp.setLayout(new FlowLayout());
 		lbltemp.add(lbltext);
+		lbltext.setBounds(90, 90, 20, 20);
 		lblTessere.put(TipoTerreno.COLTIVAZIONI, lbltext);
 		c.gridx=1;
 		c.gridy=0;
@@ -243,8 +231,8 @@ public class View {
 		lbltext.setBorder(new MatteBorder(1,5,1,5, Color.RED));
 		lbltext.setBackground(Color.RED);
 		lbltext.setOpaque(true);
-		lbltemp.setLayout(new FlowLayout());
 		lbltemp.add(lbltext);
+		lbltext.setBounds(90, 90, 20, 20);
 		lblTessere.put(TipoTerreno.MONTAGNA, lbltext);
 		c.gridx=0;
 		c.gridy=1;
@@ -258,8 +246,8 @@ public class View {
 		lbltext.setBorder(new MatteBorder(1,5,1,5, Color.RED));
 		lbltext.setBackground(Color.RED);
 		lbltext.setOpaque(true);
-		lbltemp.setLayout(new FlowLayout());
 		lbltemp.add(lbltext);
+		lbltext.setBounds(90, 90, 20, 20);
 		lblTessere.put(TipoTerreno.PALUDI, lbltext);
 		c.gridx=1;
 		c.gridy=1;
@@ -273,8 +261,8 @@ public class View {
 		lbltext.setBorder(new MatteBorder(1,5,1,5, Color.RED));
 		lbltext.setBackground(Color.RED);
 		lbltext.setOpaque(true);
-		lbltemp.setLayout(new FlowLayout());
 		lbltemp.add(lbltext);
+		lbltext.setBounds(90, 90, 20, 20);
 		lblTessere.put(TipoTerreno.PIANURA, lbltext);
 		c.gridx=0;
 		c.gridy=2;
@@ -288,61 +276,14 @@ public class View {
 		lbltext.setBorder(new MatteBorder(1,5,1,5, Color.RED));
 		lbltext.setBackground(Color.RED);
 		lbltext.setOpaque(true);
-		lbltemp.setLayout(new FlowLayout());
 		lbltemp.add(lbltext);
+		lbltext.setBounds(90, 90, 20, 20);
 		lblTessere.put(TipoTerreno.SABBIA, lbltext);
 		c.gridx=1;
 		c.gridy=2;
 		leftPanel.add(lbltemp,c);
-		
-		//LABEL PER I GIOCATORI
-		//Prelevo i nomi dei gicatori dal controller e il colore loro associato (List<Color,String>)
-		Color coloreGiocatore = new Color(255,0,0);
-		c.gridwidth=2;
-		JLabel lbltemp2;
-		lbltemp2 = new JLabel();
-		lbltemp2.setText("giocatore 1 SOLDI: 20");
-		lbltemp2.setBackground(coloreGiocatore);
-		lbltemp2.setOpaque(true);
-		lbltemp2.setBorder(new MatteBorder(10,10,10,10, coloreGiocatore));
-		c.gridx=0;
-		c.gridy=3;
-		leftPanel.add(lbltemp2,c);
-		giocatori.add(lbltemp2);
-		
-		coloreGiocatore= new Color(0,255,0);
-		lbltemp2 = new JLabel();
-		lbltemp2.setText("giocatore 2 SOLDI: 20");
-		lbltemp2.setBackground(coloreGiocatore);
-		lbltemp2.setOpaque(true);
-		lbltemp2.setBorder(new MatteBorder(10,10,10,10, coloreGiocatore));
-		c.gridx=0;
-		c.gridy=4;
-		leftPanel.add(lbltemp2,c);
-		giocatori.add(lbltemp2);
-		
-		coloreGiocatore= new Color(0,0,255);
-		lbltemp2 = new JLabel();
-		lbltemp2.setText("giocatore 3 SOLDI: 20");
-		lbltemp2.setOpaque(true);
-		lbltemp2.setBackground(coloreGiocatore);
-		lbltemp2.setBorder(new MatteBorder(10,10,10,10, coloreGiocatore));
-		c.gridx=0;
-		c.gridy=5;
-		leftPanel.add(lbltemp2,c);
-		giocatori.add(lbltemp2);
-		
-		coloreGiocatore= new Color(255,255,0);
-		lbltemp2 = new JLabel();
-		lbltemp2.setText("giocatore 4 SOLDI: 20");
-		lbltemp2.setOpaque(true);
-		lbltemp2.setBackground(coloreGiocatore);
-		lbltemp2.setBorder(new MatteBorder(10,10,10,10, coloreGiocatore));
-		c.gridx=0;
-		c.gridy=6;
-		leftPanel.add(lbltemp2,c);
-		giocatori.add(lbltemp2);
-		
+
+		//LABEL PER GLI ERRORI
 		lblOutput = new JLabel();
 		lblOutput.setText("sdasd ");
 		lblOutput.setBorder(new EmptyBorder(30,10,0,0));
@@ -356,25 +297,103 @@ public class View {
 		frame.setVisible(true);
 		frame.setResizable(false);
 		frame.pack();
-		spostaPecoraBianca("ff39efa9","ff75e8a1");
+	}
+	
+	//INIZIALIZZA TUTTI GLI OGGETTI CHE SONO POSIZIONATI SOPRA LA MAPPA E I GIOCATORI
+	public void initMappa(){
+		//Visualizzo tutte le pecore
+		//File da passare al BackgroundedLabel per l'immagine di sfondo
+		File pecBianca = new File("immagini/pecora_bianca.png");
+		//Usata solo per sapere le dimensioni dell'immagine della pecora bianca
+		ImageIcon iconBianca = new ImageIcon("immagini/pecora_bianca.png");
+		ImageIcon pecNera = new ImageIcon("immagini/pecora_nera.png");
+		for(String s: posizioniRegioni.keySet()){
+			Point p = posizioniRegioni.get(s);
+			BackgroundedLabel lblPecora = new BackgroundedLabel(pecBianca);
+			lblPecora.setText("      1");
+			mappa.add(lblPecora);
+			lblPecora.setBounds(p.x, p.y, iconBianca.getIconWidth(), iconBianca.getIconHeight());
+			lblRegioni.put(s,lblPecora);
+
+			//POSIZIONE PROVA PECORA NERA
+			JLabel lblN = new JLabel();
+
+			lblN.setIcon(pecNera);
+			lblN.setBounds(p.x+10,p.y-20,pecNera.getIconWidth(),pecNera.getIconHeight());
+			//mappa.add(lblN);
+		}
+		pecoraNera= new JLabel();
+		pecoraNera.setIcon(new ImageIcon("immagini/pecora_nera.png"));
+		pecoraNera.setBounds(281, 221, 30, 21);
+		mappa.add(pecoraNera);
 		
+		//Prelevo i giocatori dal controller e li visualizzo
+		GridBagConstraints c = new GridBagConstraints();
+		Color coloreGiocatore = new Color(255,0,0);
+		c.gridwidth=2;
+		JLabel lbltemp2;
+		lbltemp2 = new JLabel();
+		lbltemp2.setText("giocatore 1 SOLDI: 20");
+		lbltemp2.setBackground(coloreGiocatore);
+		lbltemp2.setOpaque(true);
+		lbltemp2.setBorder(new MatteBorder(10,10,10,10, coloreGiocatore));
+		c.gridx=0;
+		c.gridy=3;
+		leftPanel.add(lbltemp2,c);
+		giocatori.put(coloreGiocatore,lbltemp2);
+		
+		coloreGiocatore= new Color(0,255,0);
+		lbltemp2 = new JLabel();
+		lbltemp2.setText("giocatore 2 SOLDI: 20");
+		lbltemp2.setBackground(coloreGiocatore);
+		lbltemp2.setOpaque(true);
+		lbltemp2.setBorder(new MatteBorder(10,10,10,10, coloreGiocatore));
+		c.gridx=0;
+		c.gridy=4;
+		leftPanel.add(lbltemp2,c);
+		giocatori.put(coloreGiocatore,lbltemp2);
+		
+		coloreGiocatore= new Color(0,0,255);
+		lbltemp2 = new JLabel();
+		lbltemp2.setText("giocatore 3 SOLDI: 20");
+		lbltemp2.setOpaque(true);
+		lbltemp2.setBackground(coloreGiocatore);
+		lbltemp2.setBorder(new MatteBorder(10,10,10,10, coloreGiocatore));
+		c.gridx=0;
+		c.gridy=5;
+		leftPanel.add(lbltemp2,c);
+		giocatori.put(coloreGiocatore,lbltemp2);
+		
+		coloreGiocatore= new Color(255,255,0);
+		lbltemp2 = new JLabel();
+		lbltemp2.setText("giocatore 4 SOLDI: 20");
+		lbltemp2.setOpaque(true);
+		lbltemp2.setBackground(coloreGiocatore);
+		lbltemp2.setBorder(new MatteBorder(10,10,10,10, coloreGiocatore));
+		c.gridx=0;
+		c.gridy=6;
+		leftPanel.add(lbltemp2,c);
+		giocatori.put(coloreGiocatore,lbltemp2);
+		
+		frame.pack();
+		mossaAttuale=TipoMossa.NO_MOSSA;
+		attivaGiocatore();
+
 	}
 
 	public static void main(String[] args) {
 		//CREO tutte le istanze che mi servono per far funzionare il gioco
 		StatoPartita statopartita= new StatoPartita();
 		
-		
 		Controller controller = new Controller(statopartita);
-		controller.creaGiocatore("prova", "ffd5f85a");
-		controller.creaGiocatore("prova 2", "ffd27f52");
-		controller.iniziaPartita();
+		controller.creaGiocatore("prova");
+		controller.creaGiocatore("prova 2");
+		
 		
 		View view = new View(controller);
 		controller.setView(view);
-		view.mossaAttuale=TipoMossa.NO_MOSSA;
-	//	view.selectPosizioneGiocatori();
-
+		view.mossaAttuale=TipoMossa.SELEZ_POSIZ;
+		controller.iniziaPartita();
 	}
 	
 	/**
@@ -383,11 +402,12 @@ public class View {
 	 */
 	public void cambiaGiocatore(Color color){
 		//Cambio l'enable delle tessere
-		for(JLabel lbl: giocatori){
-			if(lbl.getBackground().equals(color)){
-				lbl.setEnabled(true);
+		for(Color col: giocatori.keySet()){
+			if(col.equals(color)){
+				giocatori.get(col).setEnabled(true);
+				giocatoreCorrente=color;
 			}else{
-				lbl.setEnabled(false);
+				giocatori.get(col).setEnabled(false);
 			}
 		}
 	}
@@ -483,6 +503,27 @@ public class View {
 		spostaPecora(sorg, dest, new ImageIcon("immagini/pecora_bianca.png"));
 	}
 	
+	public void spostaPastore(String s, String d, Color colore){
+		ImageIcon img = null;
+		if(colore.equals(new Color(255,0,0))){
+			img=new ImageIcon("immagini/pedinarossa.png");
+		}
+		if(colore.equals(new Color(0,255,0))){
+			img=new ImageIcon("immagini/pedinaverde.png");
+		}
+		if(colore.equals(new Color(0,0,255))){
+			img=new ImageIcon("immagini/pedinaazzurra.png");
+		}
+		if(colore.equals(new Color(255,255,0))){
+			img=new ImageIcon("immagini/pedinagialla.png");
+		}
+		
+		if(!s.equals("")){
+			spostaPecora(posizioniCancelli.get(s), posizioniCancelli.get(d), img);
+		}
+		mettiCancello(d, img);
+	}
+	
 	/**
 	 * Animazione di spostamento della pecora nera
 	 * @param s ID della regione da cui spostare la pecora
@@ -527,8 +568,18 @@ public class View {
 		lblTessere.get(tess).setText(Integer.toString(num));
 	}
 	
-	public void modPrezzoTessera(TipoTerreno tess, int num){
-		
+	public void incPrezzoTessera(TipoTerreno tess){
+		JLabel lblTessera = (JLabel)lblTessere.get(tess).getParent();
+		int posx = 20* (lblTessera.getComponentCount()-1);
+		if(posx<0){
+			lblOutput.setText("ERRORE NELL'INCREMENTO DEL PREZZZO TESSERA!!");
+			return;
+		}
+		JLabel lblDanaro = new JLabel();
+		ImageIcon imgDanaro = new ImageIcon("immagini/danaro.png");
+		lblDanaro.setIcon(imgDanaro);
+		lblTessera.add(lblDanaro);
+		lblDanaro.setBounds(posx, 0, imgDanaro.getIconWidth(), imgDanaro.getIconHeight());
 	}
 
 	public Map<String,Point> getPosizioniRegioni() {
@@ -551,5 +602,18 @@ public class View {
 	public Map<String, Point> getPosizioniCancelli() {
 		return posizioniCancelli;
 	}
+
+	/**
+	 * Serve per settare, da parte del controller il giocatore corrente
+	 * @param colore
+	 */
+	public void setGiocatoreCorrente(Color colore) {
+		giocatoreCorrente=colore;
+	}
+
+	public Color getGiocatoreCorrente() {
+		return giocatoreCorrente;
+	}
+	
 
 }
