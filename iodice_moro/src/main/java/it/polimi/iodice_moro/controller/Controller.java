@@ -198,8 +198,13 @@ public class Controller {
 	public void acquistaTessera(String idRegione) throws Exception{
 		acquistaTessera(statoPartita.getRegioneByID(idRegione).getTipo());
 		aggiornaTurno(TipoMossa.COMPRA_TESSERA);
-		view.modQtaTessera(statoPartita.getRegioneByID(idRegione).getTipo(), statoPartita.getGiocatoreCorrente().getTesserePossedute().get(statoPartita.getRegioneByID(idRegione).getTipo().toString()));
-		view.modSoldiGiocatore(statoPartita.getGiocatoreCorrente().getColore(), statoPartita.getGiocatoreCorrente().getSoldi());
+		
+		view.modQtaTessera(statoPartita.getRegioneByID(idRegione).getTipo(),
+				statoPartita.getGiocatoreCorrente().getTesserePossedute().get(statoPartita.getRegioneByID(idRegione).getTipo().toString()));
+		
+		view.modSoldiGiocatore(statoPartita.getGiocatoreCorrente().getColore(),
+				statoPartita.getGiocatoreCorrente().getSoldi());
+		
 		if(statoPartita.getCostoTessera( statoPartita.getRegioneByID(idRegione).getTipo())<=4){
 			view.incPrezzoTessera(statoPartita.getRegioneByID(idRegione).getTipo());
 		}
@@ -251,8 +256,8 @@ public class Controller {
 			view.addCancelloFinale(oldStreet.getColore());
 		}
 		t.start();
-		view.modSoldiGiocatore(statoPartita.getGiocatoreCorrente().getColore(), statoPartita.getGiocatoreCorrente().getSoldi());
-		;
+		view.modSoldiGiocatore(statoPartita.getGiocatoreCorrente().getColore(),
+				statoPartita.getGiocatoreCorrente().getSoldi());
 		checkTurnoGiocatore(TipoMossa.SPOSTA_PASTORE);
 	}
 
@@ -290,6 +295,12 @@ public class Controller {
 				Regione nuovaRegionePecora=statoPartita.getAltraRegione(posNera, strada);
 				try {
 					spostaPecoraNera(posNera, nuovaRegionePecora);
+					if(view!=null){
+						System.out.println("Spostamento automatico pecora nera!!");
+						ThreadAnimazionePecoraNera r = new ThreadAnimazionePecoraNera(view, posNera.getColore(),nuovaRegionePecora.getColore());
+						Thread t = new Thread(r);
+						t.start();
+					}
 					return;
 				} catch (Exception e) {
 					logger.log(Level.SEVERE, "Non ci sono pecore da spostare", e);
@@ -305,7 +316,7 @@ public class Controller {
 	 */
 	private int lanciaDado() {
 		Random random=new Random();
-		return random.nextInt(7);		
+		return random.nextInt(6)+1;	
 	}
 	
 	/**
@@ -386,6 +397,7 @@ public class Controller {
 			}
 		}
 		view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
+		checkSpostaPecoraNera();
 	}
 	
 	/**
@@ -463,14 +475,13 @@ public class Controller {
 				if(view!=null){
 					view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
 					for(String t:statoPartita.getGiocatoreCorrente().getTesserePossedute().keySet()){
-						System.out.println("QUI");
 						if(!t.equals(TipoTerreno.SHEEPSBURG.toString())){
 							view.modQtaTessera(TipoTerreno.parseInput(t),statoPartita.getGiocatoreCorrente().getTesserePossedute().get(t));
 						}
 					}
 				}
-				//checkSpostaPecoraNera();
-				
+				//Regione oldNera = statoPartita.getPosPecoraNera();
+				checkSpostaPecoraNera();
 			}
 		}
 		return statoPartita.getGiocatoreCorrente();
@@ -520,6 +531,7 @@ public class Controller {
 			if(!regione.getTipo().equals(TipoTerreno.SHEEPSBURG)) {
 				regione.setNumPecore(1);
 			} else {
+				statoPartita.setPosPecoraNera(regione);
 				regione.setPecoraNera(true);
 			}
 		}
@@ -633,22 +645,20 @@ public class Controller {
 	
 
 	
-    public static Map<Giocatore, Integer> sortByValue(Map<Giocatore, Integer> map) {
+	public static Map<Giocatore, Integer> sortByValue(Map<Giocatore, Integer> map) {
 
-        List<Map.Entry<Giocatore, Integer>> list = new LinkedList<Map.Entry<Giocatore,Integer>>(map.entrySet());    
-          Collections.sort(list, new Comparator<Object>() {     
-              public int compare(Object o1, Object o2) {         
-               return ((Comparable) ((Map.Entry<Giocatore,Integer>) (o2)).getValue()).compareTo(((Map.Entry<Giocatore,Integer>) (o1)).getValue());
-               }});  
+		List<Map.Entry<Giocatore, Integer>> list = new LinkedList<Map.Entry<Giocatore,Integer>>(map.entrySet());    
+		Collections.sort(list, new Comparator<Object>() {     
+			public int compare(Object o1, Object o2) {         
+				return ((Comparable) ((Map.Entry<Giocatore,Integer>) (o2)).getValue()).compareTo(((Map.Entry<Giocatore,Integer>) (o1)).getValue());
+			}});  
+		Map<Giocatore, Integer> result = new LinkedHashMap<Giocatore, Integer>();    
+		for (Iterator<Entry<Giocatore, Integer>> it = list.iterator(); it.hasNext();) {   
 
-        Map<Giocatore, Integer> result = new LinkedHashMap<Giocatore, Integer>();    
-         for (Iterator<Entry<Giocatore, Integer>> it = list.iterator(); it.hasNext();) {   
+			Entry<Giocatore, Integer> entry = (Map.Entry<Giocatore,Integer>)it.next();   
 
-             Entry<Giocatore, Integer> entry = (Map.Entry<Giocatore,Integer>)it.next();   
-
-              result.put(entry.getKey(), entry.getValue());    
-
-         }     
-
-        return result;    }
+			result.put(entry.getKey(), entry.getValue());    
+		}     
+		return result;   
+	}
 }

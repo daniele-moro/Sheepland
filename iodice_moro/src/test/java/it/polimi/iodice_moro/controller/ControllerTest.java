@@ -278,6 +278,8 @@ public class ControllerTest {
 	@Test
 	public void testCheckTurnoGiocatore() {
 		controllerTest.creaGiocatore("Giocatore2", strada2);
+		statoPartitaT.setPosPecoraNera(regione1);
+		regione1.addPecoraNera();
 		Giocatore secondoGiocatore = statoPartitaT.getGiocatori().get(1);
 		Giocatore provaGiocatore = controllerTest.checkTurnoGiocatore(TipoMossa.COMPRA_TESSERA);
 		//Controllo che se il giocatore può fare altre mosse venga ritornato

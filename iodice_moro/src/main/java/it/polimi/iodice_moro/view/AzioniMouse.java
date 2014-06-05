@@ -22,7 +22,6 @@ class AzioniMouse extends MouseAdapter{
 	//Regioni da evidenziare
 	private String reg1;
 	private String reg2;
-	private int cont;
 
 	View view;
 	Controller controller;
@@ -32,7 +31,6 @@ class AzioniMouse extends MouseAdapter{
 		super();
 		reg1="";
 		reg2="";
-		cont=0;
 		try {
 			this.image= ImageIO.read(image);
 		} catch (IOException e) {
@@ -58,7 +56,6 @@ class AzioniMouse extends MouseAdapter{
 			try {
 				controller.setStradaGiocatore(view.getGiocatoreCorrente(), Integer.toHexString(color));
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
 				view.getLBLOutput().setText( e1.getMessage());
 			}
 			
@@ -82,7 +79,6 @@ class AzioniMouse extends MouseAdapter{
 					break;
 				case SPOSTA_PASTORE:
 					try {
-						System.out.println("S");
 						controller.spostaPedina(Integer.toHexString(color));
 					} catch (Exception e1) {
 						view.getLBLOutput().setText(e1.getMessage());
@@ -90,8 +86,7 @@ class AzioniMouse extends MouseAdapter{
 					break;
 				case SPOSTA_PECORA:
 					try {
-						System.out.println("B");
-						//if(Integer.toHexString(color).equals(reg1) || Integer.toHexString(color).equals(reg2))
+						if(Integer.toHexString(color).equals(reg1) || Integer.toHexString(color).equals(reg2))
 						{
 							Point posPecoraNera=view.getLBLPecoraNera().getLocation();
 							if(image.getRGB((int)posPecoraNera.getX()+10,(int)posPecoraNera.getY()+10)==color){
@@ -101,11 +96,11 @@ class AzioniMouse extends MouseAdapter{
 								Object[] options = {new ImageIcon("immagini/pecora_bianca.png"),
 										new ImageIcon("immagini/pecora_nera.png")};
 								int n = JOptionPane.showOptionDialog(null,
-								    "Quale pecora vuoi spostare",
+								    "Quale pecora vuoi spostare?",
 								    "Spostamento Pecora",
 								    JOptionPane.YES_NO_CANCEL_OPTION,
 								    JOptionPane.QUESTION_MESSAGE,
-								    null,
+								    new ImageIcon("immagini/question-png"),
 								    options,
 								    options[0]);
 								switch(n){
@@ -126,7 +121,8 @@ class AzioniMouse extends MouseAdapter{
 							}
 						}
 					} catch (Exception e1) {
-						view.getLBLOutput().setText(""+e1.getMessage());
+						System.out.println("ERRORE CLICK MAPPA!!");
+						view.getLBLOutput().setText(e1.getMessage());
 					}
 					break;
 				default:
@@ -141,12 +137,6 @@ class AzioniMouse extends MouseAdapter{
 		}
 
 		switch(color){
-		case 0xff18d111:
-			System.out.println("Regione 2");
-			break;
-		case 0xff007b0e:
-			System.out.println("Regione 1");
-			break;
 		case 0x00ffffff:
 			System.out.println("VUOTO");
 			break;

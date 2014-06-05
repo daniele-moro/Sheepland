@@ -88,18 +88,6 @@ public class View {
 					mouse.setRegioni("", "");
 					mossaAttuale=TipoMossa.NO_MOSSA;
 				}
-			/*	Thread t = new Thread(new Runnable(){
-
-					@Override
-					public void run() {
-						spostaPecoraBianca("ff18d111", "ff007b0e");
-					
-						
-					}
-				});
-				t.start();
-				addCancelloFinale("ff63bdb3");
-				*/
 				
 			} catch (Exception e1) {
 				e1.printStackTrace();
@@ -315,12 +303,13 @@ public class View {
 		for(String s: posizioniRegioni.keySet()){
 			Point p = posizioniRegioni.get(s);
 			if(s.equals("ff002e73")){
-				//devo posizionare la pecora nera perche sono in sheepsburg
+				//devo posizionare la pecora nera perchè sono in sheepsburg
 				JLabel lblNera = new JLabel();
 				lblNera.setIcon(pecNera);
 				lblNera.setBounds(p.x+10, p.y-20, pecNera.getIconWidth(), pecNera.getIconHeight());
 				mappa.add(lblNera);
 				pecoraNera=lblNera;
+				//comunque devo inizializzare la label per la pecora normale, però senza numero di pecore
 				BackgroundedLabel lblPecora = new BackgroundedLabel(pecBianca);
 				lblPecora.setBounds(p.x, p.y, iconBianca.getIconWidth(), iconBianca.getIconHeight());
 				lblRegioni.put(s,lblPecora);
@@ -339,6 +328,7 @@ public class View {
 		GridBagConstraints c = new GridBagConstraints();
 		JLabel lbltemp2;
 		c.gridwidth=2;
+		c.fill=GridBagConstraints.HORIZONTAL;
 		int py=3;
 		for(Color colore:gioc.keySet()){
 			lbltemp2 = new JLabel();
@@ -368,6 +358,8 @@ public class View {
 		Controller controller = new Controller(statopartita);
 		controller.creaGiocatore("prova");
 		controller.creaGiocatore("prova 2");
+		controller.creaGiocatore("prova 3");
+		controller.creaGiocatore("prova 4");
 		
 		View view = new View(controller);
 		controller.setView(view);
@@ -556,7 +548,6 @@ public class View {
 	}
 	
 	public void modSoldiGiocatore(Color coloreGiocatoreDaModificare, int soldi) {
-		// TODO Auto-generated method stub
 		Map<Color,String> mappaColoriGiocatori=controller.getGiocatori();
 		giocatori.get(coloreGiocatoreDaModificare).setText(mappaColoriGiocatori.get(coloreGiocatoreDaModificare)+" SOLDI: "+soldi);
 		giocatori.get(coloreGiocatoreDaModificare).repaint();
