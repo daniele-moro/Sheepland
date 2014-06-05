@@ -86,7 +86,7 @@ class AzioniMouse extends MouseAdapter{
 					break;
 				case SPOSTA_PECORA:
 					try {
-						if(Integer.toHexString(color).equals(reg1) || Integer.toHexString(color).equals(reg2))
+						//if(Integer.toHexString(color).equals(reg1) || Integer.toHexString(color).equals(reg2))
 						{
 							Point posPecoraNera=view.getLBLPecoraNera().getLocation();
 							if(image.getRGB((int)posPecoraNera.getX()+10,(int)posPecoraNera.getY()+10)==color){

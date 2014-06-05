@@ -119,6 +119,9 @@ public class Controller {
 	
 	public void spostaPecora(String idRegione) throws Exception{
 		Regione regSorg=statoPartita.getRegioneByID(idRegione);
+		if(regSorg == null){
+			throw new Exception("Non hai cliccato su una regione!!");
+		}
 		System.out.println("Sposta pecora controller");
 		spostaPecora(statoPartita.getRegioneByID(idRegione));
 		aggiornaTurno(TipoMossa.SPOSTA_PECORA);
@@ -196,7 +199,11 @@ public class Controller {
 	}
 	
 	public void acquistaTessera(String idRegione) throws Exception{
-		acquistaTessera(statoPartita.getRegioneByID(idRegione).getTipo());
+		Regione reg = statoPartita.getRegioneByID(idRegione);
+		if(reg==null){
+			throw new Exception("Non hai cliccato su una regione!!");
+		}
+		acquistaTessera(reg.getTipo());
 		aggiornaTurno(TipoMossa.COMPRA_TESSERA);
 		
 		view.modQtaTessera(statoPartita.getRegioneByID(idRegione).getTipo(),
@@ -246,7 +253,11 @@ public class Controller {
 	
 	public void spostaPedina(String idStrada) throws Exception{
 		Strada oldStreet = statoPartita.getGiocatoreCorrente().getPosition();
-		spostaPedina(statoPartita.getStradaByID(idStrada));
+		Strada newStreet = statoPartita.getStradaByID(idStrada);
+		if(newStreet == null){
+			throw new Exception("Non hai cliccato su una strada!");
+		}
+		spostaPedina(newStreet);
 		aggiornaTurno(TipoMossa.SPOSTA_PASTORE);
 		ThreadAnimazionePastore r = new ThreadAnimazionePastore(view, oldStreet.getColore(),idStrada, statoPartita.getGiocatoreCorrente().getColore());
 		Thread t = new Thread(r);
