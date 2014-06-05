@@ -8,20 +8,28 @@ import it.polimi.iodice_moro.model.Strada;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
 import it.polimi.iodice_moro.view.ThreadAnimazionePastore;
+import it.polimi.iodice_moro.view.ThreadAnimazionePecoraBianca;
 import it.polimi.iodice_moro.view.ThreadAnimazionePecoraNera;
 import it.polimi.iodice_moro.view.View;
-import it.polimi.iodice_moro.view.ThreadAnimazionePecoraBianca;
 
 import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
 
 public class Controller {
 	
@@ -485,6 +493,17 @@ public class Controller {
 	private void finePartita(){
 		if(view!=null){
 			view.disattivaGiocatore();
+			
+			Map<Giocatore, Integer> listaPunteggi = calcolaPunteggio();
+			Map<Giocatore, Integer> punteggiOrdinati = Controller.sortByValue(listaPunteggi);
+			JTable tabellaPunteggi = new JTable(punteggiOrdinati.size(),2);
+			int row = 0;
+			for(Map.Entry<Giocatore,Integer> entry: punteggiOrdinati.entrySet()){
+			      tabellaPunteggi.setValueAt(entry.getKey().getNome(),row,0);
+			      tabellaPunteggi.setValueAt(entry.getValue(),row,1);
+			      row++;
+			 }
+			view.visualizzaPunteggi(tabellaPunteggi);
 		}
 		
 		
@@ -608,4 +627,25 @@ public class Controller {
 			}
 			return posRegioni;
 		}*/
+	
+
+	
+    public static Map<Giocatore, Integer> sortByValue(Map<Giocatore, Integer> map) {
+
+        List<Map.Entry<Giocatore, Integer>> list = new LinkedList<Map.Entry<Giocatore,Integer>>(map.entrySet());    
+          Collections.sort(list, new Comparator<Object>() {     
+              public int compare(Object o1, Object o2) {         
+               return ((Comparable) ((Map.Entry<Giocatore,Integer>) (o2)).getValue()).compareTo(((Map.Entry<Giocatore,Integer>) (o1)).getValue());
+               }});  
+
+        Map<Giocatore, Integer> result = new LinkedHashMap<Giocatore, Integer>();    
+         for (Iterator<Entry<Giocatore, Integer>> it = list.iterator(); it.hasNext();) {   
+
+             Entry<Giocatore, Integer> entry = (Map.Entry<Giocatore,Integer>)it.next();   
+
+              result.put(entry.getKey(), entry.getValue());    
+
+         }     
+
+        return result;    }
 }

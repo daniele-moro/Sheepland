@@ -32,9 +32,12 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
@@ -564,6 +567,10 @@ public class View {
 		lblDanaro.setIcon(imgDanaro);
 		lblTessera.add(lblDanaro);
 		lblDanaro.setBounds(posx, 0, imgDanaro.getIconWidth(), imgDanaro.getIconHeight());
+	}
+	
+	public void visualizzaPunteggi(JTable listaPunteggi) {		
+		JOptionPane.showMessageDialog(null, listaPunteggi, "Lista Punteggi", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	public Map<String,Point> getPosizioniRegioni() {

@@ -112,7 +112,6 @@ class AzioniMouse extends MouseAdapter{
 								case 0:
 									//Pecora Bianca
 									controller.spostaPecora(Integer.toHexString(color));
-									controller.checkTurnoGiocatore(TipoMossa.SPOSTA_PECORA);
 									break;
 								case 1:
 									//Pecora Nera
