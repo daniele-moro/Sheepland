@@ -510,14 +510,7 @@ public class Controller {
 			
 			Map<Giocatore, Integer> listaPunteggi = calcolaPunteggio();
 			Map<Giocatore, Integer> punteggiOrdinati = Controller.sortByValue(listaPunteggi);
-			JTable tabellaPunteggi = new JTable(punteggiOrdinati.size(),2);
-			int row = 0;
-			for(Map.Entry<Giocatore,Integer> entry: punteggiOrdinati.entrySet()){
-			      tabellaPunteggi.setValueAt(entry.getKey().getNome(),row,0);
-			      tabellaPunteggi.setValueAt(entry.getValue(),row,1);
-			      row++;
-			 }
-			view.visualizzaPunteggi(tabellaPunteggi);
+			view.visualizzaPunteggi(punteggiOrdinati);
 		}
 		
 		
@@ -661,4 +654,30 @@ public class Controller {
 		}     
 		return result;   
 	}
+	
+	/*public static void main(String args[]) {
+    	JFrame frame = new JFrame();
+    	List<String> listaNomi = new ArrayList<String>();
+    	for(int i = 0; i<4; i++) {
+    		try {
+    			String s = (String)JOptionPane.showInputDialog(
+    					frame,
+    					"Inserisci il nome del giocatore:"+(i+1)+"\n"
+    							+ "",
+    							"Inserimento Giocatori",
+    							JOptionPane.INFORMATION_MESSAGE,
+    							null,
+    							null,
+    							"Giocatore"+(i+1));
+    			if (!(s.equals("Giocatore "+(i+1)) || s.equals(""))) {
+    				listaNomi.add(s);
+    			}
+    		} catch (NullPointerException e) {
+    			break;
+    		}
+    	}
+    		if(listaNomi!=null) {
+    			System.out.println(listaNomi);
+    		}
+    }*/
 }

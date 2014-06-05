@@ -567,8 +567,16 @@ public class View {
 		lblDanaro.setBounds(posx, 0, imgDanaro.getIconWidth(), imgDanaro.getIconHeight());
 	}
 	
-	public void visualizzaPunteggi(JTable listaPunteggi) {		
-		JOptionPane.showMessageDialog(null, listaPunteggi, "Lista Punteggi", JOptionPane.INFORMATION_MESSAGE);
+	public void visualizzaPunteggi(Map<Giocatore, Integer> punteggiOrdinati) {		
+		JTable tabellaPunteggi = new JTable(punteggiOrdinati.size(),2);
+		int row = 0;
+		for(Map.Entry<Giocatore,Integer> entry: punteggiOrdinati.entrySet()){
+		      tabellaPunteggi.setValueAt(entry.getKey().getNome(),row,0);
+		      tabellaPunteggi.setValueAt(entry.getValue(),row,1);
+		      row++;
+		 }
+		tabellaPunteggi.setEnabled(false);
+		JOptionPane.showMessageDialog(null, tabellaPunteggi, "Lista Punteggi", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	public Map<String,Point> getPosizioniRegioni() {
