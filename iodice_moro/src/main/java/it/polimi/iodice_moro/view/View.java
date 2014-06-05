@@ -555,6 +555,13 @@ public class View {
 		frame.repaint();
 	}
 	
+	public void modSoldiGiocatore(Color coloreGiocatoreDaModificare, int soldi) {
+		// TODO Auto-generated method stub
+		Map<Color,String> mappaColoriGiocatori=controller.getGiocatori();
+		giocatori.get(coloreGiocatoreDaModificare).setText(mappaColoriGiocatori.get(coloreGiocatoreDaModificare)+" SOLDI: "+soldi);
+		giocatori.get(coloreGiocatoreDaModificare).repaint();
+	}
+	
 	public void incPrezzoTessera(TipoTerreno tess){
 		JLabel lblTessera = (JLabel)lblTessere.get(tess).getParent();
 		int posx = 20* (lblTessera.getComponentCount()-1);
@@ -613,6 +620,8 @@ public class View {
 	public JFrame getFrame() {
 		return frame;
 	}
+
+
 	
 
 }

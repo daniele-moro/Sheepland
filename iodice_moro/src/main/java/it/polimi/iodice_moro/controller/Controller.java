@@ -199,6 +199,7 @@ public class Controller {
 		acquistaTessera(statoPartita.getRegioneByID(idRegione).getTipo());
 		aggiornaTurno(TipoMossa.COMPRA_TESSERA);
 		view.modQtaTessera(statoPartita.getRegioneByID(idRegione).getTipo(), statoPartita.getGiocatoreCorrente().getTesserePossedute().get(statoPartita.getRegioneByID(idRegione).getTipo().toString()));
+		view.modSoldiGiocatore(statoPartita.getGiocatoreCorrente().getColore(), statoPartita.getGiocatoreCorrente().getSoldi());
 		if(statoPartita.getCostoTessera( statoPartita.getRegioneByID(idRegione).getTipo())<=4){
 			view.incPrezzoTessera(statoPartita.getRegioneByID(idRegione).getTipo());
 		}
@@ -250,6 +251,8 @@ public class Controller {
 			view.addCancelloFinale(oldStreet.getColore());
 		}
 		t.start();
+		view.modSoldiGiocatore(statoPartita.getGiocatoreCorrente().getColore(), statoPartita.getGiocatoreCorrente().getSoldi());
+		;
 		checkTurnoGiocatore(TipoMossa.SPOSTA_PASTORE);
 	}
 
