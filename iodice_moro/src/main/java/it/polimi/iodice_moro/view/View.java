@@ -126,6 +126,7 @@ public class View implements IFView {
 	
 	public View(Controller controller){
 		this.controller=controller;
+		mossaAttuale=TipoMossa.SELEZ_POSIZ;
 		initGUI();
 	}
 	
@@ -371,8 +372,9 @@ public class View implements IFView {
 		
 		View view = new View(controller);
 		controller.setView(view);
-		view.mossaAttuale=TipoMossa.SELEZ_POSIZ;
+		
 		controller.iniziaPartita();
+		
 	}
 	
 	/* (non-Javadoc)

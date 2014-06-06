@@ -1,24 +1,19 @@
 package it.polimi.iodice_moro.network;
 
+import it.polimi.iodice_moro.controller.IFController;
+import it.polimi.iodice_moro.model.Giocatore;
+import it.polimi.iodice_moro.model.TipoMossa;
+import it.polimi.iodice_moro.view.View;
+
 import java.awt.Color;
 import java.awt.Point;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-
-import it.polimi.iodice_moro.controller.IFController;
-import it.polimi.iodice_moro.model.Giocatore;
-import it.polimi.iodice_moro.model.StatoPartita;
-import it.polimi.iodice_moro.model.Strada;
-import it.polimi.iodice_moro.model.TipoMossa;
-import it.polimi.iodice_moro.model.TipoTerreno;
-import it.polimi.iodice_moro.view.View;
 
 
 //Utilizzato dalla view "remota", cioè dal client
@@ -36,6 +31,7 @@ public class ControllerSocket implements IFController{
 		socket = new Socket(host, port);
 		output = new PrintWriter(socket.getOutputStream());
 		input = new Scanner(socket.getInputStream());
+		input.useDelimiter("\n");
 	}
 	
 	public ControllerSocket(String host) throws UnknownHostException, IOException{
@@ -44,35 +40,69 @@ public class ControllerSocket implements IFController{
 	
 	@Override
 	public void spostaPecora(String idRegione) throws Exception {
-		// TODO Auto-generated method stub
+		output.println("SPOSTA_PECORA#"+idRegione);
+		String risposta=input.next();
+		String[] parametri = risposta.split("#");
+		switch(parametri[0]){
+		case "OK":
+			System.out.println("TUTTO OK");
+			break;
+		case "EXCEPTION":
+			throw new Exception(parametri[1]);
+		}
 		
 	}
 
 	@Override
 	public void spostaPecoraNera(String idRegPecoraNera) throws Exception {
-		// TODO Auto-generated method stub
+		output.println("SPOSTA_PECORA_NERA#"+idRegPecoraNera);
+		String risposta=input.next();
+		String[] parametri = risposta.split("#");
+		switch(parametri[0]){
+		case "OK":
+			System.out.println("TUTTO OK");
+			break;
+		case "EXCEPTION":
+			throw new Exception(parametri[1]);
+		}
 		
 	}
 
 
 	@Override
 	public void acquistaTessera(String idRegione) throws Exception {
-		// TODO Auto-generated method stub
+		output.println("COMPRA_TESSERA#"+idRegione);
+		String risposta=input.next();
+		String[] parametri = risposta.split("#");
+		switch(parametri[0]){
+		case "OK":
+			System.out.println("TUTTO OK");
+			break;
+		case "EXCEPTION":
+			throw new Exception(parametri[1]);
+		}
 		
 	}
 
 	@Override
 	public void spostaPedina(String idStrada) throws Exception {
-		// TODO Auto-generated method stub
-		
+		output.println("SPOSTA_PEDINA#"+idStrada);
+		String risposta=input.next();
+		String[] parametri = risposta.split("#");
+		switch(parametri[0]){
+		case "OK":
+			System.out.println("TUTTO OK");
+			break;
+		case "EXCEPTION":
+			throw new Exception(parametri[1]);
+		}
 	}
 
 
 	@Override
 	public Color creaGiocatore(String nome) {
-		// TODO Auto-generated method stub
+		output.print(nome+"\n");
 		return null;
-		
 	}
 
 	@Override
