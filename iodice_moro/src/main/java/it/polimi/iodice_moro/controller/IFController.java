@@ -30,7 +30,7 @@ public interface IFController {
 
 	
 	//OK
-	public abstract void creaGiocatore(String nome);
+	public abstract Color creaGiocatore(String nome);
 
 	
 	//OK

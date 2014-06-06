@@ -141,6 +141,7 @@ public class View implements IFView {
 		frame= new JFrame("SHEEPLAND");
 		frame.setLayout(new BorderLayout());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setAlwaysOnTop(true);
 		
 		//CENTRALPANEL
 		mappa = new JLabel();

@@ -69,8 +69,9 @@ public class ControllerSocket implements IFController{
 
 
 	@Override
-	public void creaGiocatore(String nome) {
+	public Color creaGiocatore(String nome) {
 		// TODO Auto-generated method stub
+		return null;
 		
 	}
 

@@ -388,8 +388,11 @@ public class Controller implements IFController {
 	 * @see it.polimi.iodice_moro.controller.IFController#creaGiocatore(java.lang.String)
 	 */
 	@Override
-	public void creaGiocatore(String nome){
-		statoPartita.addGiocatore(new Giocatore(nome));
+	public Color creaGiocatore(String nome){
+		Giocatore nuovoGiocatore = new Giocatore(nome);
+		statoPartita.addGiocatore(nuovoGiocatore);
+		nuovoGiocatore.setColore(vettColori[statoPartita.getGiocatori().indexOf(nuovoGiocatore)]);
+		return nuovoGiocatore.getColore();
 	}
 	
 	/* (non-Javadoc)
@@ -561,9 +564,10 @@ public class Controller implements IFController {
 		}
 		
 		//Inizializzazione dei colori associati ai giocatori
-		for(Giocatore g: statoPartita.getGiocatori()){
+/*		for(Giocatore g: statoPartita.getGiocatori()){
 			g.setColore(vettColori[statoPartita.getGiocatori().indexOf(g)]);
-		}
+		}*/
+		
 		statoPartita.setGiocatoreCorrente(statoPartita.getGiocatori().get(0));
 		view.setGiocatoreCorrente(statoPartita.getGiocatoreCorrente().getColore());
 		
@@ -580,14 +584,7 @@ public class Controller implements IFController {
 		
 		for(Giocatore g: statoPartita.getGiocatori()) {
 			g.addTessera(tipoTessere.get(statoPartita.getGiocatori().indexOf(g)));
-			//g.getTesserePossedute().put(tipoTessere.get(statoPartita.getGiocatori().indexOf(g)).toString(), 1);
 		}
-		//inizializziamo le altre tessere dei giocatori a 0
-		/*for(Giocatore g: statoPartita.getGiocatori()){
-			for(TipoTerreno t:TipoTerreno.values()){
-				g.getTesserePossedute().get(TipoTerreno.BOSCO)
-			}
-		}*/
 		
 		//TODO
 		//Chiama il metodo della view per inizializzare l'interfaccia.
