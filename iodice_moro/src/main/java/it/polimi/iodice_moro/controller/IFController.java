@@ -5,6 +5,7 @@ import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.Strada;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
+import it.polimi.iodice_moro.view.IFView;
 import it.polimi.iodice_moro.view.View;
 
 import java.awt.Color;
@@ -60,16 +61,6 @@ public interface IFController {
 	 */
 	public abstract boolean mossaPossibile(TipoMossa mossaDaEffettuare);
 
-	//___________________________________________________________________________________________________________________
-	/*
-	 * Controlla se il giocatore corrente può fare ancora mosse (n. mosse): se non può farle
-	 * azzera le variabili di turno (fineturno() ) nel giocatore corrente e trova
-	 * il prossimo giocatore (modifica il StatoPartita.giocatoreCorrente ).
-	 * Inoltre se è il turno finale ed è l'ultimo giocatore mette finePartita().
-	 * Ritorna il prossimo giocatore.
-	 */
-	//OK
-	public abstract Giocatore checkTurnoGiocatore(TipoMossa mossaFatta);
 	
 	//OK
 	public abstract void iniziaPartita();
@@ -106,5 +97,7 @@ public interface IFController {
 	 * @return
 	 */
 	public abstract Map<Color, String> getGiocatori();
+	
+	public abstract void setView(IFView view2);
 
 }

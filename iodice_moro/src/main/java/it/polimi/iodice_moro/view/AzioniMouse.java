@@ -46,30 +46,41 @@ class AzioniMouse extends MouseAdapter{
 	public void mouseClicked(MouseEvent e)
 	{
 		JLabel lbl=(JLabel) e.getComponent();
+		
 		if(e.getX()< 0 || e.getY()<0 || e.getX()>image.getWidth() || e.getY()>image.getHeight()) return;
 		int color=image.getRGB(e.getX(),e.getY());
 		System.out.println("X:"+e.getX()+" Y:"+e.getY() + "  COLOR:0x"+ Integer.toHexString(color));
+		
 		if(view.getMossaAttuale().equals(TipoMossa.SELEZ_POSIZ) 
 				&& view.getPosizioniCancelli().keySet().contains(Integer.toHexString(color))){
+			
 			//STO SELEZIONANDO LE POSIZIONI DEI PASTORI
 			System.out.println("SELEZPOSIZ");
+			//Metto il pastore nella posizione che ho appena selezionato
 			view.spostaPastore("", Integer.toHexString(color), view.getGiocatoreCorrente());
 			try {
+				//provo a settare la strada del Pastore
 				controller.setStradaGiocatore(view.getGiocatoreCorrente(), Integer.toHexString(color));
 			} catch (Exception e1) {
 				view.getLBLOutput().setText( e1.getMessage());
 			}
-			
 		}
 				
+		//Controllo che il click sia avvenuto all'interno della mappa(quindi o su regioni o su caselle),
+		//inoltre controllo che la mossa da fare non sia ne NO_MOSSA(in cui non si deve fare null) 
+		//ne SELEZ_POSIZ(caso gia gestito prima)
 		if((view.getPosizioniRegioni().keySet().contains(Integer.toHexString(color))
 				|| view.getPosizioniCancelli().keySet().contains(Integer.toHexString(color)))
 				&& view.getMossaAttuale()!=TipoMossa.NO_MOSSA
 				&& view.getMossaAttuale()!=TipoMossa.SELEZ_POSIZ){
+			
 			System.out.println("A");
+			//ricontrollo per sicurezza che la mossa da fare sia possibile
 			if(controller.mossaPossibile(view.getMossaAttuale())){
 				System.out.println("B");
 				switch(view.getMossaAttuale()){
+				
+				
 				case COMPRA_TESSERA:
 					System.out.println("COMPRA TESSERA");
 					try {
@@ -78,6 +89,8 @@ class AzioniMouse extends MouseAdapter{
 						view.getLBLOutput().setText(e2.getMessage());
 					}
 					break;
+					
+					
 				case SPOSTA_PASTORE:
 					try {
 						controller.spostaPedina(Integer.toHexString(color));
@@ -85,6 +98,8 @@ class AzioniMouse extends MouseAdapter{
 						view.getLBLOutput().setText(e1.getMessage());
 					}
 					break;
+					
+					
 				case SPOSTA_PECORA:
 					try {
 						//if(Integer.toHexString(color).equals(reg1) || Integer.toHexString(color).equals(reg2))
@@ -97,13 +112,13 @@ class AzioniMouse extends MouseAdapter{
 								Object[] options = {new ImageIcon("immagini/pecora_bianca.png"),
 										new ImageIcon("immagini/pecora_nera.png")};
 								int n = JOptionPane.showOptionDialog(null,
-								    "Quale pecora vuoi spostare?",
-								    "Spostamento Pecora",
-								    JOptionPane.YES_NO_CANCEL_OPTION,
-								    JOptionPane.QUESTION_MESSAGE,
-								    new ImageIcon("immagini/question-png"),
-								    options,
-								    options[0]);
+										"Quale pecora vuoi spostare?",
+										"Spostamento Pecora",
+										JOptionPane.YES_NO_CANCEL_OPTION,
+										JOptionPane.QUESTION_MESSAGE,
+										new ImageIcon("immagini/question-png"),
+										options,
+										options[0]);
 								switch(n){
 								case 0:
 									//Pecora Bianca
@@ -118,7 +133,6 @@ class AzioniMouse extends MouseAdapter{
 							else{
 								System.out.println("SPOSTAPECORA");
 								controller.spostaPecora(Integer.toHexString(color));
-								controller.checkTurnoGiocatore(TipoMossa.SPOSTA_PECORA);
 							}
 						}
 					} catch (Exception e1) {
@@ -126,6 +140,8 @@ class AzioniMouse extends MouseAdapter{
 						view.getLBLOutput().setText(e1.getMessage());
 					}
 					break;
+					
+					
 				default:
 					break;
 

@@ -7,6 +7,7 @@ import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.Strada;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
+import it.polimi.iodice_moro.network.ViewSocket;
 import it.polimi.iodice_moro.view.IFView;
 import it.polimi.iodice_moro.view.ThreadAnimazionePastore;
 import it.polimi.iodice_moro.view.ThreadAnimazionePecoraBianca;
@@ -14,6 +15,7 @@ import it.polimi.iodice_moro.view.ThreadAnimazionePecoraNera;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -154,10 +156,14 @@ public class Controller implements IFController {
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see it.polimi.iodice_moro.controller.IFController#spostaPecoraNera(java.lang.String)
+	//___________________________________________________________________________________________________________________
+	/*
+	 * Controlla se il giocatore corrente può fare ancora mosse (n. mosse): se non può farle
+	 * azzera le variabili di turno (fineturno() ) nel giocatore corrente e trova
+	 * il prossimo giocatore (modifica il StatoPartita.giocatoreCorrente ).
+	 * Inoltre se è il turno finale ed è l'ultimo giocatore mette finePartita().
+	 * Ritorna il prossimo giocatore.
 	 */
-	@Override
 	public void spostaPecoraNera(String idRegPecoraNera) throws Exception{
 		Regione regionePecora=statoPartita.getRegioneByID(idRegPecoraNera);
 		Regione regAdiacente=statoPartita.getAltraRegione(regionePecora, statoPartita.getGiocatoreCorrente().getPosition());
@@ -316,6 +322,12 @@ public class Controller implements IFController {
 		 */
 		for(Strada strada : stradeConfini) {
 			if(strada.getnCasella()==valoreDado && !strada.isRecinto()) {
+				//Controllo che non la pecora non si debba spostare su strade in cui ci sono presenti pastori
+				for(Giocatore g : statoPartita.getGiocatori()){
+					if(strada==g.getPosition() || strada==g.getPosition2()){
+						return;
+					}
+				}
 				Regione nuovaRegionePecora=statoPartita.getAltraRegione(posNera, strada);
 				try {
 					spostaPecoraNera(posNera, nuovaRegionePecora);
@@ -471,10 +483,6 @@ public class Controller implements IFController {
 	 * Inoltre se è il turno finale ed è l'ultimo giocatore mette finePartita().
 	 * Ritorna il prossimo giocatore.
 	 */
-	/* (non-Javadoc)
-	 * @see it.polimi.iodice_moro.controller.IFController#checkTurnoGiocatore(it.polimi.iodice_moro.model.TipoMossa)
-	 */
-	@Override
 	public Giocatore checkTurnoGiocatore(TipoMossa mossaFatta) {
 		/*
 		 * Controllo se il giocatore non può fare più mosse
@@ -589,13 +597,8 @@ public class Controller implements IFController {
 		//TODO
 		//Chiama il metodo della view per inizializzare l'interfaccia.
 	}
-		
-		/*
-		List<Giocatore> listaGiocatori = statoPartita.getGiocatori();
-		for (int i = 0; i<listaGiocatori.size(); i++) {
-			listaGiocatori.get(i).setColore(colori[i]);
-		}
-		*/
+
+	
 	//AGGIUNTE!!!
 	//TODO
 	/* (non-Javadoc)
@@ -687,6 +690,25 @@ public class Controller implements IFController {
 			result.put(entry.getKey(), entry.getValue());    
 		}     
 		return result;   
+	}
+	public static void main(String args[]) {
+		StatoPartita stato= new StatoPartita();
+		Controller cont=new Controller(stato);
+		ViewSocket view=null;
+		try {
+			view = new ViewSocket(cont);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("ECCO QUI");
+		cont.setView(view);
+		try {
+			view.attendiGiocatori();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/*public static void main(String args[]) {

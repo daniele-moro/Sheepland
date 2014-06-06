@@ -2,11 +2,13 @@ package it.polimi.iodice_moro.network;
 
 import it.polimi.iodice_moro.controller.Controller;
 import it.polimi.iodice_moro.model.Giocatore;
+import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
 import it.polimi.iodice_moro.view.IFView;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -25,55 +27,73 @@ public class ViewSocket implements IFView {
 	Map<Color, Scanner> scannerGiocatori = new HashMap<Color,Scanner>();
 	Map<Color, PrintWriter> writerGiocatori = new HashMap<Color,PrintWriter>();
 
+	/**
+	 * Metodo per ricevere tutte le mosse dei giocatori, cioè dei client
+	 */
 	public void riceviMossa(){
 		while(true){
 			for(Entry<Color, Scanner> entry : scannerGiocatori.entrySet()){
 				if(entry.getValue().hasNext()){
 					String mossa = entry.getValue().next();
 					String [] parametri=mossa.split("#");
+					PrintWriter giocaRisposta= writerGiocatori.get(entry.getKey());
 					switch(parametri[0]){
+					
 					case "COMPRA_TESSERA":
 						try {
 							controller.acquistaTessera(parametri[1]);
-							writerGiocatori.get(entry.getKey()).write("OK\n");
 						} catch (Exception e) {
-							writerGiocatori.get(entry.getKey()).write("EXCEPTION#"+e.getMessage()+"\n");
+							giocaRisposta.write("EXCEPTION#"+e.getMessage()+"\n");
 						}
 						break;
+						
 					case "SELEZ_POSIZ":
-
+						//TODO
 						break;
+						
 					case "SPOSTA_PASTORE":
 						try {
 							controller.spostaPedina(parametri[1]);
-							writerGiocatori.get(entry.getKey()).write("OK\n");
 						} catch (Exception e) {
-							writerGiocatori.get(entry.getKey()).write("EXCEPTION#"+e.getMessage()+"\n");
+							giocaRisposta.write("EXCEPTION#"+e.getMessage()+"\n");
 						}
 						break;
+						
 					case "SPOSTA_PECORA":
 						try {
 							controller.spostaPecora(parametri[1]);
-							writerGiocatori.get(entry.getKey()).write("OK\n");
 						} catch (Exception e) {
-							writerGiocatori.get(entry.getKey()).write("EXCEPTION#"+e.getMessage()+"\n");
+							giocaRisposta.write("EXCEPTION#"+e.getMessage()+"\n");
 						}
 						break;
+						
 					case "SPOSTA_PECORA_NERA":
 						try {
 							controller.spostaPecoraNera(parametri[1]);
-							writerGiocatori.get(entry.getKey()).write("OK\n");
 						} catch (Exception e) {
-							writerGiocatori.get(entry.getKey()).write("EXCEPTION#"+e.getMessage()+"\n");
+							giocaRisposta.write("EXCEPTION#"+e.getMessage()+"\n");
 						}
+						break;
+						
+					case "MOSSA_POSSIBILE":
+						try {
+							Boolean risp = controller.mossaPossibile(TipoMossa.parseInput(parametri[1]));
+							giocaRisposta.write("OK#"+risp.toString());
+						} catch (Exception e) {
+							giocaRisposta.write("ERROR#"+e.getMessage()+"\n");
+						}
+						break;
+						
+					case "INIZIA_PARTITA":
+						controller.iniziaPartita();
 						break;
 					default:
 						break;
 					}
+					giocaRisposta.flush();
 				}
 			}
 		}
-
 	}
 	
 	public void riceviComando(){
@@ -87,10 +107,12 @@ public class ViewSocket implements IFView {
 				|| (socketGiocatori.size()>=2 && System.currentTimeMillis()-inizioAttesa > 120000)
 				)){
 			Socket nuovoGiocatore =serverSocket.accept();
+			System.out.println("Accettata connessione da IP: "+nuovoGiocatore.getInetAddress());
 			Scanner in = new Scanner(nuovoGiocatore.getInputStream());
 			PrintWriter out = new PrintWriter(nuovoGiocatore.getOutputStream());
 			in.useDelimiter("\n");
 			Color colore=controller.creaGiocatore(in.next());
+			System.out.println("Colore: "+colore);
 			socketGiocatori.put(colore, nuovoGiocatore);
 			scannerGiocatori.put(colore,in);
 			writerGiocatori.put(colore, out);
@@ -150,7 +172,11 @@ public class ViewSocket implements IFView {
 
 	@Override
 	public void spostaPastore(String s, String d, Color colore) {
-		// TODO Auto-generated method stub
+		//Deve effettuare il movimento del pastore su tutti i client collegati alla partita!
+		for(Entry<Color, PrintWriter> giocatore :writerGiocatori.entrySet()){
+			giocatore.getValue().println("SPOSTA_PASTORE#"+s+"#"+d+"#"+giocatore.getKey().getRGB());
+			giocatore.getValue().flush();
+		}
 
 	}
 
@@ -192,7 +218,11 @@ public class ViewSocket implements IFView {
 
 	@Override
 	public void setGiocatoreCorrente(Color colore) {
-		// TODO Auto-generated method stub
+		//Comunico a tutti i client qual'è il giocatore corrente!!
+		for(Entry<Color,PrintWriter> g : writerGiocatori.entrySet()){
+			g.getValue().println("GIOC_CORR#"+g.getKey().getRGB());
+			g.getValue().flush();
+		}
 
 	}
 
