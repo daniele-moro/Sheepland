@@ -2,6 +2,7 @@ package it.polimi.iodice_moro.view;
 
 
 import it.polimi.iodice_moro.controller.Controller;
+import it.polimi.iodice_moro.controller.IFController;
 import it.polimi.iodice_moro.model.Giocatore;
 import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.TipoMossa;
@@ -12,6 +13,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -41,7 +43,7 @@ import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
-public class View {
+public class View implements IFView {
 	
 	public class AzioniBottoni implements ActionListener{
 
@@ -118,7 +120,7 @@ public class View {
 	private JLabel lblOutput = new JLabel();
 	
 	private TipoMossa mossaAttuale;
-	private Controller controller;
+	private IFController controller;
 	
 	private AzioniMouse mouse;
 	
@@ -293,6 +295,10 @@ public class View {
 	}
 	
 	//INIZIALIZZA TUTTI GLI OGGETTI CHE SONO POSIZIONATI SOPRA LA MAPPA E I GIOCATORI
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFView#initMappa()
+	 */
+	@Override
 	public void initMappa(){
 		//Visualizzo tutte le pecore
 		//File da passare al BackgroundedLabel per l'immagine di sfondo
@@ -334,6 +340,7 @@ public class View {
 			lbltemp2 = new JLabel();
 			lbltemp2.setText(gioc.get(colore)+" SOLDI: 20");
 			lbltemp2.setBackground(colore);
+			lbltemp2.setFont(new Font("Arial", Font.PLAIN, 12));
 			lbltemp2.setOpaque(true);
 			lbltemp2.setBorder(new MatteBorder(10,10,10,10, colore));
 			c.gridx=0;
@@ -367,50 +374,56 @@ public class View {
 		controller.iniziaPartita();
 	}
 	
-	/**
-	 * Cambio giocatore attivo, attivando la label corrispondente al giocatore che deve giocare
-	 * @param color Colore del giocatore che deve giocare
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFView#cambiaGiocatore(java.awt.Color)
 	 */
+	@Override
 	public void cambiaGiocatore(Color color){
 		//Cambio l'enable delle tessere
 		for(Color col: giocatori.keySet()){
 			if(col.equals(color)){
 				giocatori.get(col).setEnabled(true);
+				giocatori.get(col).setFont(new Font("Arial", Font.BOLD, 20));
+				giocatori.get(col).setText(giocatori.get(col).getText());
 				giocatoreCorrente=color;
 			}else{
 				giocatori.get(col).setEnabled(false);
+				giocatori.get(col).setFont(new Font("Arial", Font.PLAIN, 12));
+				giocatori.get(col).setText(giocatori.get(col).getText());
 			}
 		}
 	}
 	
-	/**
-	 * Attiva il giocatore collegato alla schermata di questa istanza
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFView#attivaGiocatore()
 	 */
+	@Override
 	public void attivaGiocatore(){
 		btnCompraTessera.setEnabled(true);
 		btnSpostaPastore.setEnabled(true);
 		btnSpostaPecora.setEnabled(true);
 	}
-	/**
-	 * Disattiva il giocatore collegato alla schermata di questa istanza
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFView#disattivaGiocatore()
 	 */
+	@Override
 	public void disattivaGiocatore(){
 		btnCompraTessera.setEnabled(false);
 		btnSpostaPastore.setEnabled(false);
 		btnSpostaPecora.setEnabled(false);
 	}
 	
-	/**
-	 * Aggiunta del cancello normale alla strada collegata all'ID
-	 * @param stradaID
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFView#addCancelloNormale(java.lang.String)
 	 */
+	@Override
 	public void addCancelloNormale(String stradaID){
 		mettiCancello(stradaID, new ImageIcon("immagini/cancello.png"));
 	}
-	/**
-	 * Aggiunta del cancello finale alla strada collegata all'ID
-	 * @param stradaID
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFView#addCancelloFinale(java.lang.String)
 	 */
+	@Override
 	public void addCancelloFinale(String stradaID){
 		mettiCancello(stradaID, new ImageIcon("immagini/cancello_finale.png"));
 	}
@@ -462,11 +475,10 @@ public class View {
 		}
 	}
 	
-	/**
-	 * Animazione di spostamento della pecora bianca
-	 * @param s Id della regione da cui spostare la pecora
-	 * @param d ID della regione su cui spostare la pecora
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFView#spostaPecoraBianca(java.lang.String, java.lang.String)
 	 */
+	@Override
 	public void spostaPecoraBianca(String s, String d){
 		Point sorg= posizioniRegioni.get(s);
 		Point dest= posizioniRegioni.get(d);
@@ -474,6 +486,10 @@ public class View {
 		spostaPecora(sorg, dest, new ImageIcon("immagini/pecora_bianca.png"));
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFView#spostaPastore(java.lang.String, java.lang.String, java.awt.Color)
+	 */
+	@Override
 	public void spostaPastore(String s, String d, Color colore){
 		ImageIcon img = null;
 		if(colore.equals(new Color(255,0,0))){
@@ -502,11 +518,10 @@ public class View {
 		pedGiocatore.setBounds(posizioniCancelli.get(d).x, posizioniCancelli.get(d).y, img.getIconWidth(), img.getIconHeight());
 	}
 	
-	/**
-	 * Animazione di spostamento della pecora nera
-	 * @param s ID della regione da cui spostare la pecora
-	 * @param d ID della regione su cui spostare la pecora
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFView#spostaPecoraNera(java.lang.String, java.lang.String)
 	 */
+	@Override
 	public void spostaPecoraNera(String s, String d){
 		mappa.remove(pecoraNera);
 		Point sorg= posizioniRegioni.get(s);
@@ -520,11 +535,10 @@ public class View {
 		pecoraNera.setBounds(dest2.x, dest2.y, pecoraNera.getWidth(), pecoraNera.getHeight());
 	}
 	
-	/**
-	 * Cambia il numero di pecore della regione con ID passato come parametro
-	 * @param idReg Id della regione di cui cambiare il numero di pecore
-	 * @param num Numero di pecore presenti nella regione
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFView#modificaQtaPecora(java.lang.String, int)
 	 */
+	@Override
 	public void modificaQtaPecora(String idReg, int num){
 		JLabel lblPecore =lblRegioni.get(idReg);
 		if(num>0){
@@ -537,22 +551,29 @@ public class View {
 		mappa.repaint();
 	}
 	
-	/**
-	 * Cambia il numero di tessere del terreno passato come parametro
-	 * @param tess Terreno di cui cambiare il numero di tessere
-	 * @param num Numero di tessere di quel terreno
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFView#modQtaTessera(it.polimi.iodice_moro.model.TipoTerreno, int)
 	 */
+	@Override
 	public void modQtaTessera(TipoTerreno tess, int num){
 		lblTessere.get(tess).setText(Integer.toString(num));
 		frame.repaint();
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFView#modSoldiGiocatore(java.awt.Color, int)
+	 */
+	@Override
 	public void modSoldiGiocatore(Color coloreGiocatoreDaModificare, int soldi) {
 		Map<Color,String> mappaColoriGiocatori=controller.getGiocatori();
 		giocatori.get(coloreGiocatoreDaModificare).setText(mappaColoriGiocatori.get(coloreGiocatoreDaModificare)+" SOLDI: "+soldi);
 		giocatori.get(coloreGiocatoreDaModificare).repaint();
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFView#incPrezzoTessera(it.polimi.iodice_moro.model.TipoTerreno)
+	 */
+	@Override
 	public void incPrezzoTessera(TipoTerreno tess){
 		JLabel lblTessera = (JLabel)lblTessere.get(tess).getParent();
 		int posx = 20* (lblTessera.getComponentCount()-1);
@@ -567,6 +588,10 @@ public class View {
 		lblDanaro.setBounds(posx, 0, imgDanaro.getIconWidth(), imgDanaro.getIconHeight());
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFView#visualizzaPunteggi(java.util.Map)
+	 */
+	@Override
 	public void visualizzaPunteggi(Map<Giocatore, Integer> punteggiOrdinati) {		
 		JTable tabellaPunteggi = new JTable(punteggiOrdinati.size(),2);
 		int row = 0;
@@ -600,10 +625,10 @@ public class View {
 		return posizioniCancelli;
 	}
 
-	/**
-	 * Serve per settare, da parte del controller il giocatore corrente
-	 * @param colore
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFView#setGiocatoreCorrente(java.awt.Color)
 	 */
+	@Override
 	public void setGiocatoreCorrente(Color colore) {
 		giocatoreCorrente=colore;
 	}

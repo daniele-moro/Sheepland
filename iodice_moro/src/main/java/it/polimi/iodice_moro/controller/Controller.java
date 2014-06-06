@@ -7,10 +7,10 @@ import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.Strada;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
+import it.polimi.iodice_moro.view.IFView;
 import it.polimi.iodice_moro.view.ThreadAnimazionePastore;
 import it.polimi.iodice_moro.view.ThreadAnimazionePecoraBianca;
 import it.polimi.iodice_moro.view.ThreadAnimazionePecoraNera;
-import it.polimi.iodice_moro.view.View;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -28,10 +28,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
-
-public class Controller {
+public class Controller implements IFController {
 	
 	/**
 	 * Istanza del model di StatoPartita.
@@ -42,14 +39,14 @@ public class Controller {
 
 	private static final Color[] vettColori = {new Color(255,0,0), new Color(0,255,0), new Color(0,0,255), new Color(255,255,0)};
 	
-	private View view;
+	private IFView view;
 	
 	/**
 	 * Costruttore del controller del giocatore.
 	 * @param statopartita Istanza statopartita.
 	 * @param giocatore Istanza del giocatore gestito.
 	 */
-	public Controller(View view) {
+	public Controller(IFView view) {
 		this.statoPartita = new StatoPartita();
 		this.view=view;
 	}
@@ -117,6 +114,10 @@ public class Controller {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#spostaPecora(java.lang.String)
+	 */
+	@Override
 	public void spostaPecora(String idRegione) throws Exception{
 		Regione regSorg=statoPartita.getRegioneByID(idRegione);
 		if(regSorg == null){
@@ -153,6 +154,10 @@ public class Controller {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#spostaPecoraNera(java.lang.String)
+	 */
+	@Override
 	public void spostaPecoraNera(String idRegPecoraNera) throws Exception{
 		Regione regionePecora=statoPartita.getRegioneByID(idRegPecoraNera);
 		Regione regAdiacente=statoPartita.getAltraRegione(regionePecora, statoPartita.getGiocatoreCorrente().getPosition());
@@ -198,6 +203,10 @@ public class Controller {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#acquistaTessera(java.lang.String)
+	 */
+	@Override
 	public void acquistaTessera(String idRegione) throws Exception{
 		Regione reg = statoPartita.getRegioneByID(idRegione);
 		if(reg==null){
@@ -251,6 +260,10 @@ public class Controller {
 		giocatore.setPosition(nuovastrada);
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#spostaPedina(java.lang.String)
+	 */
+	@Override
 	public void spostaPedina(String idStrada) throws Exception{
 		Strada oldStreet = statoPartita.getGiocatoreCorrente().getPosition();
 		Strada newStreet = statoPartita.getStradaByID(idStrada);
@@ -371,16 +384,18 @@ public class Controller {
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#creaGiocatore(java.lang.String)
+	 */
+	@Override
 	public void creaGiocatore(String nome){
 		statoPartita.addGiocatore(new Giocatore(nome));
 	}
 	
-	/**
-	 * Setta la posizione del pastore dato il suo colore che lo identifica univocamente
-	 * @param colore
-	 * @param idStrada
-	 * @throws Exception 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#setStradaGiocatore(java.awt.Color,java.lang.String)
 	 */
+	@Override
 	public void setStradaGiocatore(Color colore, String idStrada) throws Exception{
 		Strada strada = statoPartita.getStradaByID(idStrada);
 		for(Giocatore g: statoPartita.getGiocatori()){
@@ -411,12 +426,10 @@ public class Controller {
 		checkSpostaPecoraNera();
 	}
 	
-	/**
-	 * Metodo nel caso di due giocatori in cui ogni pastore ha due pedine
-	 * @param colore
-	 * @param idStrada
-	 * @param idStrada2
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#setStradaGiocatore(java.awt.Color, java.lang.String, java.lang.String)
 	 */
+	@Override
 	public void setStradaGiocatore(Color colore, String idStrada, String idStrada2){
 		Strada strada = statoPartita.getStradaByID(idStrada);
 		Strada strada2 = statoPartita.getStradaByID(idStrada2);
@@ -428,11 +441,10 @@ public class Controller {
 		}
 	}
 	
-	/**
-	 * Stabilisce se una mossa può essere effettuata.
-	 * @param mossaDaEffettuare Mossa che il giocatore vuole effettuare.
-	 * @return Ritorna true in caso positivo, false altrimenti.
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#mossaPossibile(it.polimi.iodice_moro.model.TipoMossa)
 	 */
+	@Override
 	public boolean mossaPossibile(TipoMossa mossaDaEffettuare) {
 		Giocatore giocatoreCorrente=statoPartita.getGiocatoreCorrente();
 		TipoMossa ultimaMossa=giocatoreCorrente.getUltimaMossa();
@@ -456,6 +468,10 @@ public class Controller {
 	 * Inoltre se è il turno finale ed è l'ultimo giocatore mette finePartita().
 	 * Ritorna il prossimo giocatore.
 	 */
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#checkTurnoGiocatore(it.polimi.iodice_moro.model.TipoMossa)
+	 */
+	@Override
 	public Giocatore checkTurnoGiocatore(TipoMossa mossaFatta) {
 		/*
 		 * Controllo se il giocatore non può fare più mosse
@@ -528,6 +544,10 @@ public class Controller {
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#iniziaPartita()
+	 */
+	@Override
 	public void iniziaPartita(){
 		List<Regione> listaRegioni = statoPartita.getRegioni();
 		//Inizializzazione delle pecore nelle regioni
@@ -581,10 +601,10 @@ public class Controller {
 		*/
 	//AGGIUNTE!!!
 	//TODO
-	/**
-	 * Ritorna l'elenco delle posizioni di tutte le regioni, con i colori loro assegnati
-	 * @return
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#getPosRegioni()
 	 */
+	@Override
 	public Map<String, Point> getPosRegioni() {
 		Map<String,Point> posRegioni = new HashMap<String,Point>();
 		for(Regione r: statoPartita.getRegioni()){
@@ -593,6 +613,10 @@ public class Controller {
 		return posRegioni;
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#getPosStrade()
+	 */
+	@Override
 	public Map<String, Point> getPosStrade() {
 		Map<String,Point> posStrade = new HashMap<String,Point>();
 		for(Strada s: statoPartita.getStrade()){
@@ -602,10 +626,10 @@ public class Controller {
 	}
 
 
-	/**
-	 * Ritorna gli ID delle due regioni adiacenti alla strada in cui si trova il pastore
-	 * @return Ritorna la lista di ID delle regioni adiacenti alla strada in cui si trova il pastore (giocatore corrente)
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#getIDRegioniAd()
 	 */
+	@Override
 	public List<String >getIDRegioniAd(){
 		List<String> regAD = new ArrayList<String>();
 		List<Regione> reg=statoPartita.getRegioniADStrada(statoPartita.getGiocatoreCorrente().getPosition());
@@ -615,14 +639,16 @@ public class Controller {
 		}
 		return regAD;
 	}
-	public void setView(View view2) {
+
+	
+	public void setView(IFView view2) {
 		this.view=view2;
 	}
 	
-	/**
-	 * Ritorna i colori dei giocatori e i loro nomi
-	 * @return
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#getGiocatori()
 	 */
+	@Override
 	public Map<Color, String> getGiocatori() {
 		Map<Color, String> gioc= new HashMap<Color,String>();
 		for(Giocatore g:statoPartita.getGiocatori()){

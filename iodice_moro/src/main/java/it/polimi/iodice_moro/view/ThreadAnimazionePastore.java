@@ -4,12 +4,12 @@ import java.awt.Color;
 
 public class ThreadAnimazionePastore implements Runnable {
 
-	private View view;
+	private IFView view;
 	private String ids;
 	private String idd;
 	private Color colore;
 	
-	public ThreadAnimazionePastore(View view2, String ids, String idd, Color colore){
+	public ThreadAnimazionePastore(IFView view2, String ids, String idd, Color colore){
 		this.view=view2;
 		this.idd=idd;
 		this.ids=ids;

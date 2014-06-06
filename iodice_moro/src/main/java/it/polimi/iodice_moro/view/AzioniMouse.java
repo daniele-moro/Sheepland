@@ -1,6 +1,7 @@
 package it.polimi.iodice_moro.view;
 
 import it.polimi.iodice_moro.controller.Controller;
+import it.polimi.iodice_moro.controller.IFController;
 import it.polimi.iodice_moro.model.TipoMossa;
 
 import java.awt.Cursor;
@@ -24,10 +25,10 @@ class AzioniMouse extends MouseAdapter{
 	private String reg2;
 
 	View view;
-	Controller controller;
+	IFController controller;
 
 	BufferedImage image;
-	public AzioniMouse(File image, View view, Controller controller){
+	public AzioniMouse(File image, View view, IFController controller){
 		super();
 		reg1="";
 		reg2="";
