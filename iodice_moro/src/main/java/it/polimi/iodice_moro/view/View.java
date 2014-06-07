@@ -7,34 +7,27 @@ import it.polimi.iodice_moro.model.Giocatore;
 import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
+import it.polimi.iodice_moro.network.ControllerSocket;
+import it.polimi.iodice_moro.network.ViewSocket;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -124,7 +117,7 @@ public class View implements IFView {
 	
 	private AzioniMouse mouse;
 	
-	public View(Controller controller){
+	public View(IFController controller){
 		this.controller=controller;
 		mossaAttuale=TipoMossa.SELEZ_POSIZ;
 		initGUI();
@@ -360,19 +353,111 @@ public class View implements IFView {
 
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		//CREO tutte le istanze che mi servono per far funzionare il gioco
-		StatoPartita statopartita= new StatoPartita();
 		
-		Controller controller = new Controller(statopartita);
+		/*		Controller controller = new Controller(statopartita);
 		controller.creaGiocatore("prova");
 		controller.creaGiocatore("prova 2");
 		controller.creaGiocatore("prova 3");
-		controller.creaGiocatore("prova 4");
+		controller.creaGiocatore("prova 4");*/
+		StatoPartita statopartita= new StatoPartita();
+		IFController controller;
+		IFView view;
+		String[] optionsModalita = {"Online","Offline"};
+		String[] optionsRete = {"Client", "Server"};
+		String ip = "";
+		String porta = "";
+		String nome = "";
+		int sceltaModalita = JOptionPane.showOptionDialog(frame,
+				"Vuoi giocare in modalità Online o Offline?",
+				"Scelta modalità di gioco",
+				JOptionPane.YES_NO_OPTION,
+				JOptionPane.QUESTION_MESSAGE,
+				null,     //do not use a custom Icon
+				optionsModalita,  //the titles of buttons
+				optionsModalita[0]); //default button title
 		
-		View view = new View(controller);
-		controller.setView(view);
-		
+		switch (sceltaModalita) {
+		//Online
+		case 0:
+			int sceltaRete = JOptionPane.showOptionDialog(frame,
+					"Vuoi essere cliente o server?",
+					"Scelta modalità di gioco",
+					JOptionPane.YES_NO_OPTION,
+					JOptionPane.QUESTION_MESSAGE,
+					null,
+					optionsRete,
+					optionsRete[0]);
+			switch (sceltaRete) {
+			//Client
+			case 0:
+				while(ip.equals("")) {
+					ip = (String)JOptionPane.showInputDialog(
+							frame,
+							"Inserisci Ip",
+							"Inserisci IP",
+							JOptionPane.PLAIN_MESSAGE,
+							null,
+							null,
+							"127.0.0.1");
+				}
+				while(porta.equals("")) {
+					porta = (String)JOptionPane.showInputDialog(
+							frame,
+							"Inserisci Porta a cui connettersi",
+							"Inserisci Porta",
+							JOptionPane.PLAIN_MESSAGE,
+							null,
+							null,
+							"12345");
+				}
+				while(nome.equals("")) {
+					nome = (String)JOptionPane.showInputDialog(
+							frame,
+							"Nome",
+							"Inserisci nome del tuo giocatore",
+							JOptionPane.PLAIN_MESSAGE,
+							null,
+							null,
+							"");
+				}
+				controller = new ControllerSocket(ip, Integer.parseInt(porta));
+				view = new View(controller);
+				controller.creaGiocatore(nome);
+				break;
+			//Server
+			case 1:
+				while(porta.equals("")) {
+					porta = (String)JOptionPane.showInputDialog(
+							frame,
+							"Inserisci Porta su cui mettersi in ascolto ",
+							"Inserisci Porta",
+							JOptionPane.PLAIN_MESSAGE,
+							null,
+							null,
+							"12345");
+				}
+				controller = new Controller(statopartita);
+				view = new ViewSocket(controller, Integer.parseInt(porta));
+				view.attendiGiocatori();
+				break;
+				
+			default:
+				throw new Exception();
+			}
+			
+		//Offline	
+		case 1:
+			controller = new Controller(statopartita);
+			view = new View(controller);
+			break;
+		default:
+			throw new Exception();
+		}
+		//controller.creaGiocatore("prova");
+		//controller.creaGiocatore("prova");
+		controller.setView(view);		
 		controller.iniziaPartita();
 		
 	}
@@ -646,6 +731,12 @@ public class View implements IFView {
 
 	public JFrame getFrame() {
 		return frame;
+	}
+
+	@Override
+	public void attendiGiocatori() {
+		// TODO Auto-generated method stub
+		
 	}
 
 

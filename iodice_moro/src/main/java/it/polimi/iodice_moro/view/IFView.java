@@ -5,6 +5,7 @@ import it.polimi.iodice_moro.model.Giocatore;
 import it.polimi.iodice_moro.model.TipoTerreno;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.util.Map;
 
 public interface IFView {
@@ -83,5 +84,7 @@ public interface IFView {
 	 * @param colore
 	 */
 	public abstract void setGiocatoreCorrente(Color colore);
+	
+	public abstract void attendiGiocatori() throws IOException;
 
 }

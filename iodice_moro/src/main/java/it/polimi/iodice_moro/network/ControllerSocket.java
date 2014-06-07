@@ -125,7 +125,7 @@ public class ControllerSocket implements IFController{
 
 	@Override
 	public Color creaGiocatore(String nome) {
-		output.print(nome+"\n");
+		output.print("CREA_GIOCATORE#"+nome+"\n");
 		output.flush();
 		return null;
 	}
@@ -133,7 +133,16 @@ public class ControllerSocket implements IFController{
 	@Override
 	public void setStradaGiocatore(Color colore, String idStrada,
 			String idStrada2) {
-		// TODO Auto-generated method stub
+		output.println("SET_STRADE_GIOCATORE#"+colore.toString()+idStrada+idStrada2);
+		output.flush();
+		String risposta=input.next();
+		String[] parametri = risposta.split("#");
+		switch(parametri[0]) {
+		case "OK":
+			System.out.println("OK"+parametri[1]);
+		case "ERROR":
+			System.out.println("ERRORE"+parametri[1]);
+		}
 		
 	}
 
@@ -199,7 +208,16 @@ public class ControllerSocket implements IFController{
 	@Override
 	public void setStradaGiocatore(Color colore, String idStrada)
 			throws Exception {
-		// TODO Auto-generated method stub
+		output.println("SET_STRADA_GIOCATORE#"+colore+"#".toString()+"#"+idStrada);
+		output.flush();
+		String risposta=input.next();
+		String[] parametri = risposta.split("#");
+		switch(parametri[0]) {
+		case "OK":
+			System.out.println("OK"+parametri[1]);
+		case "ERROR":
+			System.out.println("ERRORE"+parametri[1]);
+		}
 		
 	}
 

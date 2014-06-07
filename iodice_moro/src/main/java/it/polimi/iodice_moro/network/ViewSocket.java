@@ -1,6 +1,6 @@
 package it.polimi.iodice_moro.network;
 
-import it.polimi.iodice_moro.controller.Controller;
+import it.polimi.iodice_moro.controller.IFController;
 import it.polimi.iodice_moro.model.Giocatore;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
@@ -8,7 +8,6 @@ import it.polimi.iodice_moro.view.IFView;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -21,7 +20,7 @@ import java.util.Scanner;
 //Utilizzata dal controller, quindi dal SERVER
 public class ViewSocket implements IFView {
 	
-	private Controller controller;
+	private IFController controller;
 	ServerSocket serverSocket;
 	Map<Color, Socket> socketGiocatori = new HashMap<Color, Socket>();
 	Map<Color, Scanner> scannerGiocatori = new HashMap<Color,Scanner>();
@@ -87,6 +86,10 @@ public class ViewSocket implements IFView {
 					case "INIZIA_PARTITA":
 						controller.iniziaPartita();
 						break;
+					case "CREA_GIOCATORE":
+						controller.creaGiocatore(parametri[1]);
+						giocaRisposta.write("OK#");
+						break;
 					default:
 						break;
 					}
@@ -122,9 +125,16 @@ public class ViewSocket implements IFView {
 		//e con il colore inserisco il socket nella hashmap
 	}
 
-	public ViewSocket(Controller controller) throws IOException {
-		serverSocket = new ServerSocket(12345);
+	
+	public ViewSocket(IFController controller, int porta) throws IOException {
+		serverSocket = new ServerSocket(porta);
 		this.controller=controller;
+		
+	}
+	
+
+	public ViewSocket(IFController controller) throws IOException {
+		this(controller, 12345);
 		
 	}
 
