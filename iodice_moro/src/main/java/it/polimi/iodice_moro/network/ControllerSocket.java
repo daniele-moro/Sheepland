@@ -3,6 +3,7 @@ package it.polimi.iodice_moro.network;
 import it.polimi.iodice_moro.controller.IFController;
 import it.polimi.iodice_moro.model.Giocatore;
 import it.polimi.iodice_moro.model.TipoMossa;
+import it.polimi.iodice_moro.model.TipoTerreno;
 import it.polimi.iodice_moro.view.IFView;
 import it.polimi.iodice_moro.view.ThreadAnimazionePastore;
 import it.polimi.iodice_moro.view.ThreadAnimazionePecoraBianca;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -33,6 +35,7 @@ public class ControllerSocket implements IFController{
 	public ControllerSocket(String host, int port) throws UnknownHostException, IOException{
 		//Apriamo la connessione
 		socket = new Socket(host, port);
+		System.out.println("Apertura connessione");
 		output = new PrintWriter(socket.getOutputStream());
 		input = new Scanner(socket.getInputStream());
 		input.useDelimiter("\n");
@@ -42,7 +45,48 @@ public class ControllerSocket implements IFController{
 	 * Metodo invocato quando non è il turno di questa istanza, usato per visualizzare le mosse sulla view
 	 */
 	public void attesaTurno(){
-		
+		while(true){
+			System.out.println("attesa input");
+			if(input.hasNext()){
+				System.out.println("ricevuto qualcosa");
+				String risposta = input.next();
+				String[] parametri= risposta.split("#");
+				switch(parametri[0]){
+				case "MOD_QTA_TESS":
+
+					TipoTerreno tess= TipoTerreno.parseInput(parametri[1]);
+					int num = Integer.parseInt(parametri[2]);
+					Color colore = new Color(Integer.parseInt(parametri[3]));
+
+					view.modQtaTessera(tess, num,colore);
+					break;
+
+				case "GIOC_CORR":
+					colore = new Color(Integer.parseInt(parametri[1]));
+					view.setGiocatoreCorrente(colore);
+					System.out.println("INIZIATA LA PARTITA!!");
+					return;
+
+				case "SPOSTA_PECORA_BIANCA":
+					break;
+
+				case "SPOSTA_PECORA_NERA":
+					break;
+
+				case "SPOSTA_PASTORE":
+					break;
+
+				case "ATTIVA":
+					view.setGiocatoreCorrente(new Color(Integer.parseInt(parametri[1])));
+					view.attivaGiocatore();
+					return;
+				case "DISATTIVA":
+					view.setGiocatoreCorrente(new Color(Integer.parseInt(parametri[1])));
+					view.disattivaGiocatore();
+				}
+
+			}
+		}
 	}
 	
 	public ControllerSocket(String host) throws UnknownHostException, IOException{
@@ -57,7 +101,7 @@ public class ControllerSocket implements IFController{
 		String risposta=input.next();
 		String[] parametri = risposta.split("#");
 		switch(parametri[0]){
-		case "SPOSTA_PECORA":
+		case "SPOSTA_PECORA_BIANCA":
 			ThreadAnimazionePecoraBianca r = new ThreadAnimazionePecoraBianca(view, parametri[1], parametri[2]);
 			Thread t = new Thread(r);
 			t.start();
@@ -94,6 +138,7 @@ public class ControllerSocket implements IFController{
 		String risposta=input.next();
 		String[] parametri = risposta.split("#");
 		switch(parametri[0]){
+		//DOVREBBE MODIFICARE LA QTA TESSERA
 		case "OK":
 			System.out.println("TUTTO OK");
 			break;
@@ -125,11 +170,15 @@ public class ControllerSocket implements IFController{
 
 	@Override
 	public Color creaGiocatore(String nome) {
-		output.print("CREA_GIOCATORE#"+nome+"\n");
+		System.out.println("NOME:" + nome);
+		output.print(nome+"\n");
 		output.flush();
+		System.out.println("QUI");
 		return null;
 	}
-
+	
+	
+	//METODO INUTILE!!
 	@Override
 	public void setStradaGiocatore(Color colore, String idStrada,
 			String idStrada2) {
@@ -166,7 +215,10 @@ public class ControllerSocket implements IFController{
 	public void iniziaPartita() {
 		output.println("INIZIA_PARTITA");
 		output.flush();
-		String risposta=input.next();
+		System.out.println("ATTESA CHE SIA IL MIO TURNO PER SELEZIONARE LA POSIZIONE");
+		attesaTurno();
+		/*String risposta=input.next();
+		System.out.println("è il mio turno!!" + risposta);
 		String[] parametri = risposta.split("#");
 		switch(parametri[0]){
 		case "GIOC_CORR":
@@ -177,19 +229,50 @@ public class ControllerSocket implements IFController{
 		case "ERROR":
 			System.out.println("ERRORE"+parametri[1]);
 		}
-		
+		*/
 	}
 
 	@Override
 	public Map<String, Point> getPosRegioni() {
-		// TODO Auto-generated method stub
-		return null;
+		System.out.println("RICHEISTA POS REGIONI");
+		output.print(new String("POS_REGIONI")+"\n");
+		System.out.println("Inviata richiesta");
+		output.flush();
+		Map<String,Point> posRegioni = new HashMap<String,Point>();
+		System.out.println("attesa risposta");
+		//LETTURA DELLA RISPOSTA
+		String risposta = input.next();
+		System.out.println("rispostar icveuto ");
+		String[] parametri = risposta.split("#");
+		System.out.println(risposta);
+		while(!parametri[0].equals("END")){
+			posRegioni.put(parametri[0], new Point(Integer.parseInt(parametri[1]),Integer.parseInt(parametri[2])));
+			risposta = input.next();
+			parametri = risposta.split("#");
+		}
+		
+		return posRegioni;
+
 	}
 
 	@Override
 	public Map<String, Point> getPosStrade() {
-		// TODO Auto-generated method stub
-		return null;
+		System.out.println("RICHIESTA POS STRADE");
+		output.print("POS_STRADE\n");
+		output.flush();
+		Map<String,Point> posStrade = new HashMap<String,Point>();
+		//LETTURA DELLA RISPOSTA
+		String risposta = input.next();
+		String[] parametri = risposta.split("#");
+		System.out.println(risposta);
+		while(!parametri[0].equals("END")){
+			posStrade.put(parametri[0], new Point(Integer.parseInt(parametri[1]),Integer.parseInt(parametri[2])));
+			risposta = input.next();
+			parametri = risposta.split("#");
+			System.out.println(risposta);
+		}
+		
+		return posStrade;
 	}
 
 	@Override
@@ -201,14 +284,26 @@ public class ControllerSocket implements IFController{
 
 	@Override
 	public Map<Color, String> getGiocatori() {
-		// TODO Auto-generated method stub
-		return null;
+		output.print("GET_GIOCATORI\n");
+		output.flush();
+		Map<Color,String> giocatori = new HashMap<Color,String>();
+		//LETTURA DELLA RISPOSTA
+		String risposta = input.next();
+		String[] parametri = risposta.split("#");
+		
+		while(!parametri[0].equals("END")){
+			giocatori.put(new Color(Integer.parseInt(parametri[0])),parametri[1]);
+			risposta = input.next();
+			parametri = risposta.split("#");
+		}
+		
+		return giocatori;
 	}
 
 	@Override
-	public void setStradaGiocatore(Color colore, String idStrada)
-			throws Exception {
-		output.println("SET_STRADA_GIOCATORE#"+colore+"#".toString()+"#"+idStrada);
+	public void setStradaGiocatore(Color colore, String idStrada) throws Exception {
+		
+		output.println("SELEZ_POSIZ#"+colore+"#".toString()+"#"+idStrada);
 		output.flush();
 		String risposta=input.next();
 		String[] parametri = risposta.split("#");

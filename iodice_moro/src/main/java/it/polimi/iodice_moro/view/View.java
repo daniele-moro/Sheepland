@@ -125,9 +125,11 @@ public class View implements IFView {
 	
 	//Inizializzazione della GUI
 	public void initGUI(){
+		System.out.println("PRELEVO REGIONI");
 		//Prelevo le posizioni delle regioni ed il loro id memorizzati nel MODEL
 		posizioniRegioni=controller.getPosRegioni();
 		
+		System.out.println("PRELEVO STRADE");
 		//Prelevo le posizioni dei cancelli ed i loro iD memorizzati nel MODEL
 		posizioniCancelli = controller.getPosStrade();
 		
@@ -423,8 +425,8 @@ public class View implements IFView {
 							"");
 				}
 				controller = new ControllerSocket(ip, Integer.parseInt(porta));
-				view = new View(controller);
 				controller.creaGiocatore(nome);
+				view = new View(controller);
 				break;
 			//Server
 			case 1:
@@ -440,24 +442,31 @@ public class View implements IFView {
 				}
 				controller = new Controller(statopartita);
 				view = new ViewSocket(controller, Integer.parseInt(porta));
-				view.attendiGiocatori();
+				//metto in attesa il server dei gioacatori
+				controller.setView(view);
+				((ViewSocket)view).attendiGiocatori();
+				System.out.println("ora attendo mosse!");
+				((ViewSocket)view).riceviMossa();
 				break;
 				
 			default:
 				throw new Exception();
 			}
-			
+		break;
 		//Offline	
 		case 1:
 			controller = new Controller(statopartita);
 			view = new View(controller);
+			controller.creaGiocatore("prova");
+			controller.creaGiocatore("prova");
 			break;
 		default:
 			throw new Exception();
 		}
 		//controller.creaGiocatore("prova");
 		//controller.creaGiocatore("prova");
-		controller.setView(view);		
+		controller.setView(view);	
+		System.out.println("Chiamata a iniziapartita");
 		controller.iniziaPartita();
 		
 	}
@@ -643,7 +652,7 @@ public class View implements IFView {
 	 * @see it.polimi.iodice_moro.view.IFView#modQtaTessera(it.polimi.iodice_moro.model.TipoTerreno, int)
 	 */
 	@Override
-	public void modQtaTessera(TipoTerreno tess, int num){
+	public void modQtaTessera(TipoTerreno tess, int num, Color colore){
 		lblTessere.get(tess).setText(Integer.toString(num));
 		frame.repaint();
 	}

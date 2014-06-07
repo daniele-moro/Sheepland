@@ -52,7 +52,8 @@ class AzioniMouse extends MouseAdapter{
 		System.out.println("X:"+e.getX()+" Y:"+e.getY() + "  COLOR:0x"+ Integer.toHexString(color));
 		
 		if(view.getMossaAttuale().equals(TipoMossa.SELEZ_POSIZ) 
-				&& view.getPosizioniCancelli().keySet().contains(Integer.toHexString(color))){
+				&& view.getPosizioniCancelli().keySet().contains(Integer.toHexString(color)) 
+				&& view.getGiocatoreCorrente()!=null){
 			
 			//STO SELEZIONANDO LE POSIZIONI DEI PASTORI
 			System.out.println("SELEZPOSIZ");
@@ -116,7 +117,7 @@ class AzioniMouse extends MouseAdapter{
 										"Spostamento Pecora",
 										JOptionPane.YES_NO_CANCEL_OPTION,
 										JOptionPane.QUESTION_MESSAGE,
-										new ImageIcon("immagini/question-png"),
+										new ImageIcon("immagini/question_png"),
 										options,
 										options[0]);
 								switch(n){

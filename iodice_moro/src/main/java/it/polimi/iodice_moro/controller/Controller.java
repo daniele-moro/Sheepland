@@ -222,7 +222,8 @@ public class Controller implements IFController {
 		aggiornaTurno(TipoMossa.COMPRA_TESSERA);
 		
 		view.modQtaTessera(statoPartita.getRegioneByID(idRegione).getTipo(),
-				statoPartita.getGiocatoreCorrente().getTesserePossedute().get(statoPartita.getRegioneByID(idRegione).getTipo().toString()));
+				statoPartita.getGiocatoreCorrente().getTesserePossedute().get(statoPartita.getRegioneByID(idRegione).getTipo().toString()),
+				statoPartita.getGiocatoreCorrente().getColore());
 		
 		view.modSoldiGiocatore(statoPartita.getGiocatoreCorrente().getColore(),
 				statoPartita.getGiocatoreCorrente().getSoldi());
@@ -309,6 +310,7 @@ public class Controller implements IFController {
 	 */
 	public void checkSpostaPecoraNera() {
 		int valoreDado = lanciaDado();
+		System.out.println("VALORE DADO: "+valoreDado);
 		/*
 		 * Preleviamo la posizione della pecora nera e le strade che circondano la regione in cui si trova la nera
 		 */
@@ -412,7 +414,47 @@ public class Controller implements IFController {
 	 */
 	@Override
 	public void setStradaGiocatore(Color colore, String idStrada) throws Exception{
+		
 		Strada strada = statoPartita.getStradaByID(idStrada);
+		
+		//Controllo che la posizione non sia già occupata da un altro pastore
+		for(Giocatore g: statoPartita.getGiocatori()){
+			if(g.getColore().equals(colore)){
+				for(Giocatore g2: statoPartita.getGiocatori()){
+					if(g2.getPosition()==strada|| g2.getPosition2()==strada){
+						throw new Exception("non puoi posizionare qui il tuo pastore!!");
+					}
+				}
+			}
+		}
+		//Setto la posizione del giocatore corrente
+		statoPartita.getGiocatoreCorrente().setPosition(strada);
+		
+		//Ora devo trovare il prossimo giocatore
+		statoPartita.setGiocatoreCorrente(statoPartita.getNextGamer());
+		if(statoPartita.getGiocatoreCorrente()!=statoPartita.getGiocatori().get(0)){
+			System.out.println("Selezione del nuovo giocatore che deve selezionare la posizione");
+			view.setGiocatoreCorrente(statoPartita.getGiocatoreCorrente().getColore());
+			
+		}else{
+			//finito inserimento dei giocatori
+			//inizializzo la mappa nelal view
+			view.initMappa();
+			//comunico tutte le tessere che ogni giocatore possiede
+			for(Giocatore g : statoPartita.getGiocatori()){
+				for(Entry<String,Integer> tessere : g.getTesserePossedute().entrySet()){
+					//comunico alla view il tipo di terreno della tessera, 
+					//il numero di tessere di quel tipo ed il colore del giocatore a cui è associata la tessera
+					if(!tessere.getKey().equals(TipoTerreno.SHEEPSBURG.toString())){
+						view.modQtaTessera(TipoTerreno.parseInput(tessere.getKey()), tessere.getValue(), g.getColore());
+					}
+				}
+			}
+			view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
+			checkSpostaPecoraNera();
+			//DA qui inizia la partita vera e propria
+		}
+		/*Strada strada = statoPartita.getStradaByID(idStrada);
 		for(Giocatore g: statoPartita.getGiocatori()){
 			if(g.getColore().equals(colore)){
 				for(Giocatore g2: statoPartita.getGiocatori()){
@@ -432,13 +474,25 @@ public class Controller implements IFController {
 		//inizializzo la Mappa nella view
 		view.initMappa();
 		//inizializzo le tessere del giocatore corrente
-		for(String t:statoPartita.getGiocatoreCorrente().getTesserePossedute().keySet()){
+	/*	for(String t:statoPartita.getGiocatoreCorrente().getTesserePossedute().keySet()){
 			if(!t.equals(TipoTerreno.SHEEPSBURG.toString())){
 				view.modQtaTessera(TipoTerreno.parseInput(t),statoPartita.getGiocatoreCorrente().getTesserePossedute().get(t));
+			}
+		}*/
+		//al posto di modificare le tessere del solo giocatore corrente, comunico le tessere di tutti i giocatori,
+		//cosi facendo anche in rete il metodo può funzionare
+		/*for(Giocatore g : statoPartita.getGiocatori()){
+			for(Entry<String,Integer> tessere : g.getTesserePossedute().entrySet()){
+				//comunico alla view il tipo di terreno della tessera, 
+				//il numero di tessere di quel tipo ed il colore del giocatore a cui è associata la tessera
+				if(!tessere.getKey().equals(TipoTerreno.SHEEPSBURG.toString())){
+					view.modQtaTessera(TipoTerreno.parseInput(tessere.getKey()), tessere.getValue(), g.getColore());
+				}
 			}
 		}
 		view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
 		checkSpostaPecoraNera();
+		//DA QUI INIZIA LA PARTITA VERA E PROPRIA*/
 	}
 	
 	/* (non-Javadoc)
@@ -512,11 +566,24 @@ public class Controller implements IFController {
 				statoPartita.setGiocatoreCorrente(statoPartita.getNextGamer());
 				if(view!=null){
 					view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
-					for(String t:statoPartita.getGiocatoreCorrente().getTesserePossedute().keySet()){
+					/*for(String t:statoPartita.getGiocatoreCorrente().getTesserePossedute().keySet()){
 						if(!t.equals(TipoTerreno.SHEEPSBURG.toString())){
 							view.modQtaTessera(TipoTerreno.parseInput(t),statoPartita.getGiocatoreCorrente().getTesserePossedute().get(t));
 						}
+					}*/
+					//MODIFICATO:
+					//aggiorno le tessere di tutti i giocatori, nel caso online è INUTILE!!!!
+					//TODO DA SISTEMARE!!!!!!!!!!!!
+					for(Giocatore g : statoPartita.getGiocatori()){
+						for(Entry<String,Integer> tessere : g.getTesserePossedute().entrySet()){
+							//comunico alla view il tipo di terreno della tessera, 
+							//il numero di tessere di quel tipo ed il colore del giocatore a cui è associata la tessera
+							if(!tessere.getKey().equals(TipoTerreno.SHEEPSBURG.toString())){
+								view.modQtaTessera(TipoTerreno.parseInput(tessere.getKey()), tessere.getValue(), g.getColore());
+							}
+						}
 					}
+					
 				}
 				//Regione oldNera = statoPartita.getPosPecoraNera();
 				checkSpostaPecoraNera();
@@ -560,7 +627,11 @@ public class Controller implements IFController {
 	 */
 	@Override
 	public void iniziaPartita(){
+		//questo metodo deve venire chiamato una sola volta all'inizio della partita,
+		//quando tutti i gicatori sono pronti a giocare
+		
 		List<Regione> listaRegioni = statoPartita.getRegioni();
+		
 		//Inizializzazione delle pecore nelle regioni
 		for(Regione regione : listaRegioni) {
 			if(!regione.getTipo().equals(TipoTerreno.SHEEPSBURG)) {
@@ -571,14 +642,7 @@ public class Controller implements IFController {
 			}
 		}
 		
-		//Inizializzazione dei colori associati ai giocatori
-/*		for(Giocatore g: statoPartita.getGiocatori()){
-			g.setColore(vettColori[statoPartita.getGiocatori().indexOf(g)]);
-		}*/
-		
-		statoPartita.setGiocatoreCorrente(statoPartita.getGiocatori().get(0));
-		view.setGiocatoreCorrente(statoPartita.getGiocatoreCorrente().getColore());
-		
+		//ASSEGNAMENTO DELLE TESSERE CASUALI
 		//Metto in una lista i possibili valori delle tessere iniziali e li mescolo in modo
 		//da assegnare in modo random e univoco la tessera iniziale ai giocatori.
 		List<TipoTerreno> tipoTessere = new ArrayList<TipoTerreno>();
@@ -589,11 +653,19 @@ public class Controller implements IFController {
 		tipoTessere.add(TipoTerreno.SABBIA);
 		tipoTessere.add(TipoTerreno.COLTIVAZIONI);
 		Collections.shuffle(tipoTessere);
-		
+
 		for(Giocatore g: statoPartita.getGiocatori()) {
 			g.addTessera(tipoTessere.get(statoPartita.getGiocatori().indexOf(g)));
+			//comunico alla view qual'è la tessera che gli è toccata
+			Color colore =  g.getColore();
+			view.modQtaTessera(tipoTessere.get(statoPartita.getGiocatori().indexOf(g)), 1, g.getColore());
 		}
-		
+
+		//Set GIOCATORE CORRENTE
+		System.out.println("SET GIOCATORE CORRENTE!");
+		statoPartita.setGiocatoreCorrente(statoPartita.getGiocatori().get(0));
+		view.setGiocatoreCorrente(statoPartita.getGiocatoreCorrente().getColore());
+
 		//TODO
 		//Chiama il metodo della view per inizializzare l'interfaccia.
 	}
@@ -691,26 +763,22 @@ public class Controller implements IFController {
 		}     
 		return result;   
 	}
-	public static void main(String args[]) {
+	/*public static void main(String args[]) {
 		StatoPartita stato= new StatoPartita();
 		Controller cont=new Controller(stato);
-		ViewSocket view=null;
+		ViewSocket view;
 		try {
 			view = new ViewSocket(cont);
+			cont.setView(view);
+			view.riceviMossa();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("ECCO QUI");
-		cont.setView(view);
-		try {
-			view.attendiGiocatori();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	}*/
 	
+	
+
 	/*public static void main(String args[]) {
     	JFrame frame = new JFrame();
     	List<String> listaNomi = new ArrayList<String>();

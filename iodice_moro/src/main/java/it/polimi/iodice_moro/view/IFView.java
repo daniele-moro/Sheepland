@@ -69,7 +69,7 @@ public interface IFView {
 	 * @param tess Terreno di cui cambiare il numero di tessere
 	 * @param num Numero di tessere di quel terreno
 	 */
-	public abstract void modQtaTessera(TipoTerreno tess, int num);
+	public abstract void modQtaTessera(TipoTerreno tess, int num, Color colore);
 
 	public abstract void modSoldiGiocatore(Color coloreGiocatoreDaModificare,
 			int soldi);
@@ -86,5 +86,6 @@ public interface IFView {
 	public abstract void setGiocatoreCorrente(Color colore);
 	
 	public abstract void attendiGiocatori() throws IOException;
+
 
 }
