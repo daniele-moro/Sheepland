@@ -12,12 +12,13 @@ import it.polimi.iodice_moro.model.Strada;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
 
+import java.rmi.RemoteException;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
-public class ControllerTest {
+public class ControllerTest{
 
 	StatoPartita statoPartitaT;
 	Giocatore giocatoreTest;
@@ -53,8 +54,8 @@ public class ControllerTest {
 	}
 
 	@Test
-	public void testCostruttore() {
-		assertSame(statoPartitaT, controllerTest.getStatoPartita());
+	public void testCostruttore() throws RemoteException {
+			assertSame(statoPartitaT, controllerTest.getStatoPartita());
 	}
 	
 	
@@ -147,12 +148,13 @@ public class ControllerTest {
 	}
 	
 	@Test
-	public void testAcquistaTesseraWithNotEnoughMoneyException() {
+	public void testAcquistaTesseraWithNotEnoughMoneyException() throws RemoteException{
 		TipoTerreno tipo1=regione1.getTipo();
 		//Forzo l'incremento del costo della tessera
 		controllerTest.getStatoPartita().incCostoTessera(tipo1);
 		controllerTest.getStatoPartita().incCostoTessera(tipo1);
-		
+
+
 		giocatoreTest.decrSoldi(giocatoreTest.getSoldi()-1);
 		//Provo ad acquistare tessere quando il giocatore non ha abbastanza soldi per comprare la tessera
 		try {
@@ -249,16 +251,18 @@ public class ControllerTest {
 	}	
 
 	@Test
-	public void testCreaGiocatore() {
+	public void testCreaGiocatore() throws RemoteException {
 		controllerTest.creaGiocatore("Prova", strada0);
+
 		assertEquals("Prova", statoPartitaT.getGiocatori().get(0).getNome());
 		assertEquals(strada0, statoPartitaT.getGiocatori().get(0).getPosition());		
 	}
 	
 	@Test
-	public void testAggiornaTurno() {
+	public void testAggiornaTurno() throws RemoteException {
 		int numMossePrima = giocatoreTest.getNumMosse();
 		controllerTest.aggiornaTurno(TipoMossa.COMPRA_TESSERA);
+
 		//Controllo che dopo aver comprato la tessera si sia aggiornato l'attributo 
 		//ultima mossa, sia aumentato il numero delle mosse fatte di uno e che
 		//si sia aggiornato l'attributo del pastore spostare durante il turno.
@@ -276,7 +280,7 @@ public class ControllerTest {
 	}	
 	
 	@Test
-	public void testCheckTurnoGiocatore() {
+	public void testCheckTurnoGiocatore() throws RemoteException{
 		controllerTest.creaGiocatore("Giocatore2", strada2);
 		statoPartitaT.setPosPecoraNera(regione1);
 		regione1.addPecoraNera();
@@ -314,7 +318,7 @@ public class ControllerTest {
 
 	
 	@Test
-	public void testCheckSpostaPecoraNera() {
+	public void testCheckSpostaPecoraNera() throws RemoteException {
 		regione1.setPecoraNera(true);
 		statoPartitaT.setPosPecoraNera(regione1);
 		controllerTest.checkSpostaPecoraNera();
@@ -348,7 +352,7 @@ public class ControllerTest {
 		
 	}
 	
-	public void testMossaPossibile() {
+	public void testMossaPossibile() throws RemoteException {
 		//Testo alcune delle mosse limite.
 		//Muovere il pastore 3 volte
 		controllerTest.aggiornaTurno(TipoMossa.SPOSTA_PECORA);

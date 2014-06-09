@@ -1,12 +1,18 @@
 package it.polimi.iodice_moro.model;
 
 import java.awt.Color;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Giocatore {
-
+public class Giocatore implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -46069195325859567L;
+	
 	public static final int SOLDI_INIT = 20;
+	public static final int SOLDI_2_GIOCATORI = 30;
 	//ATTRIBUTI
 	private String nome;
 	private int soldi;
@@ -29,9 +35,9 @@ public class Giocatore {
 	/**
 	 * Posizione giocatore nella mappa
 	 */
-	private Strada position;
+	private transient Strada position;
 	
-	private Strada position2;
+	private transient Strada position2;
 	
 	private Color colore;
 	
@@ -249,5 +255,9 @@ public class Giocatore {
 		this.colore=color;
 		
 	}
-	
+
+	public void initSoldiDueGiocatori() {
+		this.soldi=SOLDI_2_GIOCATORI;
+		
+	}
 }

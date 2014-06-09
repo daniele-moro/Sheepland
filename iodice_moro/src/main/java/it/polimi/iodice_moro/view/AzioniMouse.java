@@ -1,21 +1,19 @@
 package it.polimi.iodice_moro.view;
 
-import it.polimi.iodice_moro.controller.Controller;
 import it.polimi.iodice_moro.controller.IFController;
 import it.polimi.iodice_moro.model.TipoMossa;
 
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
@@ -46,15 +44,17 @@ class AzioniMouse extends MouseAdapter{
 	public void mouseClicked(MouseEvent e)
 	{
 		JLabel lbl=(JLabel) e.getComponent();
-		
-		if(e.getX()< 0 || e.getY()<0 || e.getX()>image.getWidth() || e.getY()>image.getHeight()) return;
+
+		if(e.getX()< 0 || e.getY()<0 || e.getX()>image.getWidth() || e.getY()>image.getHeight()){
+			return;
+		}
 		int color=image.getRGB(e.getX(),e.getY());
 		System.out.println("X:"+e.getX()+" Y:"+e.getY() + "  COLOR:0x"+ Integer.toHexString(color));
-		
+
 		if(view.getMossaAttuale().equals(TipoMossa.SELEZ_POSIZ) 
 				&& view.getPosizioniCancelli().keySet().contains(Integer.toHexString(color)) 
-				&& view.getGiocatoreCorrente()!=null){
-			
+				&& view.getGiocatoreCorrente().equals(view.getColoreGamer())){
+
 			//STO SELEZIONANDO LE POSIZIONI DEI PASTORI
 			System.out.println("SELEZPOSIZ");
 			//Metto il pastore nella posizione che ho appena selezionato
@@ -66,7 +66,7 @@ class AzioniMouse extends MouseAdapter{
 				view.getLBLOutput().setText( e1.getMessage());
 			}
 		}
-				
+
 		//Controllo che il click sia avvenuto all'interno della mappa(quindi o su regioni o su caselle),
 		//inoltre controllo che la mossa da fare non sia ne NO_MOSSA(in cui non si deve fare null) 
 		//ne SELEZ_POSIZ(caso gia gestito prima)
@@ -74,81 +74,88 @@ class AzioniMouse extends MouseAdapter{
 				|| view.getPosizioniCancelli().keySet().contains(Integer.toHexString(color)))
 				&& view.getMossaAttuale()!=TipoMossa.NO_MOSSA
 				&& view.getMossaAttuale()!=TipoMossa.SELEZ_POSIZ){
-			
+			//&&view.getGiocatoreCorrente().equals(view.getColoreGamer())){
+
 			System.out.println("A");
 			//ricontrollo per sicurezza che la mossa da fare sia possibile
-			if(controller.mossaPossibile(view.getMossaAttuale())){
-				System.out.println("B");
-				switch(view.getMossaAttuale()){
-				
-				
-				case COMPRA_TESSERA:
-					System.out.println("COMPRA TESSERA");
-					try {
-						controller.acquistaTessera(Integer.toHexString(color));
-					} catch (Exception e2) {
-						view.getLBLOutput().setText(e2.getMessage());
-					}
-					break;
-					
-					
-				case SPOSTA_PASTORE:
-					try {
-						controller.spostaPedina(Integer.toHexString(color));
-					} catch (Exception e1) {
-						view.getLBLOutput().setText(e1.getMessage());
-					}
-					break;
-					
-					
-				case SPOSTA_PECORA:
-					try {
-						//if(Integer.toHexString(color).equals(reg1) || Integer.toHexString(color).equals(reg2))
-						{
-							Point posPecoraNera=view.getLBLPecoraNera().getLocation();
-							if(image.getRGB((int)posPecoraNera.getX()+10,(int)posPecoraNera.getY()+10)==color){
-								System.out.println("PECORA NERA");
-								//In questo caso nel terreno c'è anche la pecora nera,
-								//quindi bisogna far scegliere all'utente cosa spostare
-								Object[] options = {new ImageIcon("immagini/pecora_bianca.png"),
-										new ImageIcon("immagini/pecora_nera.png")};
-								int n = JOptionPane.showOptionDialog(null,
-										"Quale pecora vuoi spostare?",
-										"Spostamento Pecora",
-										JOptionPane.YES_NO_CANCEL_OPTION,
-										JOptionPane.QUESTION_MESSAGE,
-										new ImageIcon("immagini/question_png"),
-										options,
-										options[0]);
-								switch(n){
-								case 0:
-									//Pecora Bianca
+			try{
+				if(controller.mossaPossibile(view.getMossaAttuale())){
+					System.out.println("B");
+					switch(view.getMossaAttuale()){
+
+
+					case COMPRA_TESSERA:
+						System.out.println("COMPRA TESSERA");
+						try {
+							controller.acquistaTessera(Integer.toHexString(color));
+						} catch (Exception e2) {
+							view.getLBLOutput().setText(e2.getMessage());
+						}
+						break;
+
+
+					case SPOSTA_PASTORE:
+						try {
+							controller.spostaPedina(Integer.toHexString(color));
+						} catch (Exception e1) {
+							view.getLBLOutput().setText(e1.getMessage());
+						}
+						break;
+
+
+					case SPOSTA_PECORA:
+						try {
+							//if(Integer.toHexString(color).equals(reg1) || Integer.toHexString(color).equals(reg2))
+							{
+								Point posPecoraNera=view.getLBLPecoraNera().getLocation();
+								if(image.getRGB((int)posPecoraNera.getX()+10,(int)posPecoraNera.getY()+10)==color){
+									System.out.println("PECORA NERA");
+									//In questo caso nel terreno c'è anche la pecora nera,
+									//quindi bisogna far scegliere all'utente cosa spostare
+									Object[] options = {new ImageIcon("immagini/pecora_bianca.png"),
+											new ImageIcon("immagini/pecora_nera.png")};
+									int n = JOptionPane.showOptionDialog(null,
+											"Quale pecora vuoi spostare?",
+											"Spostamento Pecora",
+											JOptionPane.YES_NO_CANCEL_OPTION,
+											JOptionPane.QUESTION_MESSAGE,
+											new ImageIcon("immagini/question.png"),
+											options,
+											options[0]);
+									switch(n){
+									case 0:
+										//Pecora Bianca
+										controller.spostaPecora(Integer.toHexString(color));
+										break;
+									case 1:
+										//Pecora Nera
+										controller.spostaPecoraNera(Integer.toHexString(color));
+										break;
+									}
+								}
+								else{
+									System.out.println("SPOSTAPECORA");
 									controller.spostaPecora(Integer.toHexString(color));
-									break;
-								case 1:
-									//Pecora Nera
-									controller.spostaPecoraNera(Integer.toHexString(color));
-									break;
 								}
 							}
-							else{
-								System.out.println("SPOSTAPECORA");
-								controller.spostaPecora(Integer.toHexString(color));
-							}
+						} catch (Exception e1) {
+							System.out.println("ERRORE CLICK MAPPA!!");
+							view.getLBLOutput().setText(e1.getMessage());
 						}
-					} catch (Exception e1) {
-						System.out.println("ERRORE CLICK MAPPA!!");
-						view.getLBLOutput().setText(e1.getMessage());
+						break;
+
+
+					default:
+						break;
+
 					}
-					break;
-					
-					
-				default:
-					break;
+					view.setMossaAttuale(TipoMossa.NO_MOSSA);
+					setRegioni("","");
 
 				}
-				view.setMossaAttuale(TipoMossa.NO_MOSSA);
-				setRegioni("","");
+			}catch(RemoteException e1){
+				//TODO
+				e1.printStackTrace();
 			}
 			System.out.println("Presente");
 

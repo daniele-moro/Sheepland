@@ -22,6 +22,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,13 +110,17 @@ public class View implements IFView {
 	private Map<Color,JLabel> pedineGiocatori = new HashMap<Color, JLabel>();
 	private Map<String,JLabel> lblRegioni = new HashMap<String,JLabel>();
 	private Map<String,Point> posizioniCancelli = new HashMap<String, Point>();
+	Map<Color,String>gioc;
 	private JLabel pecoraNera;
 	private JLabel lblOutput = new JLabel();
+	private JLabel lblDado;
 	
 	private TipoMossa mossaAttuale;
 	private IFController controller;
 	
 	private AzioniMouse mouse;
+
+	private Color coloreGamer;
 	
 	public View(IFController controller){
 		this.controller=controller;
@@ -125,13 +130,26 @@ public class View implements IFView {
 	
 	//Inizializzazione della GUI
 	public void initGUI(){
-		System.out.println("PRELEVO REGIONI");
-		//Prelevo le posizioni delle regioni ed il loro id memorizzati nel MODEL
-		posizioniRegioni=controller.getPosRegioni();
+		try {
+			System.out.println("PRELEVO REGIONI");
+			posizioniRegioni=controller.getPosRegioni();
+			System.out.println("PRELEVO STRADE");
+			posizioniCancelli = controller.getPosStrade();
+			gioc=controller.getGiocatori();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		System.out.println("PRELEVO STRADE");
+		
+		//Prelevo le posizioni delle regioni ed il loro id memorizzati nel MODEL
+		//posizioniRegioni=controller.getPosRegioni();
+		
+		
 		//Prelevo le posizioni dei cancelli ed i loro iD memorizzati nel MODEL
-		posizioniCancelli = controller.getPosStrade();
+		//posizioniCancelli = controller.getPosStrade();
+		
+		//gioc=controller.getGiocatori();
 		
 		//Inizializzazione del Frame principale
 		frame= new JFrame("SHEEPLAND");
@@ -274,21 +292,35 @@ public class View implements IFView {
 		c.gridx=1;
 		c.gridy=2;
 		leftPanel.add(lbltemp,c);
+		
+		//LABEL per il dado
+		lblDado = new JLabel();
+		lblDado.setText("  ");
+		//lblDado.setVisible(false);
+		c.gridx=0;
+		c.gridy=7;
+		c.fill=GridBagConstraints.BOTH;
+		c.anchor=GridBagConstraints.LINE_START;
+		leftPanel.add(lblDado,c);
 
 		//LABEL PER GLI ERRORI
 		lblOutput = new JLabel();
-		lblOutput.setText("sdasd ");
+		lblOutput.setText("  ");
 		lblOutput.setBorder(new EmptyBorder(30,10,0,0));
 		c.gridx=0;
 		c.gridy=7;
 		c.anchor=GridBagConstraints.WEST;
 		frame.add(lblOutput,BorderLayout.SOUTH);
 		
+		
+		
+		
 		frame.add(leftPanel, BorderLayout.WEST);
 		
 		frame.setVisible(true);
 		frame.setResizable(false);
 		frame.pack();
+		
 	}
 	
 	//INIZIALIZZA TUTTI GLI OGGETTI CHE SONO POSIZIONATI SOPRA LA MAPPA E I GIOCATORI
@@ -297,6 +329,8 @@ public class View implements IFView {
 	 */
 	@Override
 	public void initMappa(){
+		
+		
 		//Visualizzo tutte le pecore
 		//File da passare al BackgroundedLabel per l'immagine di sfondo
 		File pecBianca = new File("immagini/pecora_bianca.png");
@@ -327,7 +361,9 @@ public class View implements IFView {
 		}
 		
 		//Prelevo i giocatori dal controller e li visualizzo
-		Map<Color,String>gioc=controller.getGiocatori();
+		//li prelevo prima in inizia partita Map<Color,String>gioc=controller.getGiocatori();
+		System.out.println("Ricezione dei giocatori");
+		
 		GridBagConstraints c = new GridBagConstraints();
 		JLabel lbltemp2;
 		c.gridwidth=2;
@@ -336,6 +372,7 @@ public class View implements IFView {
 		for(Color colore:gioc.keySet()){
 			lbltemp2 = new JLabel();
 			lbltemp2.setText(gioc.get(colore)+" SOLDI: 20");
+			lbltemp2.setName(gioc.get(colore));
 			lbltemp2.setBackground(colore);
 			lbltemp2.setFont(new Font("Arial", Font.PLAIN, 12));
 			lbltemp2.setOpaque(true);
@@ -351,8 +388,6 @@ public class View implements IFView {
 		mappa.repaint();
 		frame.pack();
 		mossaAttuale=TipoMossa.NO_MOSSA;
-		attivaGiocatore();
-
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -425,8 +460,16 @@ public class View implements IFView {
 							"");
 				}
 				controller = new ControllerSocket(ip, Integer.parseInt(porta));
-				controller.creaGiocatore(nome);
-				view = new View(controller);
+				Color colore=controller.creaGiocatore(nome);
+				if(colore!=null){
+					view = new View(controller);
+					((View)view).setColore(colore);
+					controller.setView(view);	
+					System.out.println("Chiamata a iniziapartita");
+					controller.iniziaPartita();
+				}else{
+					System.out.println("ERRORE DI CONNESSIONE");
+				}
 				break;
 			//Server
 			case 1:
@@ -440,14 +483,19 @@ public class View implements IFView {
 							null,
 							"12345");
 				}
-				controller = new Controller(statopartita);
-				view = new ViewSocket(controller, Integer.parseInt(porta));
-				//metto in attesa il server dei gioacatori
-				controller.setView(view);
-				((ViewSocket)view).attendiGiocatori();
-				System.out.println("ora attendo mosse!");
-				((ViewSocket)view).riceviMossa();
-				break;
+				while(true){
+					controller = new Controller(statopartita);
+					int porta2 = Integer.parseInt(porta);
+					System.out.println("PORTA DI ASCOLTO: "+porta2);
+					view = new ViewSocket(controller, Integer.parseInt(porta));
+					//metto in attesa il server dei gioacatori
+					controller.setView(view);
+					((ViewSocket)view).attendiGiocatori();
+					System.out.println("ora attendo mosse!");
+					((ViewSocket)view).riceviMossa();
+					statopartita = new StatoPartita();
+				}
+				//break;
 				
 			default:
 				throw new Exception();
@@ -459,35 +507,48 @@ public class View implements IFView {
 			view = new View(controller);
 			controller.creaGiocatore("prova");
 			controller.creaGiocatore("prova");
+			controller.setView(view);	
+			System.out.println("Chiamata a iniziapartita");
+			controller.iniziaPartita();
 			break;
 		default:
 			throw new Exception();
 		}
 		//controller.creaGiocatore("prova");
 		//controller.creaGiocatore("prova");
-		controller.setView(view);	
-		System.out.println("Chiamata a iniziapartita");
-		controller.iniziaPartita();
+		//controller.setView(view);	
+		//System.out.println("Chiamata a iniziapartita");
+		//controller.iniziaPartita();
 		
 	}
 	
+	private void setColore(Color colore) {
+		this.coloreGamer=colore;
+		
+	}
+
 	/* (non-Javadoc)
 	 * @see it.polimi.iodice_moro.view.IFView#cambiaGiocatore(java.awt.Color)
 	 */
 	@Override
 	public void cambiaGiocatore(Color color){
-		//Cambio l'enable delle tessere
+		giocatoreCorrente=color;
+		//Evidenzio il giocatore del turno corrente
 		for(Color col: giocatori.keySet()){
 			if(col.equals(color)){
 				giocatori.get(col).setEnabled(true);
 				giocatori.get(col).setFont(new Font("Arial", Font.BOLD, 20));
 				giocatori.get(col).setText(giocatori.get(col).getText());
-				giocatoreCorrente=color;
 			}else{
 				giocatori.get(col).setEnabled(false);
 				giocatori.get(col).setFont(new Font("Arial", Font.PLAIN, 12));
 				giocatori.get(col).setText(giocatori.get(col).getText());
 			}
+		}
+		if(color.equals(coloreGamer)){
+			attivaGiocatore();
+		}else{
+			disattivaGiocatore();
 		}
 	}
 	
@@ -508,6 +569,7 @@ public class View implements IFView {
 		btnCompraTessera.setEnabled(false);
 		btnSpostaPastore.setEnabled(false);
 		btnSpostaPecora.setEnabled(false);
+		mossaAttuale=TipoMossa.NO_MOSSA;
 	}
 	
 	/* (non-Javadoc)
@@ -545,7 +607,7 @@ public class View implements IFView {
 	 * @param dest Point Destinazione
 	 * @param image Sfondo della label da spostare
 	 */
-	private void spostaPecora(Point sorg, Point dest, ImageIcon image){
+	void spostaImmagine(Point sorg, Point dest, ImageIcon image){
 		JLabel lblMove = new JLabel();
 		lblMove.setIcon(image);
 		
@@ -580,7 +642,7 @@ public class View implements IFView {
 		Point sorg= posizioniRegioni.get(s);
 		Point dest= posizioniRegioni.get(d);
 		
-		spostaPecora(sorg, dest, new ImageIcon("immagini/pecora_bianca.png"));
+		spostaImmagine(sorg, dest, new ImageIcon("immagini/pecora_bianca.png"));
 	}
 	
 	/* (non-Javadoc)
@@ -589,6 +651,7 @@ public class View implements IFView {
 	@Override
 	public void spostaPastore(String s, String d, Color colore){
 		ImageIcon img = null;
+		//carico l'icona della pedina corretta
 		if(colore.equals(new Color(255,0,0))){
 			img=new ImageIcon("immagini/pedinarossa.png");
 		}
@@ -601,16 +664,25 @@ public class View implements IFView {
 		if(colore.equals(new Color(255,255,0))){
 			img=new ImageIcon("immagini/pedinagialla.png");
 		}
-		
-		if(!s.equals("")){
-			spostaPecora(posizioniCancelli.get(s), posizioniCancelli.get(d), img);
-		}
 		JLabel pedGiocatore = pedineGiocatori.get(colore);
+		if(pedGiocatore!=null){
+			pedGiocatore.setVisible(false);
+		}
+		//il metodo è usato anche nel caso in cui il pastore non sia ancora stato posizionato,
+		//in questo caso il metodo viene chiamato con parametro s=""
+		if(!s.equals("")){
+			//se abbiamo il primo parametro, significa che dobbiamo far vedere l'animazione del pastore
+			spostaImmagine(posizioniCancelli.get(s), posizioniCancelli.get(d), img);
+		}
+		
+		//se la pedina del giocatore non c'è, la creo e la aggiungo alla Map delle pedine dei giocatori
 		if(pedGiocatore == null){
 			pedGiocatore = new JLabel();
 			pedGiocatore.setIcon(img);
 			mappa.add(pedGiocatore);
 			pedineGiocatori.put(colore, pedGiocatore);
+		} else{
+			pedGiocatore.setVisible(true);
 		}
 		pedGiocatore.setBounds(posizioniCancelli.get(d).x, posizioniCancelli.get(d).y, img.getIconWidth(), img.getIconHeight());
 	}
@@ -620,16 +692,13 @@ public class View implements IFView {
 	 */
 	@Override
 	public void spostaPecoraNera(String s, String d){
-		mappa.remove(pecoraNera);
 		Point sorg= posizioniRegioni.get(s);
-		Point sorg2=(Point) sorg.clone();
 		Point dest= posizioniRegioni.get(d);
-		Point dest2=(Point) dest.clone();
-		sorg2.y-=21;
-		dest2.y-=21;
-		spostaPecora(sorg2,dest2, new ImageIcon("immagini/pecora_nera.png"));
-		mappa.add(pecoraNera);
-		pecoraNera.setBounds(dest2.x, dest2.y, pecoraNera.getWidth(), pecoraNera.getHeight());
+		
+		//Avvio il Thread per l'animazione sulla schermata
+		ThreadAnimazionePecoraNera r = new ThreadAnimazionePecoraNera(mappa, pecoraNera, sorg, dest);
+		Thread t = new Thread(r);
+		t.start();
 	}
 	
 	/* (non-Javadoc)
@@ -662,8 +731,9 @@ public class View implements IFView {
 	 */
 	@Override
 	public void modSoldiGiocatore(Color coloreGiocatoreDaModificare, int soldi) {
-		Map<Color,String> mappaColoriGiocatori=controller.getGiocatori();
-		giocatori.get(coloreGiocatoreDaModificare).setText(mappaColoriGiocatori.get(coloreGiocatoreDaModificare)+" SOLDI: "+soldi);
+		
+		String nome = giocatori.get(coloreGiocatoreDaModificare).getName();
+		giocatori.get(coloreGiocatoreDaModificare).setText(nome+" SOLDI: "+soldi);
 		giocatori.get(coloreGiocatoreDaModificare).repaint();
 	}
 	
@@ -689,7 +759,8 @@ public class View implements IFView {
 	 * @see it.polimi.iodice_moro.view.IFView#visualizzaPunteggi(java.util.Map)
 	 */
 	@Override
-	public void visualizzaPunteggi(Map<Giocatore, Integer> punteggiOrdinati) {		
+	public synchronized void visualizzaPunteggi(Map<Giocatore, Integer> punteggiOrdinati) {	
+		disattivaGiocatore();
 		JTable tabellaPunteggi = new JTable(punteggiOrdinati.size(),2);
 		int row = 0;
 		for(Map.Entry<Giocatore,Integer> entry: punteggiOrdinati.entrySet()){
@@ -699,6 +770,9 @@ public class View implements IFView {
 		 }
 		tabellaPunteggi.setEnabled(false);
 		JOptionPane.showMessageDialog(null, tabellaPunteggi, "Lista Punteggi", JOptionPane.INFORMATION_MESSAGE);
+		if(controller instanceof ControllerSocket){
+			((ControllerSocket)controller).end();
+		}
 	}
 
 	public Map<String,Point> getPosizioniRegioni() {
@@ -745,6 +819,40 @@ public class View implements IFView {
 	@Override
 	public void attendiGiocatori() {
 		// TODO Auto-generated method stub
+	}
+
+	public Color getColoreGamer() {
+		return coloreGamer;
+	}
+
+	@Override
+	public void visRisDado(int numero) {
+		if(giocatoreCorrente.equals(coloreGamer)){
+			disattivaGiocatore();
+		}
+		lblDado.setIcon(new ImageIcon("immagini/dado.gif"));
+		frame.repaint();
+		try {
+			//metto in pausa il thread per dare la sensazione che si stia lanciando il dado
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		lblDado.setIcon(null);
+		lblDado.setText("Risultato: "+numero);
+		frame.repaint();
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		lblDado.setText("    ");
+		frame.repaint();
+		if(giocatoreCorrente.equals(coloreGamer)){
+			attivaGiocatore();
+		}
 		
 	}
 

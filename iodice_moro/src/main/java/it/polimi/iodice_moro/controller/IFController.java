@@ -10,10 +10,12 @@ import it.polimi.iodice_moro.view.View;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
-public interface IFController {
+public interface IFController extends Remote{
 
 	//OK
 	public abstract void spostaPecora(String idRegione) throws Exception;
@@ -31,7 +33,7 @@ public interface IFController {
 
 	
 	//OK
-	public abstract Color creaGiocatore(String nome);
+	public abstract Color creaGiocatore(String nome) throws RemoteException ;
 
 	
 	//OK
@@ -42,7 +44,7 @@ public interface IFController {
 	 * @param idStrada2
 	 */
 	public abstract void setStradaGiocatore(Color colore, String idStrada,
-			String idStrada2);
+			String idStrada2) throws RemoteException ;
 	
 	
 	/**
@@ -59,11 +61,11 @@ public interface IFController {
 	 * @param mossaDaEffettuare Mossa che il giocatore vuole effettuare.
 	 * @return Ritorna true in caso positivo, false altrimenti.
 	 */
-	public abstract boolean mossaPossibile(TipoMossa mossaDaEffettuare);
+	public abstract boolean mossaPossibile(TipoMossa mossaDaEffettuare) throws RemoteException;
 
 	
 	//OK
-	public abstract void iniziaPartita();
+	public abstract void iniziaPartita() throws RemoteException;
 
 	/*
 		List<Giocatore> listaGiocatori = statoPartita.getGiocatori();
@@ -78,10 +80,10 @@ public interface IFController {
 	 * Ritorna l'elenco delle posizioni di tutte le regioni, con i colori loro assegnati
 	 * @return
 	 */
-	public abstract Map<String, Point> getPosRegioni();
+	public abstract Map<String, Point> getPosRegioni() throws RemoteException;
 
 	//OK
-	public abstract Map<String, Point> getPosStrade();
+	public abstract Map<String, Point> getPosStrade() throws RemoteException;
 
 	
 	//OK
@@ -89,15 +91,16 @@ public interface IFController {
 	 * Ritorna gli ID delle due regioni adiacenti alla strada in cui si trova il pastore
 	 * @return Ritorna la lista di ID delle regioni adiacenti alla strada in cui si trova il pastore (giocatore corrente)
 	 */
-	public abstract List<String> getIDRegioniAd();
+	public abstract List<String> getIDRegioniAd() throws RemoteException;
 	
 	//OK
 	/**
 	 * Ritorna i colori dei giocatori e i loro nomi
 	 * @return
 	 */
-	public abstract Map<Color, String> getGiocatori();
+	public abstract Map<Color, String> getGiocatori() throws RemoteException;
 	
-	public abstract void setView(IFView view2);
+	public abstract void setView(IFView view2) throws RemoteException;
+
 
 }

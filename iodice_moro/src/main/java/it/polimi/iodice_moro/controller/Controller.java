@@ -16,6 +16,8 @@ import it.polimi.iodice_moro.view.ThreadAnimazionePecoraNera;
 import java.awt.Color;
 import java.awt.Point;
 import java.io.IOException;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -30,8 +32,13 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Controller implements IFController {
+public class Controller extends UnicastRemoteObject implements IFController {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 182542694625017227L;
+
 	/**
 	 * Istanza del model di StatoPartita.
 	 */
@@ -48,18 +55,18 @@ public class Controller implements IFController {
 	 * @param statopartita Istanza statopartita.
 	 * @param giocatore Istanza del giocatore gestito.
 	 */
-	public Controller(IFView view) {
+	public Controller(IFView view) throws RemoteException {
 		this.statoPartita = new StatoPartita();
 		this.view=view;
 	}
-	public Controller(StatoPartita statoPartita){
+	public Controller(StatoPartita statoPartita) throws RemoteException {
 		this.statoPartita= statoPartita;
 	}
 	
 	/**
 	 * @return Ritorna riferimento a StatoPartita.
 	 */
-	public StatoPartita getStatoPartita() {
+	public StatoPartita getStatoPartita() throws RemoteException {
 		return statoPartita;
 	}
 
@@ -68,7 +75,7 @@ public class Controller implements IFController {
 	 * Aggiunge un recinto alla strada, se sono disponibili.
 	 * @param strada Strada sulla quale aggiungere il recinto.
 	 */
-	private void aggiungiRecinto(Strada strada) {
+	private synchronized void aggiungiRecinto(Strada strada) throws RemoteException {
 		/*
 		 * Controllo che ci siano recinti disponibili
 		 */
@@ -93,7 +100,7 @@ public class Controller implements IFController {
 	 * @throws Exception Se il giocatore non si trova in una strada confinante
 	 * alla posizione della pecora da spostare o se non ci sono pecore da spostare.
 	 */
-	public void spostaPecora(Regione regionePecora) throws Exception {
+	public synchronized void spostaPecora(Regione regionePecora) throws Exception, RemoteException {
 		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
 		/*
 		 * Controlliamo che la regione da cui prelevare la pecora sia vicino alla strada dove si trova il giocatore
@@ -120,21 +127,23 @@ public class Controller implements IFController {
 	 * @see it.polimi.iodice_moro.controller.IFController#spostaPecora(java.lang.String)
 	 */
 	@Override
-	public void spostaPecora(String idRegione) throws Exception{
+	public synchronized void spostaPecora(String idRegione) throws Exception, RemoteException{
 		Regione regSorg=statoPartita.getRegioneByID(idRegione);
+		
 		if(regSorg == null){
 			throw new Exception("Non hai cliccato su una regione!!");
 		}
+		
 		System.out.println("Sposta pecora controller");
 		spostaPecora(statoPartita.getRegioneByID(idRegione));
 		aggiornaTurno(TipoMossa.SPOSTA_PECORA);
 		String idregD=statoPartita.getAltraRegione(regSorg, statoPartita.getGiocatoreCorrente().getPosition()).getColore();
 		System.out.println("Sposta pecora animazione");
-		ThreadAnimazionePecoraBianca r = new ThreadAnimazionePecoraBianca(view, idRegione,idregD);
-		Thread t = new Thread(r);
-		t.start();
+
+		view.spostaPecoraBianca(idRegione, idregD);
 		view.modificaQtaPecora(idRegione, regSorg.getNumPecore());
 		view.modificaQtaPecora(idregD, statoPartita.getRegioneByID(idregD).getNumPecore());
+		
 		checkTurnoGiocatore(TipoMossa.SPOSTA_PECORA);
 	}
 	
@@ -146,7 +155,7 @@ public class Controller implements IFController {
 	 * @throws Exception se non ci sono pecore nere da spostare.
 	 * @see #checkSpostamentoNera
 	 */
-	public void spostaPecoraNera(Regione regionePecora, Regione regAdiacente) throws Exception {
+	public synchronized void spostaPecoraNera(Regione regionePecora, Regione regAdiacente) throws Exception, RemoteException {
 		if(regionePecora.isPecoraNera()) {
 			regionePecora.removePecoraNera();
 			regAdiacente.addPecoraNera();
@@ -164,15 +173,15 @@ public class Controller implements IFController {
 	 * Inoltre se è il turno finale ed è l'ultimo giocatore mette finePartita().
 	 * Ritorna il prossimo giocatore.
 	 */
-	public void spostaPecoraNera(String idRegPecoraNera) throws Exception{
+	public synchronized void spostaPecoraNera(String idRegPecoraNera) throws Exception, RemoteException{
 		Regione regionePecora=statoPartita.getRegioneByID(idRegPecoraNera);
 		Regione regAdiacente=statoPartita.getAltraRegione(regionePecora, statoPartita.getGiocatoreCorrente().getPosition());
 		spostaPecoraNera(regionePecora,regAdiacente);
 		aggiornaTurno(TipoMossa.SPOSTA_PECORA);
 		System.out.println("Sposta pecora animazione");
-		ThreadAnimazionePecoraNera r = new ThreadAnimazionePecoraNera(view, regionePecora.getColore(),regAdiacente.getColore());
-		Thread t = new Thread(r);
-		t.start();
+
+		view.spostaPecoraNera(regionePecora.getColore(), regAdiacente.getColore());
+		
 		checkTurnoGiocatore(TipoMossa.SPOSTA_PECORA);
 	}
 
@@ -182,7 +191,7 @@ public class Controller implements IFController {
 	 * @param tipo Tipo della tessera che vuole comprare.
 	 * @throws Exception Se il costo della tessera è maggiore dei soldi del giocatore.
 	 */
-	public void acquistaTessera(TipoTerreno tipo) throws Exception {
+	public synchronized void acquistaTessera(TipoTerreno tipo) throws Exception, RemoteException {
 		Giocatore giocatore=statoPartita.getGiocatoreCorrente();
 		int costoTessera=statoPartita.getCostoTessera(tipo);
 		if(tipo.equals(TipoTerreno.SHEEPSBURG)){
@@ -213,7 +222,7 @@ public class Controller implements IFController {
 	 * @see it.polimi.iodice_moro.controller.IFController#acquistaTessera(java.lang.String)
 	 */
 	@Override
-	public void acquistaTessera(String idRegione) throws Exception{
+	public synchronized void acquistaTessera(String idRegione) throws Exception, RemoteException{
 		Regione reg = statoPartita.getRegioneByID(idRegione);
 		if(reg==null){
 			throw new Exception("Non hai cliccato su una regione!!");
@@ -242,7 +251,7 @@ public class Controller implements IFController {
 	 * @throws Exception Se nuova ìposizione è già occupata da un recinto.
 	 * @throws Exception Se non ha abbastanza soldi per muoversi.
 	 */
-	public void spostaPedina (Strada nuovastrada) throws Exception {
+	public synchronized void spostaPedina (Strada nuovastrada) throws Exception, RemoteException {
 		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
 		for(Giocatore g: statoPartita.getGiocatori()){
 			if(g.getPosition()==nuovastrada){
@@ -262,7 +271,7 @@ public class Controller implements IFController {
 				giocatore.decrSoldi();
 			}
 		}
-		//L'aggiunta del recinto viene fatta dal metodo chiamante!!
+		
 		this.aggiungiRecinto(giocatore.getPosition());
 		giocatore.setPosition(nuovastrada);
 	}
@@ -271,22 +280,28 @@ public class Controller implements IFController {
 	 * @see it.polimi.iodice_moro.controller.IFController#spostaPedina(java.lang.String)
 	 */
 	@Override
-	public void spostaPedina(String idStrada) throws Exception{
+	public synchronized void spostaPedina(String idStrada) throws Exception, RemoteException{
 		Strada oldStreet = statoPartita.getGiocatoreCorrente().getPosition();
 		Strada newStreet = statoPartita.getStradaByID(idStrada);
 		if(newStreet == null){
 			throw new Exception("Non hai cliccato su una strada!");
 		}
+		
+		//Memorizzo quanti recinti ci sono prima del movimento 
+		//per capire dopo se il recinto usato è normale o finale
+		int nRecinti = statoPartita.getNumRecinti();
+		
 		spostaPedina(newStreet);
 		aggiornaTurno(TipoMossa.SPOSTA_PASTORE);
-		ThreadAnimazionePastore r = new ThreadAnimazionePastore(view, oldStreet.getColore(),idStrada, statoPartita.getGiocatoreCorrente().getColore());
-		Thread t = new Thread(r);
-		if(!statoPartita.isTurnoFinale()){
+		
+		if(!statoPartita.isTurnoFinale() || nRecinti>=1){
 			view.addCancelloNormale(oldStreet.getColore());
 		} else{
 			view.addCancelloFinale(oldStreet.getColore());
 		}
-		t.start();
+		
+		view.spostaPastore(oldStreet.getColore(),idStrada, statoPartita.getGiocatoreCorrente().getColore());
+		
 		view.modSoldiGiocatore(statoPartita.getGiocatoreCorrente().getColore(),
 				statoPartita.getGiocatoreCorrente().getSoldi());
 		checkTurnoGiocatore(TipoMossa.SPOSTA_PASTORE);
@@ -300,7 +315,7 @@ public class Controller implements IFController {
 	 * @param giocatore Giocatore corrente.
 	 * @return Ritorna true se la strada è contenuta.
 	 */
-	private boolean pagaSpostamento(Strada strada, Giocatore giocatore) {
+	private boolean pagaSpostamento(Strada strada, Giocatore giocatore) throws RemoteException {
 		return !statoPartita.getStradeAdiacenti(giocatore.getPosition()).contains(strada);
 	}
 	
@@ -308,7 +323,7 @@ public class Controller implements IFController {
 	 * Metodo avviato all'inizio del turno per valutare se la pecora nera deve essere
 	 * spostata.
 	 */
-	public void checkSpostaPecoraNera() {
+	public synchronized void checkSpostaPecoraNera() throws RemoteException {
 		int valoreDado = lanciaDado();
 		System.out.println("VALORE DADO: "+valoreDado);
 		/*
@@ -335,9 +350,7 @@ public class Controller implements IFController {
 					spostaPecoraNera(posNera, nuovaRegionePecora);
 					if(view!=null){
 						System.out.println("Spostamento automatico pecora nera!!");
-						ThreadAnimazionePecoraNera r = new ThreadAnimazionePecoraNera(view, posNera.getColore(),nuovaRegionePecora.getColore());
-						Thread t = new Thread(r);
-						t.start();
+						view.spostaPecoraNera(posNera.getColore(), nuovaRegionePecora.getColore());
 					}
 					return;
 				} catch (Exception e) {
@@ -352,22 +365,32 @@ public class Controller implements IFController {
 	 * servirà per generare la posizione in cui si sposta la pecora nera
 	 * @return Ritorna valore compreso tra 0 e 6 (incluso).
 	 */
-	private int lanciaDado() {
+	private int lanciaDado() throws RemoteException {
 		Random random=new Random();
-		return random.nextInt(6)+1;	
+		int numero=random.nextInt(6)+1;
+		if(view!=null){
+			view.visRisDado(numero);
+		}
+		return numero;	
 	}
 	
 	/**
 	 * Calcola punteggi associati ad ogni giocatore.
+	 * Il punteggio viene calcolato come i danari che possiede il giocatore, sommati al valore associato ad ogni terreno
+	 *  moltiplicato per il numero di tessere di quel terreno possedute.
+	 *  Il valore di ogni terreno è calcolato come la somma del numero di pecore di quei terreni, 
+	 *  tenendo conto che la pecora nera conta per 2
 	 * @return Ritorna una tabella hash con il punteggio relativo ad ogni giocatore.
 	 */
-	private Map<Giocatore, Integer> calcolaPunteggio() {
+	private synchronized Map<Giocatore, Integer> calcolaPunteggio() throws RemoteException {
 		List<Giocatore>listaGiocatori=statoPartita.getGiocatori();
 		Map<Giocatore, Integer> punteggi = new HashMap<Giocatore , Integer>();
 
 		for(Giocatore giocatore : listaGiocatori) {
 			Map<String, Integer> tesserePossedute = giocatore.getTesserePossedute();
-			Integer punteggio = 0;
+			
+			//Il punteggio del giocatore parte dalla quantita di danari posseduti
+			Integer punteggio = giocatore.getSoldi();
 			
 			for(Map.Entry<String, Integer> elemento : tesserePossedute.entrySet()) {
 				String nomeTessera = elemento.getKey();
@@ -392,7 +415,7 @@ public class Controller implements IFController {
 	 * @param nome Nome del giocatore.
 	 * @param posizione Strada su cui dovrà essere posizionato.
 	 */
-	public void creaGiocatore(String nome, Strada posizione) {
+	public synchronized void creaGiocatore(String nome, Strada posizione) throws RemoteException {
 		Giocatore nuovoGiocatore = new Giocatore(nome, posizione);
 		statoPartita.addGiocatore(nuovoGiocatore);
 	}
@@ -402,7 +425,7 @@ public class Controller implements IFController {
 	 * @see it.polimi.iodice_moro.controller.IFController#creaGiocatore(java.lang.String)
 	 */
 	@Override
-	public Color creaGiocatore(String nome){
+	public synchronized Color creaGiocatore(String nome) throws RemoteException {
 		Giocatore nuovoGiocatore = new Giocatore(nome);
 		statoPartita.addGiocatore(nuovoGiocatore);
 		nuovoGiocatore.setColore(vettColori[statoPartita.getGiocatori().indexOf(nuovoGiocatore)]);
@@ -413,7 +436,7 @@ public class Controller implements IFController {
 	 * @see it.polimi.iodice_moro.controller.IFController#setStradaGiocatore(java.awt.Color,java.lang.String)
 	 */
 	@Override
-	public void setStradaGiocatore(Color colore, String idStrada) throws Exception{
+	public synchronized void setStradaGiocatore(Color colore, String idStrada) throws Exception{
 		
 		Strada strada = statoPartita.getStradaByID(idStrada);
 		
@@ -427,20 +450,21 @@ public class Controller implements IFController {
 				}
 			}
 		}
+		view.spostaPastore("", idStrada, colore);
 		//Setto la posizione del giocatore corrente
 		statoPartita.getGiocatoreCorrente().setPosition(strada);
 		
 		//Ora devo trovare il prossimo giocatore
 		statoPartita.setGiocatoreCorrente(statoPartita.getNextGamer());
+		
 		if(statoPartita.getGiocatoreCorrente()!=statoPartita.getGiocatori().get(0)){
 			System.out.println("Selezione del nuovo giocatore che deve selezionare la posizione");
 			view.setGiocatoreCorrente(statoPartita.getGiocatoreCorrente().getColore());
 			
 		}else{
-			//finito inserimento dei giocatori
-			//inizializzo la mappa nelal view
-			view.initMappa();
+			
 			//comunico tutte le tessere che ogni giocatore possiede
+			/*
 			for(Giocatore g : statoPartita.getGiocatori()){
 				for(Entry<String,Integer> tessere : g.getTesserePossedute().entrySet()){
 					//comunico alla view il tipo di terreno della tessera, 
@@ -449,9 +473,13 @@ public class Controller implements IFController {
 						view.modQtaTessera(TipoTerreno.parseInput(tessere.getKey()), tessere.getValue(), g.getColore());
 					}
 				}
-			}
-			view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
+			}*/
+			//finito inserimento dei giocatori
+			//inizializzo la mappa nelal view
+			System.out.println("INIT MAPPA SERVER");
+			view.initMappa();
 			checkSpostaPecoraNera();
+			view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
 			//DA qui inizia la partita vera e propria
 		}
 		/*Strada strada = statoPartita.getStradaByID(idStrada);
@@ -499,7 +527,7 @@ public class Controller implements IFController {
 	 * @see it.polimi.iodice_moro.controller.IFController#setStradaGiocatore(java.awt.Color, java.lang.String, java.lang.String)
 	 */
 	@Override
-	public void setStradaGiocatore(Color colore, String idStrada, String idStrada2){
+	public void setStradaGiocatore(Color colore, String idStrada, String idStrada2) throws RemoteException {
 		Strada strada = statoPartita.getStradaByID(idStrada);
 		Strada strada2 = statoPartita.getStradaByID(idStrada2);
 		for(Giocatore g: statoPartita.getGiocatori()){
@@ -514,7 +542,7 @@ public class Controller implements IFController {
 	 * @see it.polimi.iodice_moro.controller.IFController#mossaPossibile(it.polimi.iodice_moro.model.TipoMossa)
 	 */
 	@Override
-	public boolean mossaPossibile(TipoMossa mossaDaEffettuare) {
+	public boolean mossaPossibile(TipoMossa mossaDaEffettuare) throws RemoteException  {
 		Giocatore giocatoreCorrente=statoPartita.getGiocatoreCorrente();
 		TipoMossa ultimaMossa=giocatoreCorrente.getUltimaMossa();
 		boolean pastoreSpostato = giocatoreCorrente.isPastoreSpostato();
@@ -537,7 +565,7 @@ public class Controller implements IFController {
 	 * Inoltre se è il turno finale ed è l'ultimo giocatore mette finePartita().
 	 * Ritorna il prossimo giocatore.
 	 */
-	public Giocatore checkTurnoGiocatore(TipoMossa mossaFatta) {
+	public Giocatore checkTurnoGiocatore(TipoMossa mossaFatta) throws RemoteException {
 		/*
 		 * Controllo se il giocatore non può fare più mosse
 		 */
@@ -556,6 +584,7 @@ public class Controller implements IFController {
 					 //Controllo se il giocatore corrente è l'ultimo della lista
 					.equals(statoPartita.getGiocatoreCorrente()	)
 					){
+				System.out.println("____________________FINE PARTITA_________________________________________");
 				finePartita();
 				return null;
 			}else{
@@ -565,7 +594,15 @@ public class Controller implements IFController {
 				 */
 				statoPartita.setGiocatoreCorrente(statoPartita.getNextGamer());
 				if(view!=null){
-					view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
+					try{
+						view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
+					}catch (RemoteException e) {
+						//TODO
+						logger.log(Level.SEVERE, "RemoteException errore", e);
+					}
+
+					
+					
 					/*for(String t:statoPartita.getGiocatoreCorrente().getTesserePossedute().keySet()){
 						if(!t.equals(TipoTerreno.SHEEPSBURG.toString())){
 							view.modQtaTessera(TipoTerreno.parseInput(t),statoPartita.getGiocatoreCorrente().getTesserePossedute().get(t));
@@ -574,7 +611,7 @@ public class Controller implements IFController {
 					//MODIFICATO:
 					//aggiorno le tessere di tutti i giocatori, nel caso online è INUTILE!!!!
 					//TODO DA SISTEMARE!!!!!!!!!!!!
-					for(Giocatore g : statoPartita.getGiocatori()){
+					/*for(Giocatore g : statoPartita.getGiocatori()){
 						for(Entry<String,Integer> tessere : g.getTesserePossedute().entrySet()){
 							//comunico alla view il tipo di terreno della tessera, 
 							//il numero di tessere di quel tipo ed il colore del giocatore a cui è associata la tessera
@@ -582,7 +619,7 @@ public class Controller implements IFController {
 								view.modQtaTessera(TipoTerreno.parseInput(tessere.getKey()), tessere.getValue(), g.getColore());
 							}
 						}
-					}
+					}*/
 					
 				}
 				//Regione oldNera = statoPartita.getPosPecoraNera();
@@ -597,7 +634,7 @@ public class Controller implements IFController {
 	 * @param giocatore Giocatore corrente che ha appena finito la sua mossa
 	 * @param mossaFatta Mossa che ha appena effettuato il giocatore
 	 */
-	public void aggiornaTurno(TipoMossa mossaFatta){
+	public void aggiornaTurno(TipoMossa mossaFatta) throws RemoteException {
 		Giocatore giocatore= statoPartita.getGiocatoreCorrente();
 		giocatore.setUltimaMossa(mossaFatta);
 		giocatore.incNumMosse();
@@ -609,13 +646,18 @@ public class Controller implements IFController {
 	/**
 	 * Metodo inovocato alla fine della partita, dovrà aggiornare la view
 	 */
-	private void finePartita(){
+	private void finePartita() throws RemoteException {
 		if(view!=null){
-			view.disattivaGiocatore();
+			//view.disattivaGiocatore();
 			
 			Map<Giocatore, Integer> listaPunteggi = calcolaPunteggio();
 			Map<Giocatore, Integer> punteggiOrdinati = Controller.sortByValue(listaPunteggi);
-			view.visualizzaPunteggi(punteggiOrdinati);
+			try{
+				view.visualizzaPunteggi(punteggiOrdinati);
+			}catch(RemoteException e){
+				//TODO
+				e.printStackTrace();
+			}
 		}
 		
 		
@@ -653,21 +695,40 @@ public class Controller implements IFController {
 		tipoTessere.add(TipoTerreno.SABBIA);
 		tipoTessere.add(TipoTerreno.COLTIVAZIONI);
 		Collections.shuffle(tipoTessere);
-
+		
+		//Chiama metodi della view a cui passa le regioni, le strade ed i giocatori
+		//e poi chiama l'init_mappa sul client
+		
+		
 		for(Giocatore g: statoPartita.getGiocatori()) {
 			g.addTessera(tipoTessere.get(statoPartita.getGiocatori().indexOf(g)));
 			//comunico alla view qual'è la tessera che gli è toccata
 			Color colore =  g.getColore();
-			view.modQtaTessera(tipoTessere.get(statoPartita.getGiocatori().indexOf(g)), 1, g.getColore());
+			try {
+				view.modQtaTessera(tipoTessere.get(statoPartita.getGiocatori().indexOf(g)), 1, g.getColore());
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		//Controllo se ci sono solo 2 giocatori, in questo caso vanno aumentati di 10 i danari
+		if(statoPartita.getGiocatori().size()==2){
+			for(Giocatore g : statoPartita.getGiocatori()){
+				g.initSoldiDueGiocatori();
+				//visualizza soldi modificati sul client
+			}
 		}
 
 		//Set GIOCATORE CORRENTE
 		System.out.println("SET GIOCATORE CORRENTE!");
 		statoPartita.setGiocatoreCorrente(statoPartita.getGiocatori().get(0));
-		view.setGiocatoreCorrente(statoPartita.getGiocatoreCorrente().getColore());
-
-		//TODO
-		//Chiama il metodo della view per inizializzare l'interfaccia.
+		try {
+			view.setGiocatoreCorrente(statoPartita.getGiocatoreCorrente().getColore());
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	
