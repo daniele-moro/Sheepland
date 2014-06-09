@@ -13,7 +13,7 @@ import java.util.Map;
 public interface IFView extends Remote{
 	
 	//INIZIALIZZA TUTTI GLI OGGETTI CHE SONO POSIZIONATI SOPRA LA MAPPA E I GIOCATORI
-	public abstract void initMappa();
+	public abstract void initMappa() throws RemoteException;
 
 	/**
 	 * Cambio giocatore attivo, attivando la label corrispondente al giocatore che deve giocare
@@ -90,6 +90,8 @@ public interface IFView extends Remote{
 	public abstract void attendiGiocatori() throws IOException;
 	
 	public abstract void visRisDado(int numero) throws RemoteException;
+
+	abstract void setColore(Color coloreGiocatore) throws RemoteException;
 
 
 }

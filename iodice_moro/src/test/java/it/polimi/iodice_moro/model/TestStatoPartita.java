@@ -2,6 +2,7 @@ package it.polimi.iodice_moro.model;
 
 import static org.junit.Assert.*;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -209,7 +210,7 @@ public class TestStatoPartita {
 	}
 	
 	@Test
-	public void testSetGiocatoreCorrente(){
+	public void testSetGiocatoreCorrente() throws RemoteException{
 		//Controlliamo che setGiocatoreCorrente funzioni correttamente
 		Giocatore gamer= new Giocatore("Prova");
 		statoPartita.setGiocatoreCorrente(gamer);
@@ -217,7 +218,7 @@ public class TestStatoPartita {
 	}
 	
 	@Test
-	public void testAddGiocatore(){
+	public void testAddGiocatore() throws RemoteException{
 		//Controlliamo che addGiocatore funzioni correttamente
 		Giocatore gamer1 = new Giocatore("Prova1");
 		Giocatore gamer2 = new Giocatore("Prova2");

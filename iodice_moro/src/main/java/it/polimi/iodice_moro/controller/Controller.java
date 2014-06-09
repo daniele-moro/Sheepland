@@ -8,6 +8,7 @@ import it.polimi.iodice_moro.model.Strada;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
 import it.polimi.iodice_moro.network.ViewSocket;
+import it.polimi.iodice_moro.network.ViewRMI;
 import it.polimi.iodice_moro.view.IFView;
 import it.polimi.iodice_moro.view.ThreadAnimazionePastore;
 import it.polimi.iodice_moro.view.ThreadAnimazionePecoraBianca;
@@ -837,6 +838,13 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			e.printStackTrace();
 		}
 	}*/
+	
+	//Precondizione: Metoto chiamato solo dal client in RMI.
+	@Override
+	public void addView(IFView view, Color coloreGiocatore) throws RemoteException {
+		((ViewRMI)(this.view)).addView(view, coloreGiocatore);
+		
+	}
 	
 	
 

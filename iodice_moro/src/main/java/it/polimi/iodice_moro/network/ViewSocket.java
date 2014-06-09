@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -383,6 +384,12 @@ public class ViewSocket implements IFView {
 			g.getValue().println("RIS_DADO#"+numero);
 			g.getValue().flush();
 		}
+		
+	}
+
+	@Override
+	public void setColore(Color coloreGiocatore) throws RemoteException {
+		// TODO Auto-generated method stub
 		
 	}
 

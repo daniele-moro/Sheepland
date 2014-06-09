@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -322,6 +323,13 @@ public class ControllerSocket implements IFController{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+	}
+
+	@Override
+	public void addView(IFView view, Color coloreGiocatore)
+			throws RemoteException {
+		// TODO Auto-generated method stub
 		
 	}
 	

@@ -102,5 +102,7 @@ public interface IFController extends Remote{
 	
 	public abstract void setView(IFView view2) throws RemoteException;
 
+	void addView(IFView view, Color coloreGiocatore) throws RemoteException;
+
 
 }

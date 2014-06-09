@@ -2,13 +2,14 @@ package it.polimi.iodice_moro.model;
 
 import static org.junit.Assert.*;
 
+import java.rmi.RemoteException;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class TestGiocatore {
-	Giocatore gamerTest = new Giocatore("test");
+	Giocatore gamerTest;
 
 	@Before
 	public void setUp() throws Exception {
@@ -17,7 +18,7 @@ public class TestGiocatore {
 	}
 
 	@Test
-	public void testGiocatoreString() {
+	public void testGiocatoreString() throws RemoteException {
 		//Test cotruttore Giocatore(String nome)
 		Giocatore gamerTestI= new Giocatore("prova");
 		
@@ -38,7 +39,7 @@ public class TestGiocatore {
 	}
 
 	@Test
-	public void testGiocatoreStringStrada() {
+	public void testGiocatoreStringStrada() throws RemoteException {
 		//TestCostruttore Giocatore(String nome, Strada strada)
 		Strada pos= new Strada(0);
 		Giocatore gamerTestI = new Giocatore("prova2",pos);

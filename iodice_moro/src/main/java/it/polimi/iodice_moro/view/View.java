@@ -8,6 +8,7 @@ import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
 import it.polimi.iodice_moro.network.ControllerSocket;
+import it.polimi.iodice_moro.network.ViewRMI;
 import it.polimi.iodice_moro.network.ViewSocket;
 
 import java.awt.BorderLayout;
@@ -20,9 +21,12 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
-import java.net.UnknownHostException;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +41,7 @@ import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
-public class View implements IFView {
+public class View extends UnicastRemoteObject implements IFView {
 	
 	public class AzioniBottoni implements ActionListener{
 
@@ -122,7 +126,8 @@ public class View implements IFView {
 
 	private Color coloreGamer;
 	
-	public View(IFController controller){
+	public View(IFController controller) throws RemoteException {
+		super(0);
 		this.controller=controller;
 		mossaAttuale=TipoMossa.SELEZ_POSIZ;
 		initGUI();
@@ -147,15 +152,13 @@ public class View implements IFView {
 		
 		
 		//Prelevo le posizioni dei cancelli ed i loro iD memorizzati nel MODEL
-		//posizioniCancelli = controller.getPosStrade();
-		
-		//gioc=controller.getGiocatori();
+
 		
 		//Inizializzazione del Frame principale
 		frame= new JFrame("SHEEPLAND");
 		frame.setLayout(new BorderLayout());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setAlwaysOnTop(true);
+		//frame.setAlwaysOnTop(true);
 		
 		//CENTRALPANEL
 		mappa = new JLabel();
@@ -328,7 +331,7 @@ public class View implements IFView {
 	 * @see it.polimi.iodice_moro.view.IFView#initMappa()
 	 */
 	@Override
-	public void initMappa(){
+	public void initMappa() throws RemoteException{
 		
 		
 		//Visualizzo tutte le pecore
@@ -470,6 +473,26 @@ public class View implements IFView {
 				}else{
 					System.out.println("ERRORE DI CONNESSIONE");
 				}
+				
+				 
+				/* try {
+					//E' da sostituire localhost con l'ip.
+					controller = (IFController)Naming.lookup("//localhost/Server");	
+					view = new View(controller);
+					//IFView remoteView = (IFView) UnicastRemoteObject.exportObject(view, 0);	
+					Color coloreGiocatore = controller.creaGiocatore(nome);
+					view.setColore(coloreGiocatore);
+					controller.addView(view, coloreGiocatore);
+					
+					
+				} catch (MalformedURLException e) {
+					System.err.println("URL non trovato!");
+				} catch (RemoteException e) {
+					System.err.println("Errore di connessione: " + e.getMessage() + "!");
+				} catch (NotBoundException e) {
+					System.err.println("Il riferimento passato non Ã¨ associato a nulla!");
+				}*/
+				 
 				break;
 			//Server
 			case 1:
@@ -495,7 +518,41 @@ public class View implements IFView {
 					((ViewSocket)view).riceviMossa();
 					statopartita = new StatoPartita();
 				}
-				//break;
+				
+			
+				/*try {
+					LocateRegistry.createRegistry(1099);
+				} catch (RemoteException e) {
+					System.out.println("Registry giÃ  presente!");			
+				}	
+
+
+				try {
+					controller = new Controller(statopartita);
+					//view = new View(controller);
+					ViewRMI viewRMI = new ViewRMI();
+					//E' da sostituire localhost con i veri ip.
+					Naming.rebind("//localhost/Server", controller);
+					controller.setView(viewRMI);
+					//view.attendiGiocatori();
+					System.out.println("PROVA");
+					long inizioAttesa = System.currentTimeMillis();
+					while(!(controller.getGiocatori().size()>=4 
+							|| (controller.getGiocatori().size()>=2 && System.currentTimeMillis()-inizioAttesa > 20)
+							)) {
+						Thread.sleep(10);
+					}
+					Thread.sleep(10000);
+					System.out.println("Arrivo");
+					controller.iniziaPartita();
+				} catch (MalformedURLException e) {
+					System.err.println("Impossibile registrare l'oggetto indicato!");
+				} catch (RemoteException e) {
+					System.err.println("Errore di connessione: " + e.getMessage() + "!");
+				}
+
+				*/
+				//break
 				
 			default:
 				throw new Exception();
@@ -522,9 +579,8 @@ public class View implements IFView {
 		
 	}
 	
-	private void setColore(Color colore) {
-		this.coloreGamer=colore;
-		
+	public void setColore(Color colore) {
+		this.coloreGamer=colore;	
 	}
 
 	/* (non-Javadoc)
