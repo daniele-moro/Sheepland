@@ -1,19 +1,14 @@
 package it.polimi.iodice_moro.network;
 
-import it.polimi.iodice_moro.model.TipoTerreno;
 import it.polimi.iodice_moro.model.Giocatore;
+import it.polimi.iodice_moro.model.TipoTerreno;
 import it.polimi.iodice_moro.view.IFView;
-import it.polimi.iodice_moro.view.ThreadAnimazionePastore;
-import it.polimi.iodice_moro.view.ThreadAnimazionePecoraBianca;
-import it.polimi.iodice_moro.view.ThreadAnimazionePecoraNera;
 import it.polimi.iodice_moro.view.View;
 
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -74,32 +69,24 @@ public class ClientMessageReader implements Runnable{
 						case "GIOC_CORR":{
 							//Modifica del giocatore corrente (identificato dal proprio colore)
 							Color colore = new Color(Integer.parseInt(parametri[1]));
-							
 							view.setGiocatoreCorrente(colore);
 						}break;
 
-						case "SPOSTA_PECORA_BIANCA":{
+						case "SPOSTA_PECORA_BIANCA":
 							//Animazione di spostamento della pecora bianca
-							ThreadAnimazionePecoraBianca r = new ThreadAnimazionePecoraBianca(view, parametri[1], parametri[2]);
-							Thread t = new Thread(r);
-							t.start();
-						}break;
+							view.spostaPecoraBianca( parametri[1], parametri[2]);
+							break;
 
-						case "SPOSTA_PECORA_NERA":{
+						case "SPOSTA_PECORA_NERA":
 							//Animazione di spostamento della pecora nera
 							System.out.println("spostamento pecora nera!!");
-							/*ThreadAnimazionePecoraNera r2 = new ThreadAnimazionePecoraNera(view, parametri[1], parametri[2]);
-							Thread t2 = new Thread(r2);
-							t2.start();*/
 							view.spostaPecoraNera(parametri[1], parametri[2]);
-						}break;
+							break;
 
-						case "SPOSTA_PASTORE":{
+						case "SPOSTA_PASTORE":
 							//Animazione di spostamento del pastore
-							ThreadAnimazionePastore r3 = new ThreadAnimazionePastore(view, parametri[1], parametri[2], new Color(Integer.parseInt(parametri[3])));
-							Thread t3 = new Thread(r3);
-							t3.start();
-						}break;
+							view.spostaPastore(parametri[1], parametri[2], new Color(Integer.parseInt(parametri[3])));
+							break;
 
 						/*case "ATTIVA":{
 							//Attivazione della view che è collegata al clienti a cui fa riferimento questo oggetto

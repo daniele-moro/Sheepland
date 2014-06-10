@@ -663,7 +663,7 @@ public class View extends UnicastRemoteObject implements IFView {
 	 * @param dest Point Destinazione
 	 * @param image Sfondo della label da spostare
 	 */
-	void spostaImmagine(Point sorg, Point dest, ImageIcon image){
+	synchronized void spostaImmagine(Point sorg, Point dest, ImageIcon image){
 		JLabel lblMove = new JLabel();
 		lblMove.setIcon(image);
 		
@@ -698,7 +698,9 @@ public class View extends UnicastRemoteObject implements IFView {
 		Point sorg= posizioniRegioni.get(s);
 		Point dest= posizioniRegioni.get(d);
 		
-		spostaImmagine(sorg, dest, new ImageIcon("immagini/pecora_bianca.png"));
+		ThreadAnimazionePecoraBianca r = new ThreadAnimazionePecoraBianca(this, sorg, dest);
+		Thread t = new Thread(r);
+		t.start();
 	}
 	
 	/* (non-Javadoc)
@@ -706,7 +708,7 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void spostaPastore(String s, String d, Color colore){
-		ImageIcon img = null;
+		/*ImageIcon img = null;
 		//carico l'icona della pedina corretta
 		if(colore.equals(new Color(255,0,0))){
 			img=new ImageIcon("immagini/pedinarossa.png");
@@ -741,6 +743,21 @@ public class View extends UnicastRemoteObject implements IFView {
 			pedGiocatore.setVisible(true);
 		}
 		pedGiocatore.setBounds(posizioniCancelli.get(d).x, posizioniCancelli.get(d).y, img.getIconWidth(), img.getIconHeight());
+		*/
+		Point sorg=null;
+		Point dest =posizioniCancelli.get(d);
+		if(!s.equals("")){
+			sorg=posizioniCancelli.get(s);
+		}
+		JLabel pedGiocatore = pedineGiocatori.get(colore);
+		ThreadAnimazionePastore r = new ThreadAnimazionePastore(this,
+				mappa,
+				pedGiocatore,
+				sorg,
+				dest,
+				colore);
+		Thread t = new Thread(r);
+		t.start();
 	}
 	
 	/* (non-Javadoc)
@@ -752,7 +769,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		Point dest= posizioniRegioni.get(d);
 		
 		//Avvio il Thread per l'animazione sulla schermata
-		ThreadAnimazionePecoraNera r = new ThreadAnimazionePecoraNera(mappa, pecoraNera, sorg, dest);
+		ThreadAnimazionePecoraNera r = new ThreadAnimazionePecoraNera(this, mappa, pecoraNera, sorg, dest);
 		Thread t = new Thread(r);
 		t.start();
 	}
@@ -910,6 +927,9 @@ public class View extends UnicastRemoteObject implements IFView {
 			attivaGiocatore();
 		}
 		
+	}
+	public void addPedinaGiocatore(Color colore, JLabel pedGiocatore) {
+		pedineGiocatori.put(colore, pedGiocatore);		
 	}
 
 

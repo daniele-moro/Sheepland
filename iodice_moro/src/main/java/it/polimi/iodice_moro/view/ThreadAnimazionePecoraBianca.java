@@ -1,21 +1,24 @@
 package it.polimi.iodice_moro.view;
 
+import java.awt.Point;
+
+import javax.swing.ImageIcon;
+
 public class ThreadAnimazionePecoraBianca implements Runnable {
 	
 	private View view;
-	private String ids;
-	private String idd;
+	private Point sorg;
+	private Point dest;
 	
-	public ThreadAnimazionePecoraBianca(View view2, String ids, String idd){
-		this.view=view2;
-		this.idd=idd;
-		this.ids=ids;
+	public ThreadAnimazionePecoraBianca(View view, Point sorg, Point dest){
+		this.view=view;
+		this.sorg=sorg;
+		this.dest=dest;
 	}
 
 	@Override
 	public void run() {
-		view.spostaPecoraBianca(ids, idd);
-
+		view.spostaImmagine(sorg, dest, new ImageIcon("immagini/pecora_bianca.png"));
 	}
 
 }
