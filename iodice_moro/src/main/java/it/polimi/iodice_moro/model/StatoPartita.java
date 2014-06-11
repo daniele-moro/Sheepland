@@ -3,6 +3,7 @@ package it.polimi.iodice_moro.model;
 import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -92,16 +93,16 @@ public class StatoPartita {
 	 * Costruttore per l'inizializzazione della partita, con caricamento della mappa,
 	 *  è privato perchè lo StatoPartita è un singleton, 
 	 *  per inizializare la classe si chiama {@link StatoPartita#getInstance(String path)}
-	 * @param path Indirizzo del file da cui caricare la mappa
+	 * @param file Indirizzo del file da cui caricare la mappa
 	 */
-	public StatoPartita(String path) {
+	public StatoPartita(String file) {
 		initTessere();
 		posPecoraNera=null;
 		giocatoreCorrente=null;
 		numRecinti=NUM_RECINTI_MAX;
 		turnoFinale=false;
 		mappa= new SimpleGraph<VerticeGrafo,DefaultEdge>(DefaultEdge.class);
-		caricaMappa(path);
+		caricaMappa(file);
 	}
 	
 	/**
@@ -125,11 +126,11 @@ public class StatoPartita {
 	/**
 	 * Metodo per caricare la mappa
 	 * Gestisce le eventuali eccezioni generate dal caricamento da file della mappa
-	 * @param path Indirizzo del file da cui caricare la mappa
+	 * @param file Indirizzo del file da cui caricare la mappa
 	 */
-	private void caricaMappa(String path){
+	private void caricaMappa(String file){
 		try {
-			parseMappaXML(path);
+			parseMappaXML(this.getClass().getClassLoader().getResource(file));
 		} catch (JDOMException e)  {
 			/*
 			 * L'eccezione viene loggata nel logger del model
@@ -146,11 +147,11 @@ public class StatoPartita {
 	
 	/**
 	 * Parser del file XML contenente la mappa
-	 * @param pathFile Path del file da caricare
+	 * @param url URL del file da caricare
 	 * @throws IOException 
 	 * @throws JDOMException 
 	 */
-	private void parseMappaXML(String pathFile) throws JDOMException, IOException{
+	private void parseMappaXML(URL url) throws JDOMException, IOException{
 		Map<Integer,VerticeGrafo> nodi = new HashMap<Integer, VerticeGrafo>();
 		/*
 		 * SAXBuilder usato per creare oggetti JDOM2
@@ -159,7 +160,7 @@ public class StatoPartita {
 		/*
 		 * Apertura del file xml in cui e' contenuta la mappa
 		 */
-		File xmlFile = new File(pathFile);
+		File xmlFile = new File(url.getPath());
 		/*
 		 * jdomDocument e' l'oggetto JDOM2
 		 */

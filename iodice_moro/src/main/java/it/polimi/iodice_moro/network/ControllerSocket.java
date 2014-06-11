@@ -2,11 +2,7 @@ package it.polimi.iodice_moro.network;
 
 import it.polimi.iodice_moro.controller.IFController;
 import it.polimi.iodice_moro.model.TipoMossa;
-import it.polimi.iodice_moro.model.TipoTerreno;
 import it.polimi.iodice_moro.view.IFView;
-import it.polimi.iodice_moro.view.ThreadAnimazionePastore;
-import it.polimi.iodice_moro.view.ThreadAnimazionePecoraBianca;
-import it.polimi.iodice_moro.view.ThreadAnimazionePecoraNera;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -16,7 +12,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -118,10 +113,12 @@ public class ControllerSocket implements IFController{
 			colore = new Color(Integer.parseInt(risp));
 			System.out.println("colore assegnato: " + colore);
 			
+			
 		}catch(IOException e ){
 			System.out.println("ECCEZIONE");
 			e.printStackTrace();
 		}
+		
 		return colore;
 	}
 	
@@ -310,6 +307,10 @@ public class ControllerSocket implements IFController{
 	@Override
 	public void setView(IFView view) {
 		this.view=view;
+		//creo il thread che stara in ascolto delle risposte del server
+		r = new ClientMessageReader(view, socket, input);
+		attesaRisp = new Thread(r);
+		attesaRisp.start();
 		
 	}
 
@@ -326,12 +327,5 @@ public class ControllerSocket implements IFController{
 		
 	}
 
-	@Override
-	public void addView(IFView view, Color coloreGiocatore)
-			throws RemoteException {
-		// TODO Auto-generated method stub
-		
-	}
-	
 
 }

@@ -7,16 +7,11 @@ import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.Strada;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
-import it.polimi.iodice_moro.network.ViewSocket;
 import it.polimi.iodice_moro.network.ViewRMI;
 import it.polimi.iodice_moro.view.IFView;
-import it.polimi.iodice_moro.view.ThreadAnimazionePastore;
-import it.polimi.iodice_moro.view.ThreadAnimazionePecoraBianca;
-import it.polimi.iodice_moro.view.ThreadAnimazionePecoraNera;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -50,6 +45,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	private static final Color[] vettColori = {new Color(255,0,0), new Color(0,255,0), new Color(0,0,255), new Color(255,255,0)};
 	
 	private IFView view;
+	
 	
 	/**
 	 * Costruttore del controller del giocatore.
@@ -476,6 +472,30 @@ public class Controller extends UnicastRemoteObject implements IFController {
 				}
 			}*/
 			//finito inserimento dei giocatori
+			Map<String,Point> posRegioni = new HashMap<String,Point>();
+			for(Regione r: statoPartita.getRegioni()){
+				posRegioni.put(r.getColore(),r.getPosizione());
+			}
+			
+			Map<String,Point> posStrade = new HashMap<String,Point>();
+			for(Strada s: statoPartita.getStrade()){
+				posStrade.put(s.getColore(),s.getPosizione());
+			}
+			
+			Map<Color, String> gioc= new HashMap<Color,String>();
+			for(Giocatore g:statoPartita.getGiocatori()){
+				gioc.put(g.getColore(), g.getNome());
+			}
+
+			view.setPosizioniRegioni(posRegioni);
+			view.setPosizioniStrade(posStrade);
+			try{
+			view.setGiocatori(gioc);
+			}catch(RemoteException e){
+				//TODO
+				e.printStackTrace();
+			}
+			
 			//inizializzo la mappa nelal view
 			System.out.println("INIT MAPPA SERVER");
 			view.initMappa();
@@ -483,45 +503,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
 			//DA qui inizia la partita vera e propria
 		}
-		/*Strada strada = statoPartita.getStradaByID(idStrada);
-		for(Giocatore g: statoPartita.getGiocatori()){
-			if(g.getColore().equals(colore)){
-				for(Giocatore g2: statoPartita.getGiocatori()){
-					if(g2.getPosition()==strada|| g2.getPosition2()==strada){
-						throw new Exception("non puoi posizionare qui il tuo pastore!!");
-					}
-				}
-				g.setPosition(strada);
-			}
-		}
-		for(Giocatore g: statoPartita.getGiocatori()){
-			if(g.getPosition()==null){
-				view.setGiocatoreCorrente(g.getColore());
-				return;
-			}
-		}
-		//inizializzo la Mappa nella view
-		view.initMappa();
-		//inizializzo le tessere del giocatore corrente
-	/*	for(String t:statoPartita.getGiocatoreCorrente().getTesserePossedute().keySet()){
-			if(!t.equals(TipoTerreno.SHEEPSBURG.toString())){
-				view.modQtaTessera(TipoTerreno.parseInput(t),statoPartita.getGiocatoreCorrente().getTesserePossedute().get(t));
-			}
-		}*/
-		//al posto di modificare le tessere del solo giocatore corrente, comunico le tessere di tutti i giocatori,
-		//cosi facendo anche in rete il metodo può funzionare
-		/*for(Giocatore g : statoPartita.getGiocatori()){
-			for(Entry<String,Integer> tessere : g.getTesserePossedute().entrySet()){
-				//comunico alla view il tipo di terreno della tessera, 
-				//il numero di tessere di quel tipo ed il colore del giocatore a cui è associata la tessera
-				if(!tessere.getKey().equals(TipoTerreno.SHEEPSBURG.toString())){
-					view.modQtaTessera(TipoTerreno.parseInput(tessere.getKey()), tessere.getValue(), g.getColore());
-				}
-			}
-		}
-		view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
-		checkSpostaPecoraNera();
-		//DA QUI INIZIA LA PARTITA VERA E PROPRIA*/
 	}
 	
 	/* (non-Javadoc)
@@ -670,9 +651,28 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 */
 	@Override
 	public void iniziaPartita(){
+		
+		Map<String,Point> posRegioni = new HashMap<String,Point>();
+		for(Regione r: statoPartita.getRegioni()){
+			posRegioni.put(r.getColore(),r.getPosizione());
+		}
+		
+		Map<String,Point> posStrade = new HashMap<String,Point>();
+		for(Strada s: statoPartita.getStrade()){
+			posStrade.put(s.getColore(),s.getPosizione());
+		}
+		try {
+			view.setPosizioniRegioni(posRegioni);
+			view.setPosizioniStrade(posStrade);
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
+		
 		//questo metodo deve venire chiamato una sola volta all'inizio della partita,
 		//quando tutti i gicatori sono pronti a giocare
-		
 		List<Regione> listaRegioni = statoPartita.getRegioni();
 		
 		//Inizializzazione delle pecore nelle regioni
@@ -704,7 +704,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		for(Giocatore g: statoPartita.getGiocatori()) {
 			g.addTessera(tipoTessere.get(statoPartita.getGiocatori().indexOf(g)));
 			//comunico alla view qual'è la tessera che gli è toccata
-			Color colore =  g.getColore();
 			try {
 				view.modQtaTessera(tipoTessere.get(statoPartita.getGiocatori().indexOf(g)), 1, g.getColore());
 			} catch (RemoteException e) {
@@ -813,6 +812,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 
 		List<Map.Entry<Giocatore, Integer>> list = new LinkedList<Map.Entry<Giocatore,Integer>>(map.entrySet());    
 		Collections.sort(list, new Comparator<Object>() {     
+			@SuppressWarnings({ "rawtypes", "unchecked" })
 			public int compare(Object o1, Object o2) {         
 				return ((Comparable) ((Map.Entry<Giocatore,Integer>) (o2)).getValue()).compareTo(((Map.Entry<Giocatore,Integer>) (o1)).getValue());
 			}});  
@@ -840,37 +840,17 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	}*/
 	
 	//Precondizione: Metoto chiamato solo dal client in RMI.
-	@Override
 	public void addView(IFView view, Color coloreGiocatore) throws RemoteException {
 		((ViewRMI)(this.view)).addView(view, coloreGiocatore);
 		
 	}
+	@Override
+	public void end() throws RemoteException {
+		//Metodo per la chiusura dell'applicazione
+		//Comando alla view di terminare l'applicazione
+		//Usato nel caso un utente si disconnetta dal gioco
+		view.close();
+		
+	}
 	
-	
-
-	/*public static void main(String args[]) {
-    	JFrame frame = new JFrame();
-    	List<String> listaNomi = new ArrayList<String>();
-    	for(int i = 0; i<4; i++) {
-    		try {
-    			String s = (String)JOptionPane.showInputDialog(
-    					frame,
-    					"Inserisci il nome del giocatore:"+(i+1)+"\n"
-    							+ "",
-    							"Inserimento Giocatori",
-    							JOptionPane.INFORMATION_MESSAGE,
-    							null,
-    							null,
-    							"Giocatore"+(i+1));
-    			if (!(s.equals("Giocatore "+(i+1)) || s.equals(""))) {
-    				listaNomi.add(s);
-    			}
-    		} catch (NullPointerException e) {
-    			break;
-    		}
-    	}
-    		if(listaNomi!=null) {
-    			System.out.println(listaNomi);
-    		}
-    }*/
 }

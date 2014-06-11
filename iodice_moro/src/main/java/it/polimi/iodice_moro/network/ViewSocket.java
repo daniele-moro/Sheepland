@@ -1,42 +1,35 @@
 package it.polimi.iodice_moro.network;
 
-import it.polimi.iodice_moro.controller.IFController;
+import it.polimi.iodice_moro.controller.Controller;
 import it.polimi.iodice_moro.model.Giocatore;
-import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
 import it.polimi.iodice_moro.view.IFView;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Scanner;
 
 
 //Utilizzata dal controller, quindi dal SERVER
 public class ViewSocket implements IFView {
 	
-	private IFController controller;
+	private Controller controller;
 	ServerSocket serverSocket;
 	Map<Color, Socket> socketGiocatori = new HashMap<Color, Socket>();
-	Map<Color, BufferedReader> scannerGiocatori = new HashMap<Color,BufferedReader>();
 	Map<Color, PrintWriter> writerGiocatori = new HashMap<Color,PrintWriter>();
-	//Map<Color, InputStream> inputStreamGiocatori = new HashMap<Color, InputStream>();
-	
+	private long inizio;
+	ServerConnessione attesaConnessioni;
 	/**
 	 * Metodo per ricevere tutte le mosse dei giocatori, cioè dei client
 	 */
-	public void riceviMossa(){
+	/*public void riceviMossa(){
 		int cont=0;
 		while(!serverSocket.isClosed()){
 			try {
@@ -177,45 +170,46 @@ public class ViewSocket implements IFView {
 				}
 			}
 		}
-	}
+	}*/
 	
+	/**
+	 * Metodo che si mette in attesa che i client si connettano,
+	 * quando c'è un determinato numero di utenti connessi parte chiamando iniziaPartita
+	 */
 	public void attendiGiocatori() throws IOException{
-		//Memorizzo l'"orario" in cui inizio ad aspettare i giocatori
-		long inizioAttesa = System.currentTimeMillis();
-		while(!(socketGiocatori.size()>=4 
-				|| (socketGiocatori.size()>=2 && System.currentTimeMillis()-inizioAttesa > 20)
-				)){
-			Socket nuovoGiocatore =serverSocket.accept();
-			System.out.println("Accettata connessione da IP: "+nuovoGiocatore.getInetAddress());
-			BufferedReader in =  new BufferedReader(
-		            new InputStreamReader(nuovoGiocatore.getInputStream()));
-			PrintWriter out = new PrintWriter(nuovoGiocatore.getOutputStream());
-			String nome = in.readLine();
-			
-			Color colore=controller.creaGiocatore(nome);
-			
-			System.out.println("Colore: "+colore + "NOME: "+nome);
-			socketGiocatori.put(colore, nuovoGiocatore);
-			scannerGiocatori.put(colore,in);
-			writerGiocatori.put(colore, out);
-			out.println(colore.getRGB());
-			out.flush();
-			//Crea thread per ascolto e spedizione messaggi
+		long ora = System.currentTimeMillis();
+		while(inizio==0 ||
+				(inizio!=0 &&
+					!(socketGiocatori.size()>=4 || (socketGiocatori.size()>=2 && ora-inizio>30000)))){
+			//System.out.println("attesaGiocatori");
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			ora=System.currentTimeMillis();
 		}
-		//accetta la richiesta dal client, il quale gli passa il nome del nuovo giocatore
-		//chiama il metodo creaGiocatore del controller, il quale gli torna il colore del giocatore appena creato
-		//e con il colore inserisco il socket nella hashmap
+		System.out.println("partita iniziata!!!");
+		attesaConnessioni.partitaIniziata=true;
+		controller.iniziaPartita();
 	}
 
 	
-	public ViewSocket(IFController controller, int porta) throws IOException {
+	public ViewSocket(Controller controller, int porta) throws IOException {
 		serverSocket = new ServerSocket(porta);
 		this.controller=controller;
+		inizio=0;
+		//Avvio il thread per la ricezione delle connessioni
+		//il quale riceve le connessioni e aggiugne i giocatori alla partita
+		attesaConnessioni = new ServerConnessione(controller, this,serverSocket);
+		Thread t = new Thread(attesaConnessioni);
+		t.start();
 		
 	}
 	
 
-	public ViewSocket(IFController controller) throws IOException {
+	public ViewSocket(Controller controller) throws IOException {
 		this(controller, 12345);
 		
 	}
@@ -391,6 +385,79 @@ public class ViewSocket implements IFView {
 	public void setColore(Color coloreGiocatore) throws RemoteException {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	/**
+	 * Usato per aggiungere i client connessi
+	 * @param socket
+	 * @param output
+	 * @param colore
+	 */
+	public void addClient(Socket socket, PrintWriter output, Color colore) throws RemoteException{
+		if(socketGiocatori.size()==0){
+			System.out.println("INIZIO ARRIVO CLIENT");
+			inizio=System.currentTimeMillis();
+		}
+		socketGiocatori.put(colore, socket);
+		writerGiocatori.put(colore, output);
+	}
+
+
+	@Override
+	public void setPosizioniRegioni(Map<String, Point> posizioniRegioni)  throws RemoteException{
+		System.out.println("POS_REGIONI");
+		for(Entry<Color, PrintWriter> g : writerGiocatori.entrySet()){
+			g.getValue().println("SET_POS_REG");
+			for(Entry<String,Point> reg : controller.getPosRegioni().entrySet()){
+				g.getValue().println(reg.getKey()+"#"+reg.getValue().x+"#"+reg.getValue().y);
+				g.getValue().flush();
+			}
+			g.getValue().println("END");
+			g.getValue().flush();
+		}
+	}
+
+
+	@Override
+	public void setPosizioniStrade(Map<String, Point> posizioniCancelli)  throws RemoteException{
+		
+		System.out.println("POS_STRADE");
+		for(Entry<Color, PrintWriter> g : writerGiocatori.entrySet()){
+			g.getValue().println("SET_POS_STR");
+			for(Entry<String,Point> str : controller.getPosStrade().entrySet()){
+				g.getValue().println(str.getKey()+"#"+str.getValue().x+"#"+str.getValue().y);
+				g.getValue().flush();
+			}
+			g.getValue().println("END");
+			g.getValue().flush();
+		}
+		
+	}
+
+
+	@Override
+	public void setGiocatori(Map<Color, String> giocatori)  throws RemoteException{
+		System.out.println("GET GIOCATORI");
+		for(Entry<Color, PrintWriter> g : writerGiocatori.entrySet()){
+			g.getValue().println("SET_GIOC");
+			for(Entry<Color,String> reg : controller.getGiocatori().entrySet()){
+				g.getValue().println(reg.getKey().getRGB()+"#"+reg.getValue());
+				g.getValue().flush();
+			}
+			g.getValue().println("END");
+			g.getValue().flush();
+		}
+	}
+	
+	@Override
+	public void close(){
+		//notifico a tutti che l'applicazione va chiusa
+		for(Entry<Color, PrintWriter> g : writerGiocatori.entrySet()){
+			if(!socketGiocatori.get(g.getKey()).isClosed()){
+				g.getValue().println("CLOSE");
+				g.getValue().flush();
+			}
+		}
 	}
 
 

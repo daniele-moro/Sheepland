@@ -5,6 +5,7 @@ import it.polimi.iodice_moro.model.TipoTerreno;
 import it.polimi.iodice_moro.view.IFView;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -247,6 +248,30 @@ public class ViewRMI implements IFView {
 
 	@Override
 	public void visRisDado(int numero) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setPosizioniRegioni(Map<String, Point> posizioniRegioni) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setPosizioniStrade(Map<String, Point> posizioniCancelli) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setGiocatori(Map<Color, String> giocatori) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void close() throws RemoteException {
 		// TODO Auto-generated method stub
 		
 	}

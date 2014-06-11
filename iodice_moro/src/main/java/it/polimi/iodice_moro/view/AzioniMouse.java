@@ -43,8 +43,6 @@ class AzioniMouse extends MouseAdapter{
 	//Evento di click del mouse
 	public void mouseClicked(MouseEvent e)
 	{
-		JLabel lbl=(JLabel) e.getComponent();
-
 		if(e.getX()< 0 || e.getY()<0 || e.getX()>image.getWidth() || e.getY()>image.getHeight()){
 			return;
 		}
@@ -112,14 +110,14 @@ class AzioniMouse extends MouseAdapter{
 									System.out.println("PECORA NERA");
 									//In questo caso nel terreno c'è anche la pecora nera,
 									//quindi bisogna far scegliere all'utente cosa spostare
-									Object[] options = {new ImageIcon("immagini/pecora_bianca.png"),
-											new ImageIcon("immagini/pecora_nera.png")};
+									Object[] options = {new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pecora_bianca.png")),
+											new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pecora_nera.png"))};
 									int n = JOptionPane.showOptionDialog(null,
 											"Quale pecora vuoi spostare?",
 											"Spostamento Pecora",
 											JOptionPane.YES_NO_CANCEL_OPTION,
 											JOptionPane.QUESTION_MESSAGE,
-											new ImageIcon("immagini/question.png"),
+											new ImageIcon(this.getClass().getClassLoader().getResource("immagini/question.png")),
 											options,
 											options[0]);
 									switch(n){

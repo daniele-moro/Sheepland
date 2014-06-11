@@ -1,10 +1,10 @@
 package it.polimi.iodice_moro.view;
 
-import it.polimi.iodice_moro.controller.Controller;
 import it.polimi.iodice_moro.model.Giocatore;
 import it.polimi.iodice_moro.model.TipoTerreno;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -92,6 +92,14 @@ public interface IFView extends Remote{
 	public abstract void visRisDado(int numero) throws RemoteException;
 
 	abstract void setColore(Color coloreGiocatore) throws RemoteException;
+
+	public abstract void setPosizioniRegioni(Map<String,Point> posizioniRegioni) throws RemoteException;
+
+	public abstract void setPosizioniStrade(Map<String,Point> posizioniCancelli) throws RemoteException;
+
+	public abstract void setGiocatori(Map<Color,String> giocatori) throws RemoteException;
+
+	public abstract void close() throws RemoteException;
 
 
 }

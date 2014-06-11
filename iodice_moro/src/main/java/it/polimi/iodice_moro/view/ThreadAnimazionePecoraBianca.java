@@ -18,7 +18,7 @@ public class ThreadAnimazionePecoraBianca implements Runnable {
 
 	@Override
 	public void run() {
-		view.spostaImmagine(sorg, dest, new ImageIcon("immagini/pecora_bianca.png"));
+		view.spostaImmagine(sorg, dest, new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pecora_bianca.png")));
 	}
 
 }

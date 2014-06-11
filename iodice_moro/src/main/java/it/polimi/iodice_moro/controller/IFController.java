@@ -1,12 +1,7 @@
 package it.polimi.iodice_moro.controller;
 
-import it.polimi.iodice_moro.model.Giocatore;
-import it.polimi.iodice_moro.model.StatoPartita;
-import it.polimi.iodice_moro.model.Strada;
 import it.polimi.iodice_moro.model.TipoMossa;
-import it.polimi.iodice_moro.model.TipoTerreno;
 import it.polimi.iodice_moro.view.IFView;
-import it.polimi.iodice_moro.view.View;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -102,7 +97,7 @@ public interface IFController extends Remote{
 	
 	public abstract void setView(IFView view2) throws RemoteException;
 
-	void addView(IFView view, Color coloreGiocatore) throws RemoteException;
+	public abstract void end() throws RemoteException;
 
 
 }

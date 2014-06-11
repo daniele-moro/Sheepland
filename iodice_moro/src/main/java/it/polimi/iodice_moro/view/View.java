@@ -8,7 +8,6 @@ import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
 import it.polimi.iodice_moro.network.ControllerSocket;
-import it.polimi.iodice_moro.network.ViewRMI;
 import it.polimi.iodice_moro.network.ViewSocket;
 
 import java.awt.BorderLayout;
@@ -21,11 +20,7 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +38,11 @@ import javax.swing.border.MatteBorder;
 
 public class View extends UnicastRemoteObject implements IFView {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8928439736905632720L;
+
 	public class AzioniBottoni implements ActionListener{
 
 		@Override
@@ -127,7 +127,7 @@ public class View extends UnicastRemoteObject implements IFView {
 	private Color coloreGamer;
 	
 	public View(IFController controller) throws RemoteException {
-		super(0);
+		//super(0);
 		this.controller=controller;
 		mossaAttuale=TipoMossa.SELEZ_POSIZ;
 		initGUI();
@@ -135,7 +135,7 @@ public class View extends UnicastRemoteObject implements IFView {
 	
 	//Inizializzazione della GUI
 	public void initGUI(){
-		try {
+		/*try {
 			System.out.println("PRELEVO REGIONI");
 			posizioniRegioni=controller.getPosRegioni();
 			System.out.println("PRELEVO STRADE");
@@ -144,7 +144,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
 		
 		//Prelevo le posizioni delle regioni ed il loro id memorizzati nel MODEL
@@ -157,15 +157,16 @@ public class View extends UnicastRemoteObject implements IFView {
 		//Inizializzazione del Frame principale
 		frame= new JFrame("SHEEPLAND");
 		frame.setLayout(new BorderLayout());
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.addWindowListener(new ChiusuraSchermata(controller));
+		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//frame.setAlwaysOnTop(true);
 		
 		//CENTRALPANEL
 		mappa = new JLabel();
-		mappa.setIcon(new ImageIcon("immagini/game_board.png"));
+		mappa.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/game_board.png")));
 		
-		mouse = new AzioniMouse(new File("immagini/game_board_back.png"), this, controller);
-		mouse.setRegioni("ff18d111", "ff007b0e");
+		mouse = new AzioniMouse(new File(this.getClass().getClassLoader().getResource("immagini/game_board_back.png").getPath()), this, controller);
+		mouse.setRegioni("", "");
 		mappa.addMouseListener(mouse);
 		mappa.addMouseMotionListener(mouse);
 		mappa.setLayout(null);
@@ -207,7 +208,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		
 		JLabel lbltemp = new JLabel();
 		JLabel lbltext = new JLabel();
-		lbltemp.setIcon(new ImageIcon("immagini/bosco.png"));
+		lbltemp.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/bosco.png")));
 		lbltemp.setBorder(new EmptyBorder(5,5,5,5));
 		lbltext = new JLabel();
 		lbltext.setText("0");
@@ -222,7 +223,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		leftPanel.add(lbltemp,c);
 		
 		lbltemp = new JLabel();
-		lbltemp.setIcon(new ImageIcon("immagini/coltivazione.png"));
+		lbltemp.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/coltivazione.png")));
 		lbltemp.setBorder(new EmptyBorder(5,5,5,5));
 		lbltext = new JLabel();
 		lbltext.setText("0");
@@ -237,7 +238,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		leftPanel.add(lbltemp,c);
 		
 		lbltemp = new JLabel();
-		lbltemp.setIcon(new ImageIcon("immagini/montagne.png"));
+		lbltemp.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/montagne.png")));
 		lbltemp.setBorder(new EmptyBorder(5,5,5,5));
 		lbltext = new JLabel();
 		lbltext.setText("0");
@@ -252,7 +253,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		leftPanel.add(lbltemp,c);
 		
 		lbltemp = new JLabel();
-		lbltemp.setIcon(new ImageIcon("immagini/paludi.png"));
+		lbltemp.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/paludi.png")));
 		lbltemp.setBorder(new EmptyBorder(5,5,5,5));
 		lbltext = new JLabel();
 		lbltext.setText("0");
@@ -267,7 +268,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		leftPanel.add(lbltemp,c);
 		
 		lbltemp = new JLabel();
-		lbltemp.setIcon(new ImageIcon("immagini/pianura.png"));
+		lbltemp.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pianura.png")));
 		lbltemp.setBorder(new EmptyBorder(5,5,5,5));
 		lbltext = new JLabel();
 		lbltext.setText("0");
@@ -282,7 +283,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		leftPanel.add(lbltemp,c);
 		
 		lbltemp = new JLabel();
-		lbltemp.setIcon(new ImageIcon("immagini/sabbia.png"));
+		lbltemp.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/sabbia.png")));
 		lbltemp.setBorder(new EmptyBorder(5,5,5,5));
 		lbltext = new JLabel();
 		lbltext.setText("0");
@@ -305,6 +306,8 @@ public class View extends UnicastRemoteObject implements IFView {
 		c.fill=GridBagConstraints.BOTH;
 		c.anchor=GridBagConstraints.LINE_START;
 		leftPanel.add(lblDado,c);
+		
+		frame.add(leftPanel, BorderLayout.WEST);
 
 		//LABEL PER GLI ERRORI
 		lblOutput = new JLabel();
@@ -314,11 +317,6 @@ public class View extends UnicastRemoteObject implements IFView {
 		c.gridy=7;
 		c.anchor=GridBagConstraints.WEST;
 		frame.add(lblOutput,BorderLayout.SOUTH);
-		
-		
-		
-		
-		frame.add(leftPanel, BorderLayout.WEST);
 		
 		frame.setVisible(true);
 		frame.setResizable(false);
@@ -332,14 +330,24 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void initMappa() throws RemoteException{
+		/*try {
+			System.out.println("PRELEVO REGIONI");
+			posizioniRegioni=controller.getPosRegioni();
+			System.out.println("PRELEVO STRADE");
+			posizioniCancelli = controller.getPosStrade();
+			gioc=controller.getGiocatori();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 		
 		
 		//Visualizzo tutte le pecore
 		//File da passare al BackgroundedLabel per l'immagine di sfondo
-		File pecBianca = new File("immagini/pecora_bianca.png");
+		File pecBianca = new File(this.getClass().getClassLoader().getResource("immagini/pecora_bianca.png").getPath());
 		//Usata solo per sapere le dimensioni dell'immagine della pecora bianca
-		ImageIcon iconBianca = new ImageIcon("immagini/pecora_bianca.png");
-		ImageIcon pecNera = new ImageIcon("immagini/pecora_nera.png");
+		ImageIcon iconBianca = new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pecora_bianca.png"));
+		ImageIcon pecNera = new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pecora_nera.png"));
 		for(String s: posizioniRegioni.keySet()){
 			Point p = posizioniRegioni.get(s);
 			if(s.equals("ff002e73")){
@@ -465,11 +473,11 @@ public class View extends UnicastRemoteObject implements IFView {
 				controller = new ControllerSocket(ip, Integer.parseInt(porta));
 				Color colore=controller.creaGiocatore(nome);
 				if(colore!=null){
-					view = new View(controller);
+					view = new View((ControllerSocket)controller);
 					((View)view).setColore(colore);
 					controller.setView(view);	
 					System.out.println("Chiamata a iniziapartita");
-					controller.iniziaPartita();
+					//controller.iniziaPartita();
 				}else{
 					System.out.println("ERRORE DI CONNESSIONE");
 				}
@@ -506,18 +514,19 @@ public class View extends UnicastRemoteObject implements IFView {
 							null,
 							"12345");
 				}
-				while(true){
+				//while(true){
 					controller = new Controller(statopartita);
 					int porta2 = Integer.parseInt(porta);
 					System.out.println("PORTA DI ASCOLTO: "+porta2);
-					view = new ViewSocket(controller, Integer.parseInt(porta));
+					view = new ViewSocket((Controller)controller, Integer.parseInt(porta));
 					//metto in attesa il server dei gioacatori
 					controller.setView(view);
 					((ViewSocket)view).attendiGiocatori();
-					System.out.println("ora attendo mosse!");
-					((ViewSocket)view).riceviMossa();
-					statopartita = new StatoPartita();
-				}
+					break;
+					//System.out.println("ora attendo mosse!");
+					//((ViewSocket)view).riceviMossa();
+					//statopartita = new StatoPartita();
+				//}
 				
 			
 				/*try {
@@ -561,10 +570,10 @@ public class View extends UnicastRemoteObject implements IFView {
 		//Offline	
 		case 1:
 			controller = new Controller(statopartita);
-			view = new View(controller);
+			//view = new View(controller);
 			controller.creaGiocatore("prova");
 			controller.creaGiocatore("prova");
-			controller.setView(view);	
+			//controller.setView(view);	
 			System.out.println("Chiamata a iniziapartita");
 			controller.iniziaPartita();
 			break;
@@ -633,14 +642,14 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void addCancelloNormale(String stradaID){
-		mettiCancello(stradaID, new ImageIcon("immagini/cancello.png"));
+		mettiCancello(stradaID, new ImageIcon(this.getClass().getClassLoader().getResource("immagini/cancello.png")));
 	}
 	/* (non-Javadoc)
 	 * @see it.polimi.iodice_moro.view.IFView#addCancelloFinale(java.lang.String)
 	 */
 	@Override
 	public void addCancelloFinale(String stradaID){
-		mettiCancello(stradaID, new ImageIcon("immagini/cancello_finale.png"));
+		mettiCancello(stradaID, new ImageIcon(this.getClass().getClassLoader().getResource("immagini/cancello_finale.png")));
 	}
 	
 	/**
@@ -822,7 +831,7 @@ public class View extends UnicastRemoteObject implements IFView {
 			return;
 		}
 		JLabel lblDanaro = new JLabel();
-		ImageIcon imgDanaro = new ImageIcon("immagini/danaro.png");
+		ImageIcon imgDanaro = new ImageIcon(this.getClass().getClassLoader().getResource("immagini/danaro.png"));
 		lblDanaro.setIcon(imgDanaro);
 		lblTessera.add(lblDanaro);
 		lblDanaro.setBounds(posx, 0, imgDanaro.getIconWidth(), imgDanaro.getIconHeight());
@@ -843,7 +852,9 @@ public class View extends UnicastRemoteObject implements IFView {
 		 }
 		tabellaPunteggi.setEnabled(false);
 		JOptionPane.showMessageDialog(null, tabellaPunteggi, "Lista Punteggi", JOptionPane.INFORMATION_MESSAGE);
+		
 		if(controller instanceof ControllerSocket){
+			System.out.println("CHIUSURA CONNESSIONE");
 			((ControllerSocket)controller).end();
 		}
 	}
@@ -903,7 +914,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		if(giocatoreCorrente.equals(coloreGamer)){
 			disattivaGiocatore();
 		}
-		lblDado.setIcon(new ImageIcon("immagini/dado.gif"));
+		lblDado.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/dado.gif")));
 		frame.repaint();
 		try {
 			//metto in pausa il thread per dare la sensazione che si stia lanciando il dado
@@ -928,8 +939,35 @@ public class View extends UnicastRemoteObject implements IFView {
 		}
 		
 	}
+	
 	public void addPedinaGiocatore(Color colore, JLabel pedGiocatore) {
 		pedineGiocatori.put(colore, pedGiocatore);		
+	}
+
+	//METODI per settare le posizioni delle regioni, dei cancelli e dei giocatori
+	@Override
+	public void setPosizioniRegioni(Map<String, Point> posizioniRegioni) {
+		this.posizioniRegioni=posizioniRegioni;
+		
+	}
+
+	@Override
+	public void setPosizioniStrade(Map<String, Point> posizioniCancelli) {
+		this.posizioniCancelli=posizioniCancelli;
+	}
+
+	@Override
+	public void setGiocatori(Map<Color, String> giocatori) {
+		this.gioc=giocatori;
+		
+	}
+
+	@Override
+	public void close() throws RemoteException {
+		controller.end();
+		JOptionPane.showMessageDialog(frame,"Un utente si è disconnesso, la partita termina qui. \n Chiusura dell'applicazione");
+		System.exit(0);
+		
 	}
 
 

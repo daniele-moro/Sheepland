@@ -6,9 +6,11 @@ import it.polimi.iodice_moro.view.IFView;
 import it.polimi.iodice_moro.view.View;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -87,6 +89,88 @@ public class ClientMessageReader implements Runnable{
 							//Animazione di spostamento del pastore
 							view.spostaPastore(parametri[1], parametri[2], new Color(Integer.parseInt(parametri[3])));
 							break;
+							
+						case "SET_POS_REG":{
+							Map<String, Point> posRegioni= new HashMap<String,Point>();
+							//LETTURA DELLA RISPOSTA
+							String messaggio="";
+							try {
+								messaggio = input.readLine();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							System.out.println("rispostar icveuto ");
+							String[] valori = messaggio.split("#");
+							System.out.println(messaggio);
+							while(!valori[0].equals("END")){
+								posRegioni.put(valori[0], new Point(Integer.parseInt(valori[1]),Integer.parseInt(valori[2])));
+								try {
+									messaggio = input.readLine();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								valori = messaggio.split("#");
+							}
+							view.setPosizioniRegioni(posRegioni);
+							
+						}break;
+						
+						case "SET_POS_STR":{
+							Map<String, Point> posStrade= new HashMap<String,Point>();
+							//LETTURA DELLA RISPOSTA
+							String messaggio="";
+							try {
+								messaggio = input.readLine();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							String[] valori = messaggio.split("#");
+							System.out.println(messaggio);
+							while(!valori[0].equals("END")){
+								posStrade.put(valori[0], new Point(Integer.parseInt(valori[1]),Integer.parseInt(valori[2])));
+								try {
+									messaggio = input.readLine();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								valori = messaggio.split("#");
+								System.out.println(messaggio);
+							}
+							view.setPosizioniStrade(posStrade);
+							
+						}break;
+						
+						case "SET_GIOC":{
+							Map<Color,String> giocatori = new HashMap<Color,String>();
+							String messaggio="";
+							try {
+								messaggio = input.readLine();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							System.out.println(messaggio);
+							String[] valori = messaggio.split("#");
+
+							while(!valori[0].equals("END")){
+								Color colore = new Color(Integer.parseInt(valori[0]));
+								String pos=valori[1];
+								giocatori.put(colore,pos);
+								try {
+									messaggio = input.readLine();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								valori = messaggio.split("#");
+							}
+							view.setGiocatori(giocatori);
+							
+						}break;
 
 						/*case "ATTIVA":{
 							//Attivazione della view che è collegata al clienti a cui fa riferimento questo oggetto
@@ -146,6 +230,11 @@ public class ClientMessageReader implements Runnable{
 						case "RIS_DADO":{
 							System.out.println("Visualizzazione del risultato del dado");
 							view.visRisDado(Integer.parseInt(parametri[1]));
+						}break;
+						
+						case "CLOSE":{
+							//messaggio ricevuto alla chiusura dell'applicazione per vari motivi
+							view.close();
 						}break;
 
 						case "FINE_PARTITA":{
