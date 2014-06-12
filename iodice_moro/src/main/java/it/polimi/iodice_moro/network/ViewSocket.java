@@ -315,14 +315,6 @@ public class ViewSocket implements IFView {
 		PrintWriter g =writerGiocatori.get(colore);
 		g.println("MOD_QTA_TESS#"+tess.toString()+"#"+num+"#"+colore.getRGB());
 		g.flush();
-		/*
-		for(Entry<Color, PrintWriter> g : writerGiocatori.entrySet()){
-			if(g.getValue().equals(colore)){
-				//se l'if è verificato significa che l'informazione devo inviarla a questo client
-				g.getValue().println("MOD_QTA_TESS#"+tess.toString()+"#"+num+"#"+colore.getRGB());
-				g.getValue().flush();
-			}
-		}*/
 	}
 
 	@Override

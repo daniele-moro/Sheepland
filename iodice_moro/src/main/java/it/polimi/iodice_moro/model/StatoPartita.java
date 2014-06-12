@@ -165,6 +165,7 @@ public class StatoPartita {
 		 * jdomDocument e' l'oggetto JDOM2
 		 */
 		Document jdomDocument = (Document) jdomBuilder.build(xmlFile);
+		
 		/*
 		 * Prelevo il nodo ROOT
 		 */
@@ -238,7 +239,6 @@ public class StatoPartita {
 			 */
 			mappa.addEdge((VerticeGrafo)nodoSource, (VerticeGrafo)nodoDest);
 		}
-
 		//DEBUG DEL GRAFO
 		//System.out.println(mappa.toString());
 		//System.out.println(mappa.edgesOf(nodi.get(1)).toString());

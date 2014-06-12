@@ -7,7 +7,6 @@ import it.polimi.iodice_moro.view.IFView;
 import java.awt.Color;
 import java.awt.Point;
 import java.io.IOException;
-import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;

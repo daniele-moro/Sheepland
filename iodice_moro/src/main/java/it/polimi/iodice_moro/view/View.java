@@ -150,13 +150,6 @@ public class View extends UnicastRemoteObject implements IFView {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
-		
-		
-		//Prelevo le posizioni delle regioni ed il loro id memorizzati nel MODEL
-		//posizioniRegioni=controller.getPosRegioni();
-		
-		
-		//Prelevo le posizioni dei cancelli ed i loro iD memorizzati nel MODEL
 
 		
 		//Inizializzazione del Frame principale
@@ -224,7 +217,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		lbltext.setBounds(90, 90, 20, 20);
 		lblTessere.put(TipoTerreno.BOSCO, lbltext);
 		c.gridx=0;
-		c.gridy=0;
+		c.gridy=1;
 		leftPanel.add(lbltemp,c);
 		
 		lbltemp = new JLabel();
@@ -239,7 +232,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		lbltext.setBounds(90, 90, 20, 20);
 		lblTessere.put(TipoTerreno.COLTIVAZIONI, lbltext);
 		c.gridx=1;
-		c.gridy=0;
+		c.gridy=1;
 		leftPanel.add(lbltemp,c);
 		
 		lbltemp = new JLabel();
@@ -254,7 +247,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		lbltext.setBounds(90, 90, 20, 20);
 		lblTessere.put(TipoTerreno.MONTAGNA, lbltext);
 		c.gridx=0;
-		c.gridy=1;
+		c.gridy=2;
 		leftPanel.add(lbltemp,c);
 		
 		lbltemp = new JLabel();
@@ -269,7 +262,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		lbltext.setBounds(90, 90, 20, 20);
 		lblTessere.put(TipoTerreno.PALUDI, lbltext);
 		c.gridx=1;
-		c.gridy=1;
+		c.gridy=2;
 		leftPanel.add(lbltemp,c);
 		
 		lbltemp = new JLabel();
@@ -284,7 +277,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		lbltext.setBounds(90, 90, 20, 20);
 		lblTessere.put(TipoTerreno.PIANURA, lbltext);
 		c.gridx=0;
-		c.gridy=2;
+		c.gridy=3;
 		leftPanel.add(lbltemp,c);
 		
 		lbltemp = new JLabel();
@@ -299,7 +292,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		lbltext.setBounds(90, 90, 20, 20);
 		lblTessere.put(TipoTerreno.SABBIA, lbltext);
 		c.gridx=1;
-		c.gridy=2;
+		c.gridy=3;
 		leftPanel.add(lbltemp,c);
 		
 		//LABEL per il dado
@@ -307,7 +300,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		lblDado.setText("  ");
 		//lblDado.setVisible(false);
 		c.gridx=0;
-		c.gridy=7;
+		c.gridy=8;
 		c.fill=GridBagConstraints.BOTH;
 		c.anchor=GridBagConstraints.LINE_START;
 		leftPanel.add(lblDado,c);
@@ -318,8 +311,6 @@ public class View extends UnicastRemoteObject implements IFView {
 		lblOutput = new JLabel();
 		lblOutput.setText("  ");
 		lblOutput.setBorder(new EmptyBorder(30,10,0,0));
-		c.gridx=0;
-		c.gridy=7;
 		c.anchor=GridBagConstraints.WEST;
 		frame.add(lblOutput,BorderLayout.SOUTH);
 		
@@ -335,17 +326,6 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void initMappa() throws RemoteException{
-		/*try {
-			System.out.println("PRELEVO REGIONI");
-			posizioniRegioni=controller.getPosRegioni();
-			System.out.println("PRELEVO STRADE");
-			posizioniCancelli = controller.getPosStrade();
-			gioc=controller.getGiocatori();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-		
 		
 		//Visualizzo tutte le pecore
 		//File da passare al BackgroundedLabel per l'immagine di sfondo
@@ -384,7 +364,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		JLabel lbltemp2;
 		c.gridwidth=2;
 		c.fill=GridBagConstraints.HORIZONTAL;
-		int py=3;
+		int py=4;
 		for(Color colore:gioc.keySet()){
 			lbltemp2 = new JLabel();
 			lbltemp2.setText(gioc.get(colore)+" SOLDI: 20");
@@ -615,7 +595,18 @@ public class View extends UnicastRemoteObject implements IFView {
 	}
 	
 	public void setColore(Color colore) {
-		this.coloreGamer=colore;	
+		this.coloreGamer=colore;
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx=0;
+		c.gridy=0;
+		c.gridwidth=2;
+		c.fill=GridBagConstraints.HORIZONTAL;
+		JLabel lblGamer = new JLabel();
+		lblGamer.setText("Questo è il tuo colore!");
+		lblGamer.setBackground(colore);
+		lblGamer.setOpaque(true);
+		lblGamer.setBorder(new MatteBorder(20,20,20,20, colore));
+		leftPanel.add(lblGamer,c);
 	}
 
 	/* (non-Javadoc)
@@ -853,7 +844,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		JLabel lblTessera = (JLabel)lblTessere.get(tess).getParent();
 		int posx = 20* (lblTessera.getComponentCount()-1);
 		if(posx<0){
-			lblOutput.setText("ERRORE NELL'INCREMENTO DEL PREZZZO TESSERA!!");
+			lblOutput.setText("ERRORE NELL'INCREMENTO DEL PREZZO TESSERA!!");
 			return;
 		}
 		JLabel lblDanaro = new JLabel();
@@ -867,7 +858,7 @@ public class View extends UnicastRemoteObject implements IFView {
 	 * @see it.polimi.iodice_moro.view.IFView#visualizzaPunteggi(java.util.Map)
 	 */
 	@Override
-	public synchronized void visualizzaPunteggi(Map<Giocatore, Integer> punteggiOrdinati) {	
+	public void visualizzaPunteggi(Map<Giocatore, Integer> punteggiOrdinati) {	
 		disattivaGiocatore();
 		JTable tabellaPunteggi = new JTable(punteggiOrdinati.size(),2);
 		int row = 0;
@@ -912,6 +903,14 @@ public class View extends UnicastRemoteObject implements IFView {
 	@Override
 	public void setGiocatoreCorrente(Color colore) {
 		giocatoreCorrente=colore;
+		if(colore.equals(coloreGamer)){
+			//è il turno di questo giocatore
+			String vis="E' il tuo turno!";
+			if(mossaAttuale.equals(TipoMossa.SELEZ_POSIZ)){
+				vis+="\nSeleziona la posizione del tuo pastore";
+			}
+			JOptionPane.showMessageDialog(frame, vis,"TURNO" , JOptionPane.INFORMATION_MESSAGE);
+		}
 	}
 
 	public Color getGiocatoreCorrente() {

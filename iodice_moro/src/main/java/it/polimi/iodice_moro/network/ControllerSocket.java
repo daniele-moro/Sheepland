@@ -113,10 +113,13 @@ public class ControllerSocket implements IFController{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			colore = new Color(Integer.parseInt(risp));
-			System.out.println("colore assegnato: " + colore);
-			
-			
+			if(risp.equals("NO")){
+				//La connessione non è avvenuta
+				System.out.println("CONNESSIONE NON AVVENUTA");
+			} else {
+				colore = new Color(Integer.parseInt(risp));
+				System.out.println("colore assegnato: " + colore);
+			}			
 		}catch(IOException e ){
 			System.out.println("ECCEZIONE");
 			e.printStackTrace();
@@ -158,7 +161,7 @@ public class ControllerSocket implements IFController{
 		return retValue;
 	}
 
-
+	//CONTROLLARE SE VIENE USATO; NON DOVREBBE VENIRE USAtO, iniziaPartita chiamato dal server
 	@Override
 	public void iniziaPartita() {
 		output.println("INIZIA_PARTITA");
@@ -173,7 +176,7 @@ public class ControllerSocket implements IFController{
 	public Map<String, Point> getPosRegioni() {
 		Map<String,Point> posRegioni = new HashMap<String,Point>();
 		synchronized(input){
-			System.out.println("RICHEISTA POS REGIONI");
+			System.out.println("RICHIESTA POS REGIONI");
 			output.println("POS_REGIONI");
 			System.out.println("Inviata richiesta");
 			output.flush();
