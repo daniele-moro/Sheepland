@@ -1,5 +1,6 @@
 package it.polimi.iodice_moro.network;
 
+import it.polimi.iodice_moro.exceptions.PartitaIniziataException;
 import it.polimi.iodice_moro.model.Giocatore;
 import it.polimi.iodice_moro.model.TipoTerreno;
 import it.polimi.iodice_moro.view.IFView;
@@ -14,12 +15,18 @@ import java.util.Map;
 public class ViewRMI implements IFView {
 	
 	Map<Color, IFView> listaView;
+	ServerAttesaRMI server;
 
 	public ViewRMI() {
 		listaView = new HashMap<Color, IFView>();
 		
 	}
 	
+	public ViewRMI(ServerAttesaRMI server) {
+		this();
+		this.server=server;
+	}
+
 	public void initMappa() {
 		for(IFView view : listaView.values()) {
 			try {
@@ -224,8 +231,14 @@ public class ViewRMI implements IFView {
 	}
 	
 	//Aggiunge istanza View alla lista della View. Utilizzato in implementazione View RMI.
-	public void addView(IFView view, Color coloreGiocatore) throws RemoteException {
-		listaView.put(coloreGiocatore, view);
+	public void addView(IFView view, Color coloreGiocatore) throws RemoteException, PartitaIniziataException {
+		if(!server.isIniziata()) {
+			server.setInizio();
+			listaView.put(coloreGiocatore, view);
+		} else {
+			throw new PartitaIniziataException("Partita già iniziata");
+		}
+		
 	}
 
 	@Override

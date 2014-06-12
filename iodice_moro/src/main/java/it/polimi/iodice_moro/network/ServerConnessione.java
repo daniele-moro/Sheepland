@@ -1,6 +1,7 @@
 package it.polimi.iodice_moro.network;
 
 import it.polimi.iodice_moro.controller.Controller;
+import it.polimi.iodice_moro.exceptions.PartitaIniziataException;
 import it.polimi.iodice_moro.model.StatoPartita;
 
 import java.awt.Color;
@@ -63,12 +64,18 @@ public class ServerConnessione implements Runnable {
 							//se tutti sono connessi, ma la partita deve ancora iniziare, aggiungo il client agli altri giocatori
 							System.out.println("Accettata connessione da IP: "+nuovoGiocatore.getInetAddress());
 							//creo il nuovo giocatore
-							Color colore=controller.creaGiocatore(nome);
-							System.out.println("Colore: "+colore + "NOME: "+nome);
-							socketGiocatori.put(colore, nuovoGiocatore);
-							out.println(colore.getRGB());
-							out.flush();
-							view.addClient(nuovoGiocatore, out, colore);
+							Color colore;
+							try {
+								colore = controller.creaGiocatore(nome);
+								System.out.println("Colore: "+colore + "NOME: "+nome);
+								socketGiocatori.put(colore, nuovoGiocatore);
+								out.println(colore.getRGB());
+								out.flush();
+								view.addClient(nuovoGiocatore, out, colore);
+							} catch (PartitaIniziataException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 							//devo creare il nuovo threda per ascoltare e spedire i messaggi!
 							//se ci sono almeno 2 giocatori ed è passato più di mezzo minuto da quando si è connesso il primo utente
 							//allora faccio iniziare la partita
@@ -111,16 +118,22 @@ public class ServerConnessione implements Runnable {
 						t.start();
 						
 						//Creo il nuovo giocatore
-						Color colore=controller.creaGiocatore(nome);
-						System.out.println("Colore: "+colore + "NOME: "+nome);
-						socketGiocatori.put(colore, nuovoGiocatore);
-						out.println(colore.getRGB());
-						out.flush();
-						view.addClient(nuovoGiocatore, out, colore);
-						//devo creare il nuovo threda per ascoltare e spedire i messaggi!
-						ServerMessageReader messageReader = new ServerMessageReader(controller, nuovoGiocatore, out, in);
-						Thread t2 = new Thread(messageReader);
-						t2.start();
+						Color colore;
+						try {
+							colore = controller.creaGiocatore(nome);
+							System.out.println("Colore: "+colore + "NOME: "+nome);
+							socketGiocatori.put(colore, nuovoGiocatore);
+							out.println(colore.getRGB());
+							out.flush();
+							view.addClient(nuovoGiocatore, out, colore);
+							//devo creare il nuovo threda per ascoltare e spedire i messaggi!
+							ServerMessageReader messageReader = new ServerMessageReader(controller, nuovoGiocatore, out, in);
+							Thread t2 = new Thread(messageReader);
+							t2.start();
+						} catch (PartitaIniziataException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 
 				}

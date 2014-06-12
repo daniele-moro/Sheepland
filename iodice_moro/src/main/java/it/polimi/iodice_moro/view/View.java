@@ -3,11 +3,13 @@ package it.polimi.iodice_moro.view;
 
 import it.polimi.iodice_moro.controller.Controller;
 import it.polimi.iodice_moro.controller.IFController;
+import it.polimi.iodice_moro.exceptions.PartitaIniziataException;
 import it.polimi.iodice_moro.model.Giocatore;
 import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
 import it.polimi.iodice_moro.network.ControllerSocket;
+import it.polimi.iodice_moro.network.ServerAttesaRMI;
 import it.polimi.iodice_moro.network.ViewRMI;
 import it.polimi.iodice_moro.network.ViewSocket;
 
@@ -487,14 +489,26 @@ public class View extends UnicastRemoteObject implements IFView {
 				else {
 					try {
 						//E' da sostituire localhost con l'ip.
-						controller = (IFController)Naming.lookup("///Server");	
+						controller = (IFController)Naming.lookup("///Server");
+						if(controller.getGiocatori().size()>=4) {
+							JOptionPane.showMessageDialog(frame,
+								    "Partita già iniziata. Non puoi connetterti.");
+						}
 						view = new View(controller);
 						//IFView remoteView = (IFView) UnicastRemoteObject.exportObject(view, 0);	
-						Color coloreGiocatore = controller.creaGiocatore(nome);
-						view.setColore(coloreGiocatore);
-						//TODO: Corretto?
-						controller.addView(view, coloreGiocatore);
-
+						try {
+							//TODO: Gestire il caso in cui il giocatore provi a connettersi
+							//a partita già iniziata (con meno di 4 giocatori).
+							Color coloreGiocatore = controller.creaGiocatore(nome);
+							view.setColore(coloreGiocatore);
+							controller.addView(view, coloreGiocatore);
+							
+						} catch(PartitaIniziataException e) {
+							JOptionPane.showMessageDialog(frame,
+								    "Partita già iniziata. Non puoi connetterti.");
+							frame.dispose();
+						}				
+						
 						
 					} catch (MalformedURLException e) {
 						System.err.println("URL non trovato!");
@@ -545,21 +559,15 @@ public class View extends UnicastRemoteObject implements IFView {
 					try {
 						controller = new Controller(statopartita);
 						//view = new View(controller);
-						ViewRMI viewRMI = new ViewRMI();
+						ServerAttesaRMI server = new ServerAttesaRMI(controller);
+						ViewRMI viewRMI = new ViewRMI(server);
 						//E' da sostituire localhost con i veri ip.
 						Naming.rebind("//localhost/Server", controller);
 						controller.setView(viewRMI);
-						//view.attendiGiocatori();
+						Thread t = new Thread(server);
+						t.start();
 						System.out.println("PROVA");
-						long inizioAttesa = System.currentTimeMillis();
-						while(!(controller.getGiocatori().size()>=4 
-								|| (controller.getGiocatori().size()>=2 && System.currentTimeMillis()-inizioAttesa > 20)
-								)) {
-							Thread.sleep(10);
-						}
-						Thread.sleep(10000);
 						System.out.println("Arrivo");
-						controller.iniziaPartita();
 					} catch (MalformedURLException e) {
 						System.err.println("Impossibile registrare l'oggetto indicato!");
 					} catch (RemoteException e) {

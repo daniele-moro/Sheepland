@@ -1,6 +1,7 @@
 package it.polimi.iodice_moro.view;
 
 import it.polimi.iodice_moro.model.Giocatore;
+import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.TipoTerreno;
 
 import java.awt.Color;

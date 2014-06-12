@@ -2,6 +2,7 @@ package it.polimi.iodice_moro.controller;
 
 import it.polimi.iodice_moro.exceptions.IllegalClickException;
 import it.polimi.iodice_moro.exceptions.NotAllowedMoveException;
+import it.polimi.iodice_moro.exceptions.PartitaIniziataException;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.view.IFView;
 
@@ -30,7 +31,7 @@ public interface IFController extends Remote{
 
 	
 	//OK
-	public abstract Color creaGiocatore(String nome) throws RemoteException ;
+	public abstract Color creaGiocatore(String nome) throws RemoteException, PartitaIniziataException ;
 
 	
 	//OK
@@ -103,7 +104,7 @@ public interface IFController extends Remote{
 
 	public abstract void end() throws RemoteException;
 
-	public abstract void addView(IFView view, Color coloreGiocatore) throws RemoteException;
+	public abstract void addView(IFView view, Color coloreGiocatore) throws RemoteException, PartitaIniziataException;
 	
 	
 

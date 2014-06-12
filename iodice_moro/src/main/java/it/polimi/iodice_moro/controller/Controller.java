@@ -3,6 +3,7 @@ package it.polimi.iodice_moro.controller;
 
 import it.polimi.iodice_moro.exceptions.IllegalClickException;
 import it.polimi.iodice_moro.exceptions.NotAllowedMoveException;
+import it.polimi.iodice_moro.exceptions.PartitaIniziataException;
 import it.polimi.iodice_moro.model.Giocatore;
 import it.polimi.iodice_moro.model.Regione;
 import it.polimi.iodice_moro.model.StatoPartita;
@@ -424,7 +425,8 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @see it.polimi.iodice_moro.controller.IFController#creaGiocatore(java.lang.String)
 	 */
 	@Override
-	public synchronized Color creaGiocatore(String nome) throws RemoteException {
+	public synchronized Color creaGiocatore(String nome) throws RemoteException, PartitaIniziataException {
+		if(statoPartita.getGiocatori().size()>=4) throw new PartitaIniziataException();
 		Giocatore nuovoGiocatore = new Giocatore(nome);
 		statoPartita.addGiocatore(nuovoGiocatore);
 		nuovoGiocatore.setColore(vettColori[statoPartita.getGiocatori().indexOf(nuovoGiocatore)]);
@@ -842,7 +844,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	}*/
 	
 	//Precondizione: Metoto chiamato solo dal client in RMI.
-	public void addView(IFView view, Color coloreGiocatore) throws RemoteException {
+	public void addView(IFView view, Color coloreGiocatore) throws RemoteException, PartitaIniziataException {
 		((ViewRMI)(this.view)).addView(view, coloreGiocatore);
 		
 	}
