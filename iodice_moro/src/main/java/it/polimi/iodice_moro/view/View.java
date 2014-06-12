@@ -614,7 +614,7 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void cambiaGiocatore(Color color){
-		giocatoreCorrente=color;
+		setGiocatoreCorrente(color);
 		//Evidenzio il giocatore del turno corrente
 		for(Color col: giocatori.keySet()){
 			if(col.equals(color)){
@@ -903,7 +903,7 @@ public class View extends UnicastRemoteObject implements IFView {
 	@Override
 	public void setGiocatoreCorrente(Color colore) {
 		giocatoreCorrente=colore;
-		if(colore.equals(coloreGamer)){
+		if(giocatoreCorrente.equals(coloreGamer)){
 			//è il turno di questo giocatore
 			String vis="E' il tuo turno!";
 			if(mossaAttuale.equals(TipoMossa.SELEZ_POSIZ)){
@@ -992,7 +992,6 @@ public class View extends UnicastRemoteObject implements IFView {
 		controller.end();
 		JOptionPane.showMessageDialog(frame,"Un utente si è disconnesso, la partita termina qui. \n Chiusura dell'applicazione");
 		System.exit(0);
-		
 	}
 
 
