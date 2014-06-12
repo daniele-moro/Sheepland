@@ -1,6 +1,8 @@
 package it.polimi.iodice_moro.network;
 
 import it.polimi.iodice_moro.controller.IFController;
+import it.polimi.iodice_moro.exceptions.IllegalClickException;
+import it.polimi.iodice_moro.exceptions.NotAllowedMoveException;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.view.IFView;
 
@@ -12,6 +14,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,26 +48,26 @@ public class ControllerSocket implements IFController{
 	}
 	
 	@Override
-	public void spostaPecora(String idRegione) throws Exception {
+	public void spostaPecora(String idRegione) throws NotAllowedMoveException {
 		output.println("SPOSTA_PECORA#"+idRegione);
 		output.flush();
 	}
 
 	@Override
-	public void spostaPecoraNera(String idRegPecoraNera) throws Exception {
+	public void spostaPecoraNera(String idRegPecoraNera) throws NotAllowedMoveException, RemoteException {
 		output.println("SPOSTA_PECORA_NERA#"+idRegPecoraNera);
 		output.flush();
 	}
 
 
 	@Override
-	public void acquistaTessera(String idRegione) throws Exception {
+	public void acquistaTessera(String idRegione) throws IllegalClickException, NotAllowedMoveException, RemoteException {
 		output.println("COMPRA_TESSERA#"+idRegione);
 		output.flush();
 	}
 
 	@Override
-	public void spostaPedina(String idStrada) throws Exception {
+	public void spostaPedina(String idStrada) throws IllegalClickException, NotAllowedMoveException, RemoteException {
 		output.println("SPOSTA_PASTORE#"+idStrada);
 		output.flush();
 	}
@@ -299,7 +302,7 @@ public class ControllerSocket implements IFController{
 	}
 
 	@Override
-	public void setStradaGiocatore(Color colore, String idStrada) throws Exception {
+	public void setStradaGiocatore(Color colore, String idStrada) throws IllegalClickException {
 		output.println("SELEZ_POSIZ#"+colore.getRGB()+"#"+idStrada);
 		output.flush();
 	}
@@ -324,6 +327,13 @@ public class ControllerSocket implements IFController{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+	}
+
+	@Override
+	public void addView(IFView view, Color coloreGiocatore)
+			throws RemoteException {
+		// TODO Auto-generated method stub
 		
 	}
 

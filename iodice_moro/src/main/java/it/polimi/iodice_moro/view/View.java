@@ -8,6 +8,7 @@ import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
 import it.polimi.iodice_moro.network.ControllerSocket;
+import it.polimi.iodice_moro.network.ViewRMI;
 import it.polimi.iodice_moro.network.ViewSocket;
 
 import java.awt.BorderLayout;
@@ -20,7 +21,11 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.List;
@@ -89,7 +94,7 @@ public class View extends UnicastRemoteObject implements IFView {
 					mossaAttuale=TipoMossa.NO_MOSSA;
 				}
 				
-			} catch (Exception e1) {
+			} catch (RemoteException e1) {
 				e1.printStackTrace();
 			}
 		}
@@ -414,6 +419,8 @@ public class View extends UnicastRemoteObject implements IFView {
 		IFView view;
 		String[] optionsModalita = {"Online","Offline"};
 		String[] optionsRete = {"Client", "Server"};
+		String[] optionsTipoRete = {"Socket", "RMI"};
+		int sceltaTipoRete;
 		String ip = "";
 		String porta = "";
 		String nome = "";
@@ -429,8 +436,17 @@ public class View extends UnicastRemoteObject implements IFView {
 		switch (sceltaModalita) {
 		//Online
 		case 0:
+			sceltaTipoRete = JOptionPane.showOptionDialog(frame,
+					"Vuoi giocare in modalità Socket o RMI?",
+					"Scelta tipo rete",
+					JOptionPane.YES_NO_OPTION,
+					JOptionPane.QUESTION_MESSAGE,
+					null,
+					optionsTipoRete,
+					optionsTipoRete[0]);
+
 			int sceltaRete = JOptionPane.showOptionDialog(frame,
-					"Vuoi essere cliente o server?",
+					"Vuoi essere client o server?",
 					"Scelta modalità di gioco",
 					JOptionPane.YES_NO_OPTION,
 					JOptionPane.QUESTION_MESSAGE,
@@ -450,15 +466,17 @@ public class View extends UnicastRemoteObject implements IFView {
 							null,
 							"127.0.0.1");
 				}
-				while(porta.equals("")) {
-					porta = (String)JOptionPane.showInputDialog(
-							frame,
-							"Inserisci Porta a cui connettersi",
-							"Inserisci Porta",
-							JOptionPane.PLAIN_MESSAGE,
-							null,
-							null,
-							"12345");
+				if(sceltaTipoRete==0) {
+					while(porta.equals("")) {
+						porta = (String)JOptionPane.showInputDialog(
+								frame,
+								"Inserisci Porta a cui connettersi",
+								"Inserisci Porta",
+								JOptionPane.PLAIN_MESSAGE,
+								null,
+								null,
+								"12345");
+					}
 				}
 				while(nome.equals("")) {
 					nome = (String)JOptionPane.showInputDialog(
@@ -470,51 +488,58 @@ public class View extends UnicastRemoteObject implements IFView {
 							null,
 							"");
 				}
-				controller = new ControllerSocket(ip, Integer.parseInt(porta));
-				Color colore=controller.creaGiocatore(nome);
-				if(colore!=null){
-					view = new View((ControllerSocket)controller);
-					((View)view).setColore(colore);
-					controller.setView(view);	
-					System.out.println("Chiamata a iniziapartita");
-					//controller.iniziaPartita();
-				}else{
-					System.out.println("ERRORE DI CONNESSIONE");
+				//SocketClient
+				if(sceltaTipoRete==0) {
+					controller = new ControllerSocket(ip, Integer.parseInt(porta));
+					Color colore=controller.creaGiocatore(nome);
+					if(colore!=null){
+						view = new View((ControllerSocket)controller);
+						((View)view).setColore(colore);
+						controller.setView(view);	
+						System.out.println("Chiamata a iniziapartita");
+						//controller.iniziaPartita();
+					}else{
+						System.out.println("ERRORE DI CONNESSIONE");
+					}
 				}
 				
-				 
-				/* try {
-					//E' da sostituire localhost con l'ip.
-					controller = (IFController)Naming.lookup("//localhost/Server");	
-					view = new View(controller);
-					//IFView remoteView = (IFView) UnicastRemoteObject.exportObject(view, 0);	
-					Color coloreGiocatore = controller.creaGiocatore(nome);
-					view.setColore(coloreGiocatore);
-					controller.addView(view, coloreGiocatore);
-					
-					
-				} catch (MalformedURLException e) {
-					System.err.println("URL non trovato!");
-				} catch (RemoteException e) {
-					System.err.println("Errore di connessione: " + e.getMessage() + "!");
-				} catch (NotBoundException e) {
-					System.err.println("Il riferimento passato non Ã¨ associato a nulla!");
-				}*/
-				 
-				break;
-			//Server
-			case 1:
-				while(porta.equals("")) {
-					porta = (String)JOptionPane.showInputDialog(
-							frame,
-							"Inserisci Porta su cui mettersi in ascolto ",
-							"Inserisci Porta",
-							JOptionPane.PLAIN_MESSAGE,
-							null,
-							null,
-							"12345");
+				 //RMIClient
+				else {
+					try {
+						//E' da sostituire localhost con l'ip.
+						controller = (IFController)Naming.lookup("///Server");	
+						view = new View(controller);
+						//IFView remoteView = (IFView) UnicastRemoteObject.exportObject(view, 0);	
+						Color coloreGiocatore = controller.creaGiocatore(nome);
+						view.setColore(coloreGiocatore);
+						//TODO: Corretto?
+						controller.addView(view, coloreGiocatore);
+
+						
+					} catch (MalformedURLException e) {
+						System.err.println("URL non trovato!");
+					} catch (RemoteException e) {
+						System.err.println("Errore di connessione: " + e.getMessage() + "!");
+					} catch (NotBoundException e) {
+						System.err.println("Il riferimento passato non Ã¨ associato a nulla!");
+					}
 				}
-				//while(true){
+				break;
+				//Server
+			case 1:
+				//ServerSocket
+				if(sceltaTipoRete==0) {
+					while(porta.equals("")) {
+						porta = (String)JOptionPane.showInputDialog(
+								frame,
+								"Inserisci Porta su cui mettersi in ascolto ",
+								"Inserisci Porta",
+								JOptionPane.PLAIN_MESSAGE,
+								null,
+								null,
+								"12345");
+					}
+					//while(true){
 					controller = new Controller(statopartita);
 					int porta2 = Integer.parseInt(porta);
 					System.out.println("PORTA DI ASCOLTO: "+porta2);
@@ -526,46 +551,47 @@ public class View extends UnicastRemoteObject implements IFView {
 					//System.out.println("ora attendo mosse!");
 					//((ViewSocket)view).riceviMossa();
 					//statopartita = new StatoPartita();
-				//}
-				
-			
-				/*try {
-					LocateRegistry.createRegistry(1099);
-				} catch (RemoteException e) {
-					System.out.println("Registry giÃ  presente!");			
-				}	
+					//}
+				}
+				//ServerRMI
+				else {
+					try {
+						LocateRegistry.createRegistry(1099);
+					} catch (RemoteException e) {
+						System.out.println("Registry giÃ  presente!");			
+					}	
 
 
-				try {
-					controller = new Controller(statopartita);
-					//view = new View(controller);
-					ViewRMI viewRMI = new ViewRMI();
-					//E' da sostituire localhost con i veri ip.
-					Naming.rebind("//localhost/Server", controller);
-					controller.setView(viewRMI);
-					//view.attendiGiocatori();
-					System.out.println("PROVA");
-					long inizioAttesa = System.currentTimeMillis();
-					while(!(controller.getGiocatori().size()>=4 
-							|| (controller.getGiocatori().size()>=2 && System.currentTimeMillis()-inizioAttesa > 20)
-							)) {
-						Thread.sleep(10);
+					try {
+						controller = new Controller(statopartita);
+						//view = new View(controller);
+						ViewRMI viewRMI = new ViewRMI();
+						//E' da sostituire localhost con i veri ip.
+						Naming.rebind("//localhost/Server", controller);
+						controller.setView(viewRMI);
+						//view.attendiGiocatori();
+						System.out.println("PROVA");
+						long inizioAttesa = System.currentTimeMillis();
+						while(!(controller.getGiocatori().size()>=4 
+								|| (controller.getGiocatori().size()>=2 && System.currentTimeMillis()-inizioAttesa > 20)
+								)) {
+							Thread.sleep(10);
+						}
+						Thread.sleep(10000);
+						System.out.println("Arrivo");
+						controller.iniziaPartita();
+					} catch (MalformedURLException e) {
+						System.err.println("Impossibile registrare l'oggetto indicato!");
+					} catch (RemoteException e) {
+						System.err.println("Errore di connessione: " + e.getMessage() + "!");
 					}
-					Thread.sleep(10000);
-					System.out.println("Arrivo");
-					controller.iniziaPartita();
-				} catch (MalformedURLException e) {
-					System.err.println("Impossibile registrare l'oggetto indicato!");
-				} catch (RemoteException e) {
-					System.err.println("Errore di connessione: " + e.getMessage() + "!");
 				}
 
-				*/
-				//break
-				
+				break;
+
 			default:
 				throw new Exception();
-			}
+		}
 		break;
 		//Offline	
 		case 1:

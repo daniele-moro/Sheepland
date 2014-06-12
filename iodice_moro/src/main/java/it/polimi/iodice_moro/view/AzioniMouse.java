@@ -1,6 +1,8 @@
 package it.polimi.iodice_moro.view;
 
 import it.polimi.iodice_moro.controller.IFController;
+import it.polimi.iodice_moro.exceptions.IllegalClickException;
+import it.polimi.iodice_moro.exceptions.NotAllowedMoveException;
 import it.polimi.iodice_moro.model.TipoMossa;
 
 import java.awt.Cursor;
@@ -60,7 +62,11 @@ class AzioniMouse extends MouseAdapter{
 			try {
 				//provo a settare la strada del Pastore
 				controller.setStradaGiocatore(view.getGiocatoreCorrente(), Integer.toHexString(color));
-			} catch (Exception e1) {
+			} catch (IllegalClickException e1) {
+				view.getLBLOutput().setText( e1.getMessage());
+			} catch (NotAllowedMoveException e1) {
+				view.getLBLOutput().setText( e1.getMessage());
+			} catch (RemoteException e1) {
 				view.getLBLOutput().setText( e1.getMessage());
 			}
 		}
@@ -86,7 +92,9 @@ class AzioniMouse extends MouseAdapter{
 						System.out.println("COMPRA TESSERA");
 						try {
 							controller.acquistaTessera(Integer.toHexString(color));
-						} catch (Exception e2) {
+						} catch (NotAllowedMoveException e2) {
+							view.getLBLOutput().setText(e2.getMessage());
+						} catch (IllegalClickException e2) {
 							view.getLBLOutput().setText(e2.getMessage());
 						}
 						break;
@@ -95,7 +103,9 @@ class AzioniMouse extends MouseAdapter{
 					case SPOSTA_PASTORE:
 						try {
 							controller.spostaPedina(Integer.toHexString(color));
-						} catch (Exception e1) {
+						} catch (NotAllowedMoveException e1) {
+							view.getLBLOutput().setText(e1.getMessage());
+						} catch (IllegalClickException e1) {
 							view.getLBLOutput().setText(e1.getMessage());
 						}
 						break;
@@ -136,7 +146,10 @@ class AzioniMouse extends MouseAdapter{
 									controller.spostaPecora(Integer.toHexString(color));
 								}
 							}
-						} catch (Exception e1) {
+						} catch (RemoteException e1) {
+							System.out.println("PROBLEMI DI RETE!!");
+							view.getLBLOutput().setText(e1.getMessage());
+						} catch (NotAllowedMoveException e1) {
 							System.out.println("ERRORE CLICK MAPPA!!");
 							view.getLBLOutput().setText(e1.getMessage());
 						}

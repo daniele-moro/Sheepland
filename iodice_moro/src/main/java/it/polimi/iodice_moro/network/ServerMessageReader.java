@@ -1,6 +1,8 @@
 package it.polimi.iodice_moro.network;
 
 import it.polimi.iodice_moro.controller.Controller;
+import it.polimi.iodice_moro.exceptions.IllegalClickException;
+import it.polimi.iodice_moro.exceptions.NotAllowedMoveException;
 import it.polimi.iodice_moro.model.TipoMossa;
 
 import java.awt.Color;
@@ -8,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.rmi.RemoteException;
 import java.util.List;
 
 /**
@@ -52,7 +55,9 @@ public class ServerMessageReader implements Runnable {
 						try {
 							System.out.println("Acquista Tessera");
 							controller.acquistaTessera(parametri[1]);
-						} catch (Exception e) {
+						} catch (IllegalClickException e) {
+							output.println("EXCEPTION#"+e.getMessage()+"\n");
+						} catch (NotAllowedMoveException e) {
 							output.println("EXCEPTION#"+e.getMessage()+"\n");
 						}
 						break;
@@ -62,7 +67,7 @@ public class ServerMessageReader implements Runnable {
 						try {
 							controller.setStradaGiocatore(new Color(Integer.parseInt(parametri[1])), parametri[2]);
 							//giocaRisposta.println("OK#"+"Inserimento avvenuto con successo");
-						} catch (Exception e1) {
+						} catch (NotAllowedMoveException e1) {
 							System.out.println("eccezione");
 							output.println("EXCEPTION#"+e1.getMessage());
 						}
@@ -72,7 +77,9 @@ public class ServerMessageReader implements Runnable {
 						try {
 							System.out.println("spostaPastore");
 							controller.spostaPedina(parametri[1]);
-						} catch (Exception e) {
+						} catch (IllegalClickException e) {
+							output.println("EXCEPTION#"+e.getMessage()+"\n");
+						} catch (NotAllowedMoveException e) {
 							output.println("EXCEPTION#"+e.getMessage()+"\n");
 						}
 						break;
@@ -81,7 +88,7 @@ public class ServerMessageReader implements Runnable {
 						try {
 							System.out.println("sposta Pecora");
 							controller.spostaPecora(parametri[1]);
-						} catch (Exception e) {
+						} catch (NotAllowedMoveException e) {
 							output.println("EXCEPTION#"+e.getMessage()+"\n");
 						}
 						break;
@@ -90,7 +97,7 @@ public class ServerMessageReader implements Runnable {
 						try {
 							System.out.println("sposta pecora nera");
 							controller.spostaPecoraNera(parametri[1]);
-						} catch (Exception e) {
+						} catch (NotAllowedMoveException e) {
 							output.println("EXCEPTION#"+e.getMessage()+"\n");
 						}
 						break;
@@ -101,8 +108,8 @@ public class ServerMessageReader implements Runnable {
 							Boolean risp = controller.mossaPossibile(TipoMossa.parseInput(parametri[1]));
 							System.out.println("mossapossibile   "+ risp.toString());
 							output.println("OK#"+risp.toString());
-						} catch (Exception e) {
-							System.out.println("ERRORE nella mossa possibile!!");
+						} catch (RemoteException e) {
+							System.out.println("ERRORE nella mossa possibile. Problemi di rete!!");
 							output.println("ERROR#"+e.getMessage()+"\n");
 						}
 						break;

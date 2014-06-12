@@ -1,6 +1,8 @@
 package it.polimi.iodice_moro.controller;
 
 
+import it.polimi.iodice_moro.exceptions.IllegalClickException;
+import it.polimi.iodice_moro.exceptions.NotAllowedMoveException;
 import it.polimi.iodice_moro.model.Giocatore;
 import it.polimi.iodice_moro.model.Regione;
 import it.polimi.iodice_moro.model.StatoPartita;
@@ -97,13 +99,13 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @throws Exception Se il giocatore non si trova in una strada confinante
 	 * alla posizione della pecora da spostare o se non ci sono pecore da spostare.
 	 */
-	public synchronized void spostaPecora(Regione regionePecora) throws Exception, RemoteException {
+	public synchronized void spostaPecora(Regione regionePecora) throws NotAllowedMoveException, RemoteException {
 		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
 		/*
 		 * Controlliamo che la regione da cui prelevare la pecora sia vicino alla strada dove si trova il giocatore
 		 */
 		if(!statoPartita.getStradeConfini(regionePecora).contains(giocatore.getPosition())) {
-			throw new Exception("Non puoi spostare pecore da questa regione");
+			throw new NotAllowedMoveException("Non puoi spostare pecore da questa regione");
 		}
 		/*
 		 * Ora preleviamo la regione in cui spostare la pecora
@@ -116,7 +118,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			regionePecora.removePecora();
 			regAdiacente.addPecora();
 		} else {
-			throw new Exception("Non ci sono pecore da spostare!!");
+			throw new NotAllowedMoveException("Non ci sono pecore da spostare!!");
 		}
 	}
 	
@@ -124,11 +126,11 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @see it.polimi.iodice_moro.controller.IFController#spostaPecora(java.lang.String)
 	 */
 	@Override
-	public synchronized void spostaPecora(String idRegione) throws Exception, RemoteException{
+	public synchronized void spostaPecora(String idRegione) throws NotAllowedMoveException, RemoteException{
 		Regione regSorg=statoPartita.getRegioneByID(idRegione);
 		
 		if(regSorg == null){
-			throw new Exception("Non hai cliccato su una regione!!");
+			throw new NotAllowedMoveException("Non hai cliccato su una regione!!");
 		}
 		
 		System.out.println("Sposta pecora controller");
@@ -152,13 +154,13 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @throws Exception se non ci sono pecore nere da spostare.
 	 * @see #checkSpostamentoNera
 	 */
-	public synchronized void spostaPecoraNera(Regione regionePecora, Regione regAdiacente) throws Exception, RemoteException {
+	public synchronized void spostaPecoraNera(Regione regionePecora, Regione regAdiacente) throws NotAllowedMoveException, RemoteException {
 		if(regionePecora.isPecoraNera()) {
 			regionePecora.removePecoraNera();
 			regAdiacente.addPecoraNera();
 			statoPartita.setPosPecoraNera(regAdiacente);
 		} else {
-			throw new Exception();
+			throw new NotAllowedMoveException("Non ci sono pecore nere da spostare");
 		}
 	}
 	
@@ -170,7 +172,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * Inoltre se è il turno finale ed è l'ultimo giocatore mette finePartita().
 	 * Ritorna il prossimo giocatore.
 	 */
-	public synchronized void spostaPecoraNera(String idRegPecoraNera) throws Exception, RemoteException{
+	public synchronized void spostaPecoraNera(String idRegPecoraNera) throws NotAllowedMoveException, RemoteException{
 		Regione regionePecora=statoPartita.getRegioneByID(idRegPecoraNera);
 		Regione regAdiacente=statoPartita.getAltraRegione(regionePecora, statoPartita.getGiocatoreCorrente().getPosition());
 		spostaPecoraNera(regionePecora,regAdiacente);
@@ -188,11 +190,11 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @param tipo Tipo della tessera che vuole comprare.
 	 * @throws Exception Se il costo della tessera è maggiore dei soldi del giocatore.
 	 */
-	public synchronized void acquistaTessera(TipoTerreno tipo) throws Exception, RemoteException {
+	public synchronized void acquistaTessera(TipoTerreno tipo) throws NotAllowedMoveException, RemoteException {
 		Giocatore giocatore=statoPartita.getGiocatoreCorrente();
 		int costoTessera=statoPartita.getCostoTessera(tipo);
 		if(tipo.equals(TipoTerreno.SHEEPSBURG)){
-			throw new Exception("Non puoi acquistare tessere di sheepsburg");
+			throw new NotAllowedMoveException("Non puoi acquistare tessere di sheepsburg");
 		}
 		boolean acquistoValido=false;
 		for(Regione r :statoPartita.getRegioniADStrada(giocatore.getPosition())){
@@ -201,13 +203,13 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			}
 		}
 		if(acquistoValido==false){
-			throw new Exception("Non puoi acquistate tessere di questo terreno!");
+			throw new NotAllowedMoveException("Non puoi acquistate tessere di questo terreno!");
 		}
 		if(costoTessera>4) {
-			throw new Exception("Le tessere di questo tipo sono finite");
+			throw new NotAllowedMoveException("Le tessere di questo tipo sono finite");
 		}
 		if (costoTessera > giocatore.getSoldi() || giocatore.getSoldi()==0) {
-			throw new Exception("Non abbastanza soldi");
+			throw new NotAllowedMoveException("Non abbastanza soldi");
 		} else {
 			giocatore.decrSoldi(statoPartita.getCostoTessera(tipo));
 			giocatore.addTessera(tipo);
@@ -219,10 +221,10 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @see it.polimi.iodice_moro.controller.IFController#acquistaTessera(java.lang.String)
 	 */
 	@Override
-	public synchronized void acquistaTessera(String idRegione) throws Exception, RemoteException{
+	public synchronized void acquistaTessera(String idRegione) throws IllegalClickException, NotAllowedMoveException, RemoteException{
 		Regione reg = statoPartita.getRegioneByID(idRegione);
 		if(reg==null){
-			throw new Exception("Non hai cliccato su una regione!!");
+			throw new IllegalClickException("Non hai cliccato su una regione!!");
 		}
 		acquistaTessera(reg.getTipo());
 		aggiornaTurno(TipoMossa.COMPRA_TESSERA);
@@ -248,22 +250,22 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @throws Exception Se nuova ìposizione è già occupata da un recinto.
 	 * @throws Exception Se non ha abbastanza soldi per muoversi.
 	 */
-	public synchronized void spostaPedina (Strada nuovastrada) throws Exception, RemoteException {
+	public synchronized void spostaPedina (Strada nuovastrada) throws NotAllowedMoveException, RemoteException {
 		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
 		for(Giocatore g: statoPartita.getGiocatori()){
 			if(g.getPosition()==nuovastrada){
-				throw new Exception("Non puoi spostare qui il tuo pastore, strada occupata!");
+				throw new NotAllowedMoveException("Non puoi spostare qui il tuo pastore, strada occupata!");
 			}
 			if(g.getPosition2()==nuovastrada){
-				throw new Exception("Non puoi spostare qui il tuo pastore, strada occupata!");
+				throw new NotAllowedMoveException("Non puoi spostare qui il tuo pastore, strada occupata!");
 			}
 		}
 		if(nuovastrada.isRecinto()) {
-			throw new Exception("Non puoi sposare qui il tuo pastore, strada con recinto!");
+			throw new NotAllowedMoveException("Non puoi sposare qui il tuo pastore, strada con recinto!");
 		}
 		if(pagaSpostamento(nuovastrada, giocatore)) {
 			if(giocatore.getSoldi()==0) {
-				throw new Exception("Non hai abbastanza soldi per sposatarti!!");
+				throw new NotAllowedMoveException("Non hai abbastanza soldi per sposatarti!!");
 			} else {
 				giocatore.decrSoldi();
 			}
@@ -277,11 +279,11 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @see it.polimi.iodice_moro.controller.IFController#spostaPedina(java.lang.String)
 	 */
 	@Override
-	public synchronized void spostaPedina(String idStrada) throws Exception, RemoteException{
+	public synchronized void spostaPedina(String idStrada) throws IllegalClickException, NotAllowedMoveException, RemoteException{
 		Strada oldStreet = statoPartita.getGiocatoreCorrente().getPosition();
 		Strada newStreet = statoPartita.getStradaByID(idStrada);
 		if(newStreet == null){
-			throw new Exception("Non hai cliccato su una strada!");
+			throw new IllegalClickException("Non hai cliccato su una strada!");
 		}
 		
 		//Memorizzo quanti recinti ci sono prima del movimento 
@@ -350,7 +352,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 						view.spostaPecoraNera(posNera.getColore(), nuovaRegionePecora.getColore());
 					}
 					return;
-				} catch (Exception e) {
+				} catch (NotAllowedMoveException e) {
 					logger.log(Level.SEVERE, "Non ci sono pecore da spostare", e);
 				}
 			}
@@ -433,7 +435,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @see it.polimi.iodice_moro.controller.IFController#setStradaGiocatore(java.awt.Color,java.lang.String)
 	 */
 	@Override
-	public synchronized void setStradaGiocatore(Color colore, String idStrada) throws Exception{
+	public synchronized void setStradaGiocatore(Color colore, String idStrada) throws NotAllowedMoveException, RemoteException{
 		
 		Strada strada = statoPartita.getStradaByID(idStrada);
 		
@@ -442,7 +444,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			if(g.getColore().equals(colore)){
 				for(Giocatore g2: statoPartita.getGiocatori()){
 					if(g2.getPosition()==strada|| g2.getPosition2()==strada){
-						throw new Exception("non puoi posizionare qui il tuo pastore!!");
+						throw new NotAllowedMoveException("non puoi posizionare qui il tuo pastore!!");
 					}
 				}
 			}

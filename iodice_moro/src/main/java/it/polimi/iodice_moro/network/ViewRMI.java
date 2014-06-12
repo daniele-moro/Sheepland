@@ -7,6 +7,7 @@ import it.polimi.iodice_moro.view.IFView;
 import java.awt.Color;
 import java.awt.Point;
 import java.io.IOException;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
@@ -248,31 +249,60 @@ public class ViewRMI implements IFView {
 
 	@Override
 	public void visRisDado(int numero) throws RemoteException {
-		// TODO Auto-generated method stub
-		
+		for(IFView view : listaView.values()) {
+			try {
+				view.visRisDado(numero);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
 	public void setPosizioniRegioni(Map<String, Point> posizioniRegioni) {
-		// TODO Auto-generated method stub
+		for(IFView view : listaView.values()) {
+			try {
+				view.setPosizioniRegioni(posizioniRegioni);
+			} catch (RemoteException e) {
+				// TODO
+				e.printStackTrace();
+			}
+		}
 		
 	}
 
 	@Override
 	public void setPosizioniStrade(Map<String, Point> posizioniCancelli) {
-		// TODO Auto-generated method stub
+		for(IFView view : listaView.values()) {
+			try {
+				view.setPosizioniStrade(posizioniCancelli);
+			} catch (RemoteException e) {
+				// TODO
+				e.printStackTrace();
+			}
+		}
 		
 	}
 
 	@Override
 	public void setGiocatori(Map<Color, String> giocatori) {
-		// TODO Auto-generated method stub
+		for(IFView view : listaView.values()) {
+			try {
+				view.setGiocatori(giocatori);
+			} catch (RemoteException e) {
+				// TODO
+				e.printStackTrace();
+			}
+		}
 		
 	}
 
 	@Override
 	public void close() throws RemoteException {
-		// TODO Auto-generated method stub
+		for(IFView view : listaView.values()) {
+			view.close();
+		}
 		
 	}
 

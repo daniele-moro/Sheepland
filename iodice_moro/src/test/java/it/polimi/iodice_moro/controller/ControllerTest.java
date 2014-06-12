@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import it.polimi.iodice_moro.exceptions.NotAllowedMoveException;
 import it.polimi.iodice_moro.model.Giocatore;
 import it.polimi.iodice_moro.model.Regione;
 import it.polimi.iodice_moro.model.StatoPartita;
@@ -84,10 +85,10 @@ public class ControllerTest{
 		try {
 			controllerTest.spostaPecora(regione1);
 			fail("Should have thrown exception");
-		}
-		
-		catch (Exception e) {
+		} catch (NotAllowedMoveException e) {
 			
+		} catch (RemoteException e) {
+			fail("Problemi di rete, "+"Messaggio: "+e.getMessage());
 		}
 	}
 
@@ -120,10 +121,10 @@ public class ControllerTest{
 			regione1.setPecoraNera(false);
 			controllerTest.spostaPecoraNera(regione1, regione4);
 			fail("Should have thrown an exception");
-		}
-		
-		catch (Exception e) {
-			
+		} catch (NotAllowedMoveException e) {
+
+		} catch (RemoteException e) {
+			fail("Problemi di rete, "+"Messaggio: "+e.getMessage());
 		}
 	}
 	
@@ -161,8 +162,10 @@ public class ControllerTest{
 			controllerTest.acquistaTessera(tipo1);
 			fail("Should have thrown exception");
 		}
-		catch (Exception e) {
-			
+		catch (NotAllowedMoveException e) {
+
+		} catch (RemoteException e) {
+			fail("Problemi di rete, "+"Messaggio: "+e.getMessage());
 		}
 		
 		giocatoreTest.decrSoldi(1);
@@ -170,9 +173,10 @@ public class ControllerTest{
 		try {
 			controllerTest.acquistaTessera(tipo1);
 			fail("Should have thrown exception");
-		}
-		catch (Exception e) {
-			
+		} catch (NotAllowedMoveException e) {
+
+		} catch (RemoteException e) {
+			fail("Problemi di rete, "+"Messaggio: "+e.getMessage());
 		}
 	}
 	
@@ -187,8 +191,10 @@ public class ControllerTest{
 			controllerTest.acquistaTessera(tipo1);
 			fail("Should have thrown exception");
 		}
-		catch (Exception e) {
-			
+		catch (NotAllowedMoveException e) {
+
+		} catch (RemoteException e) {
+			fail("Problemi di rete, "+"Messaggio: "+e.getMessage());
 		}
 		
 	}
@@ -232,8 +238,10 @@ public class ControllerTest{
 			controllerTest.spostaPedina(giocatorePositionAfterFirst);
 			fail("Should have caught exception");
 		}
-		catch (Exception e) {
-			
+		catch (NotAllowedMoveException e) {
+
+		} catch (RemoteException e) {
+			fail("Problemi di rete, "+"Messaggio: "+e.getMessage());
 		}
 		
 		giocatoreTest.decrSoldi((giocatoreTest.getSoldi()));
@@ -244,8 +252,10 @@ public class ControllerTest{
 			controllerTest.spostaPedina(giocatorePositionAfterSecond);
 			fail("Should have caught the second exception");
 		}
-		catch (Exception e){
-			
+		catch (NotAllowedMoveException e) {
+
+		} catch (RemoteException e) {
+			fail("Problemi di rete, "+"Messaggio: "+e.getMessage());
 		}
 		
 	}	
