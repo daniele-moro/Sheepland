@@ -72,16 +72,18 @@ public class ServerConnessione implements Runnable {
 								out.println(colore.getRGB());
 								out.flush();
 								view.addClient(nuovoGiocatore, out, colore);
+								//devo creare il nuovo threda per ascoltare e spedire i messaggi!
+								//se ci sono almeno 2 giocatori ed è passato più di mezzo minuto da quando si è connesso il primo utente
+								//allora faccio iniziare la partita
+								ServerMessageReader messageReader = new ServerMessageReader(controller, nuovoGiocatore, out, in);
+								Thread t = new Thread(messageReader);
+								t.start();
 							} catch (PartitaIniziataException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								//Comunico l'errore di connessione
+								out.println("NO");
+								out.flush();
+								nuovoGiocatore.close();
 							}
-							//devo creare il nuovo threda per ascoltare e spedire i messaggi!
-							//se ci sono almeno 2 giocatori ed è passato più di mezzo minuto da quando si è connesso il primo utente
-							//allora faccio iniziare la partita
-							ServerMessageReader messageReader = new ServerMessageReader(controller, nuovoGiocatore, out, in);
-							Thread t = new Thread(messageReader);
-							t.start();
 						}
 					}else{
 						//Se qualcuno si è disconnesso, mi occuperò di chiudere la vecchia partita, comprese le connessioni, che sia stata avviata o meno,
@@ -98,11 +100,10 @@ public class ServerConnessione implements Runnable {
 						view=new ViewSocket(controller);
 						controller.setView(view);
 						partitaIniziata=false;
-						//azzero la mappa dei 
+						//azzero la mappa dei socket dei giocatori
 						socketGiocatori=new HashMap<Color, Socket>();
 						//creo il nuovo thread su cui girerà il controller
 						Thread t = new Thread(new Runnable(){
-
 							@Override
 							public void run() {
 								try {
@@ -111,9 +112,7 @@ public class ServerConnessione implements Runnable {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
-
 							}
-
 						});
 						t.start();
 						
@@ -131,11 +130,13 @@ public class ServerConnessione implements Runnable {
 							Thread t2 = new Thread(messageReader);
 							t2.start();
 						} catch (PartitaIniziataException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							//Comunico l'errore di connessione
+							out.println("NO");
+							out.flush();
+							
+							nuovoGiocatore.close();
 						}
 					}
-
 				}
 			}catch(InterruptedException | IOException e){
 				//TODO

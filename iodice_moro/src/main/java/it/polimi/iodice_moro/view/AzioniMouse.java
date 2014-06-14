@@ -33,6 +33,7 @@ class AzioniMouse extends MouseAdapter{
 		reg1="";
 		reg2="";
 		try {
+			System.out.println(image.getName()+"  "+image.getPath()+"  READ?"+image.canRead()+" WRITE?"+image.canWrite()+" EXECUTE?"+image.canExecute());
 			this.image= ImageIO.read(image);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -85,29 +86,53 @@ class AzioniMouse extends MouseAdapter{
 			try{
 				if(controller.mossaPossibile(view.getMossaAttuale())){
 					System.out.println("B");
+					final int c=color;
 					switch(view.getMossaAttuale()){
 
 
 					case COMPRA_TESSERA:
 						System.out.println("COMPRA TESSERA");
-						try {
-							controller.acquistaTessera(Integer.toHexString(color));
-						} catch (NotAllowedMoveException e2) {
-							view.getLBLOutput().setText(e2.getMessage());
-						} catch (IllegalClickException e2) {
-							view.getLBLOutput().setText(e2.getMessage());
-						}
+						Thread t = new Thread( new Runnable(){
+							@Override
+							public void run(){
+								try {
+									
+									controller.acquistaTessera(Integer.toHexString(c));
+								} catch (NotAllowedMoveException e2) {
+									view.getLBLOutput().setText(e2.getMessage());
+								} catch (IllegalClickException e2) {
+									view.getLBLOutput().setText(e2.getMessage());
+								} catch (RemoteException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						});
+						t.start();
 						break;
 
 
 					case SPOSTA_PASTORE:
-						try {
-							controller.spostaPedina(Integer.toHexString(color));
-						} catch (NotAllowedMoveException e1) {
-							view.getLBLOutput().setText(e1.getMessage());
-						} catch (IllegalClickException e1) {
-							view.getLBLOutput().setText(e1.getMessage());
-						}
+						Thread t1 = new Thread(new Runnable(){
+
+							@Override
+							public void run() {
+								try {
+									controller.spostaPedina(Integer.toHexString(c));
+								} catch (NotAllowedMoveException e1) {
+									view.getLBLOutput().setText(e1.getMessage());
+								} catch (IllegalClickException e1) {
+									view.getLBLOutput().setText(e1.getMessage());
+								} catch (RemoteException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								
+							}
+							
+						});
+						t1.start();
+						
 						break;
 
 

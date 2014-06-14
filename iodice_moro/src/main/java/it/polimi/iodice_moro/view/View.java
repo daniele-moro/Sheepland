@@ -697,7 +697,7 @@ public class View extends UnicastRemoteObject implements IFView {
 	 * @param dest Point Destinazione
 	 * @param image Sfondo della label da spostare
 	 */
-	synchronized void spostaImmagine(Point sorg, Point dest, ImageIcon image){
+	void spostaImmagine(Point sorg, Point dest, ImageIcon image){
 		JLabel lblMove = new JLabel();
 		lblMove.setIcon(image);
 		
@@ -705,7 +705,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		double posx=sorg.x;
 		double posy=sorg.y;
 		lblMove.setLocation((int)posx,(int)posy);
-		
+		lblMove.setVisible(true);
 		//incrementi di ogni passo nei due assi
 		double incx=(dest.x-sorg.x)/100.0;
 		double incy=(dest.y-sorg.y)/100.0;
@@ -713,7 +713,8 @@ public class View extends UnicastRemoteObject implements IFView {
 			mappa.add(lblMove);
 			for(int i=0; i<100;i++){
 				lblMove.setBounds((int)posx, (int)posy,image.getIconWidth(),image.getIconHeight());
-				Thread.sleep(15);
+				lblMove.setVisible(true);
+				Thread.sleep(20);
 				posx+=incx;
 				posy+=incy;
 			}

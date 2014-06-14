@@ -130,7 +130,9 @@ public class ViewRMI implements IFView {
 
 	@Override
 	public void spostaPastore(String s, String d, Color colore) {
-		for(IFView view : listaView.values()) {
+
+		
+		for(final IFView view : listaView.values()) {
 			try {
 				view.spostaPastore(s, d, colore);
 			} catch (RemoteException e) {
@@ -138,7 +140,6 @@ public class ViewRMI implements IFView {
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 	@Override
@@ -151,7 +152,6 @@ public class ViewRMI implements IFView {
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 	@Override
@@ -201,7 +201,6 @@ public class ViewRMI implements IFView {
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 	@Override
@@ -227,7 +226,6 @@ public class ViewRMI implements IFView {
 				e.printStackTrace();
 			}
 		}
-
 	}
 	
 	//Aggiunge istanza View alla lista della View. Utilizzato in implementazione View RMI.

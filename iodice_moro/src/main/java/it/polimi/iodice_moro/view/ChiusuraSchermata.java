@@ -30,6 +30,8 @@ public class ChiusuraSchermata extends WindowAdapter {
 			e.getWindow().dispose();
 			System.exit(0);
 			break;
+		case JOptionPane.NO_OPTION:
+			break;
 
 		}
 		
