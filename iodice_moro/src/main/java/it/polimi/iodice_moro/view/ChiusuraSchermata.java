@@ -5,12 +5,16 @@ import it.polimi.iodice_moro.controller.IFController;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
 public class ChiusuraSchermata extends WindowAdapter {
 
 	private IFController controller;
+	
+	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.view");
 
 	public ChiusuraSchermata(IFController controller) {
 		this.controller=controller;
@@ -24,7 +28,7 @@ public class ChiusuraSchermata extends WindowAdapter {
 			try {
 				controller.end();
 			} catch (RemoteException e1) {
-				// TODO Auto-generated catch block
+				logger.log(Level.SEVERE, "Parameter is null", e1);
 				e1.printStackTrace();
 			}
 			e.getWindow().dispose();

@@ -15,6 +15,7 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 
 //Utilizzata dal controller, quindi dal SERVER
@@ -26,6 +27,7 @@ public class ViewSocket implements IFView {
 	Map<Color, PrintWriter> writerGiocatori = new HashMap<Color,PrintWriter>();
 	private long inizio;
 	ServerConnessione attesaConnessioni;
+	
 	/**
 	 * Metodo per ricevere tutte le mosse dei giocatori, cioè dei client
 	 */

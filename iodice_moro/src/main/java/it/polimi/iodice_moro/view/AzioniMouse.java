@@ -13,6 +13,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -26,6 +28,8 @@ class AzioniMouse extends MouseAdapter{
 
 	View view;
 	IFController controller;
+	
+	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.view");
 
 	BufferedImage image;
 	public AzioniMouse(File image, View view, IFController controller){
@@ -36,8 +40,8 @@ class AzioniMouse extends MouseAdapter{
 			System.out.println(image.getName()+"  "+image.getPath()+"  READ?"+image.canRead()+" WRITE?"+image.canWrite()+" EXECUTE?"+image.canExecute());
 			this.image= ImageIO.read(image);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			logger.log(Level.SEVERE, "Errore di IO", e);
 		}
 		this.view=view;
 		this.controller=controller;
@@ -56,20 +60,32 @@ class AzioniMouse extends MouseAdapter{
 				&& view.getPosizioniCancelli().keySet().contains(Integer.toHexString(color)) 
 				&& view.getGiocatoreCorrente().equals(view.getColoreGamer())){
 
+			
+			final int c1=color;
 			//STO SELEZIONANDO LE POSIZIONI DEI PASTORI
 			System.out.println("SELEZPOSIZ");
 			//Metto il pastore nella posizione che ho appena selezionato
-			view.spostaPastore("", Integer.toHexString(color), view.getGiocatoreCorrente());
-			try {
-				//provo a settare la strada del Pastore
-				controller.setStradaGiocatore(view.getGiocatoreCorrente(), Integer.toHexString(color));
-			} catch (IllegalClickException e1) {
-				view.getLBLOutput().setText( e1.getMessage());
-			} catch (NotAllowedMoveException e1) {
-				view.getLBLOutput().setText( e1.getMessage());
-			} catch (RemoteException e1) {
-				view.getLBLOutput().setText( e1.getMessage());
-			}
+			Thread t4 = new Thread( new Runnable(){
+				@Override
+				public void run(){
+					view.spostaPastore("", Integer.toHexString(c1), view.getGiocatoreCorrente());
+					try {
+						//provo a settare la strada del Pastore
+						controller.setStradaGiocatore(view.getGiocatoreCorrente(), Integer.toHexString(c1));
+					} catch (IllegalClickException e1) {
+						view.getLBLOutput().setText( e1.getMessage());
+						logger.log(Level.SEVERE, "Area non clickabile", e1);
+					} catch (NotAllowedMoveException e1) {
+						view.getLBLOutput().setText( e1.getMessage());
+						logger.log(Level.SEVERE, "Mossa proibita", e1);
+					} catch (RemoteException e1) {
+						view.getLBLOutput().setText( e1.getMessage());
+						logger.log(Level.SEVERE, "Mossa proibita", e1);
+					}
+				} 
+			});
+			t4.start();
+			
 		}
 
 		//Controllo che il click sia avvenuto all'interno della mappa(quindi o su regioni o su caselle),
@@ -100,11 +116,13 @@ class AzioniMouse extends MouseAdapter{
 									controller.acquistaTessera(Integer.toHexString(c));
 								} catch (NotAllowedMoveException e2) {
 									view.getLBLOutput().setText(e2.getMessage());
+									logger.log(Level.SEVERE, "Mossa proibita", e2);
 								} catch (IllegalClickException e2) {
 									view.getLBLOutput().setText(e2.getMessage());
+									logger.log(Level.SEVERE, "Area non clickabile", e2);
 								} catch (RemoteException e) {
-									// TODO Auto-generated catch block
 									e.printStackTrace();
+									logger.log(Level.SEVERE, "Errore di rete", e);
 								}
 							}
 						});
@@ -121,10 +139,12 @@ class AzioniMouse extends MouseAdapter{
 									controller.spostaPedina(Integer.toHexString(c));
 								} catch (NotAllowedMoveException e1) {
 									view.getLBLOutput().setText(e1.getMessage());
+									logger.log(Level.SEVERE, "Mossa proibita", e1);
 								} catch (IllegalClickException e1) {
 									view.getLBLOutput().setText(e1.getMessage());
+									logger.log(Level.SEVERE, "Area non clickabile", e1);
 								} catch (RemoteException e) {
-									// TODO Auto-generated catch block
+									logger.log(Level.SEVERE, "Errore di rete", e);
 									e.printStackTrace();
 								}
 								
@@ -168,12 +188,29 @@ class AzioniMouse extends MouseAdapter{
 								}
 								else{
 									System.out.println("SPOSTAPECORA");
-									controller.spostaPecora(Integer.toHexString(color));
+									Thread t3 = new Thread(new Runnable(){
+
+										@Override
+										public void run() {
+											try {
+												controller.spostaPecora(Integer.toHexString(c));
+											} catch (RemoteException e) {
+												logger.log(Level.SEVERE, "Errore di rete", e);
+												e.printStackTrace();
+											} catch (NotAllowedMoveException e) {
+												logger.log(Level.SEVERE, "Mossa proibita", e);
+												e.printStackTrace();
+											}
+										}
+									});
+									t3.start();
+									
 								}
 							}
 						} catch (RemoteException e1) {
 							System.out.println("PROBLEMI DI RETE!!");
 							view.getLBLOutput().setText(e1.getMessage());
+							logger.log(Level.SEVERE, "Errore di rete", e);
 						} catch (NotAllowedMoveException e1) {
 							System.out.println("ERRORE CLICK MAPPA!!");
 							view.getLBLOutput().setText(e1.getMessage());
@@ -190,7 +227,7 @@ class AzioniMouse extends MouseAdapter{
 
 				}
 			}catch(RemoteException e1){
-				//TODO
+				logger.log(Level.SEVERE, "Errore di rete", e1);
 				e1.printStackTrace();
 			}
 			System.out.println("Presente");

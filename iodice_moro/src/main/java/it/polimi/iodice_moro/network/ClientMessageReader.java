@@ -13,12 +13,16 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ClientMessageReader implements Runnable{
 
 	private View view;
 	private BufferedReader input;
 	private Socket socket;
+	
+	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.network");
 	
 	public ClientMessageReader(IFView view2, Socket socket,BufferedReader scInput) {
 		this.view=(View)view2;
@@ -39,6 +43,7 @@ public class ClientMessageReader implements Runnable{
 				//Metto in sleep il thread per dare non occupare tutte le risorse del PC
 				Thread.sleep(10);
 			} catch (InterruptedException e1) {
+				logger.log(Level.SEVERE, "Errore durante la thrad.sleep", e1);
 				e1.printStackTrace();
 			}
 			try {
@@ -97,7 +102,7 @@ public class ClientMessageReader implements Runnable{
 							try {
 								messaggio = input.readLine();
 							} catch (IOException e) {
-								// TODO Auto-generated catch block
+								logger.log(Level.SEVERE, "Errore di IO", e);
 								e.printStackTrace();
 							}
 							System.out.println("rispostar icveuto ");
@@ -108,7 +113,7 @@ public class ClientMessageReader implements Runnable{
 								try {
 									messaggio = input.readLine();
 								} catch (IOException e) {
-									// TODO Auto-generated catch block
+									logger.log(Level.SEVERE, "Errore di IO", e);
 									e.printStackTrace();
 								}
 								valori = messaggio.split("#");
@@ -124,7 +129,7 @@ public class ClientMessageReader implements Runnable{
 							try {
 								messaggio = input.readLine();
 							} catch (IOException e) {
-								// TODO Auto-generated catch block
+								logger.log(Level.SEVERE, "Errore di IO", e);
 								e.printStackTrace();
 							}
 							String[] valori = messaggio.split("#");
@@ -134,7 +139,7 @@ public class ClientMessageReader implements Runnable{
 								try {
 									messaggio = input.readLine();
 								} catch (IOException e) {
-									// TODO Auto-generated catch block
+									logger.log(Level.SEVERE, "Errore di IO", e);
 									e.printStackTrace();
 								}
 								valori = messaggio.split("#");
@@ -150,7 +155,7 @@ public class ClientMessageReader implements Runnable{
 							try {
 								messaggio = input.readLine();
 							} catch (IOException e) {
-								// TODO Auto-generated catch block
+								logger.log(Level.SEVERE, "Errore di IO", e);
 								e.printStackTrace();
 							}
 							System.out.println(messaggio);
@@ -163,7 +168,7 @@ public class ClientMessageReader implements Runnable{
 								try {
 									messaggio = input.readLine();
 								} catch (IOException e) {
-									// TODO Auto-generated catch block
+									logger.log(Level.SEVERE, "Errore di IO", e);
 									e.printStackTrace();
 								}
 								valori = messaggio.split("#");
@@ -246,7 +251,7 @@ public class ClientMessageReader implements Runnable{
 							try {
 								risposta = input.readLine();
 							} catch (IOException e) {
-								// TODO Auto-generated catch block
+								logger.log(Level.SEVERE, "Errore di IO", e);
 								e.printStackTrace();
 							}
 							System.out.println(risposta);
@@ -262,7 +267,7 @@ public class ClientMessageReader implements Runnable{
 								try {
 									risposta = input.readLine();
 								} catch (IOException e) {
-									// TODO Auto-generated catch block
+									logger.log(Level.SEVERE, "Errore di IO", e);
 									e.printStackTrace();
 								}
 								parametri = risposta.split("#");
@@ -279,7 +284,7 @@ public class ClientMessageReader implements Runnable{
 					}
 				}
 			} catch (NumberFormatException | IOException e) {
-				// TODO Auto-generated catch block
+				logger.log(Level.SEVERE, "Errore di IO", e);
 				e.printStackTrace();
 			}
 		}

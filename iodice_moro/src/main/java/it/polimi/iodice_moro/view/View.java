@@ -32,6 +32,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -49,6 +51,8 @@ public class View extends UnicastRemoteObject implements IFView {
 	 * 
 	 */
 	private static final long serialVersionUID = -8928439736905632720L;
+	
+	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.view");
 
 	public class AzioniBottoni implements ActionListener{
 
@@ -97,7 +101,7 @@ public class View extends UnicastRemoteObject implements IFView {
 				}
 				
 			} catch (RemoteException e1) {
-				e1.printStackTrace();
+				logger.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
 
@@ -512,10 +516,13 @@ public class View extends UnicastRemoteObject implements IFView {
 						
 					} catch (MalformedURLException e) {
 						System.err.println("URL non trovato!");
+						logger.log(Level.SEVERE, "URL non trovato", e);
 					} catch (RemoteException e) {
 						System.err.println("Errore di connessione: " + e.getMessage() + "!");
+						logger.log(Level.SEVERE, "Errore di rete", e);
 					} catch (NotBoundException e) {
 						System.err.println("Il riferimento passato non Ã¨ associato a nulla!");
+						logger.log(Level.SEVERE, "Il riferimenton passato non è associaot a nulla", e);
 					}
 				}
 				break;
@@ -552,7 +559,8 @@ public class View extends UnicastRemoteObject implements IFView {
 					try {
 						LocateRegistry.createRegistry(1099);
 					} catch (RemoteException e) {
-						System.out.println("Registry giÃ  presente!");			
+						System.out.println("Registry giÃ  presente!");
+						logger.log(Level.SEVERE, "Registry già presente!", e);
 					}	
 
 
@@ -570,8 +578,10 @@ public class View extends UnicastRemoteObject implements IFView {
 						System.out.println("Arrivo");
 					} catch (MalformedURLException e) {
 						System.err.println("Impossibile registrare l'oggetto indicato!");
+						logger.log(Level.SEVERE, "Impossibile registrare l'oggetto indicato!", e);
 					} catch (RemoteException e) {
 						System.err.println("Errore di connessione: " + e.getMessage() + "!");
+						logger.log(Level.SEVERE, "Impossibile registrare l'oggetto indicato", e);
 					}
 				}
 
@@ -721,7 +731,7 @@ public class View extends UnicastRemoteObject implements IFView {
 			mappa.remove(lblMove);
 			mappa.repaint();
 		}catch(InterruptedException e){
-			e.printStackTrace();
+			logger.log(Level.SEVERE, "Errore nell'esecuzione della thread sleep", e);
 		}
 	}
 	
@@ -956,6 +966,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			logger.log(Level.SEVERE, "Errore nell'esecuzione della thread sleep", e);
 		}
 		lblDado.setIcon(null);
 		lblDado.setText("Risultato: "+numero);
@@ -965,6 +976,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			logger.log(Level.SEVERE, "Errore nell'esecuzione della thread sleep", e);
 		}
 		lblDado.setText("    ");
 		frame.repaint();

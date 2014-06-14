@@ -1,8 +1,10 @@
 package it.polimi.iodice_moro.network;
 
-import java.rmi.RemoteException;
-
 import it.polimi.iodice_moro.controller.IFController;
+
+import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ServerAttesaRMI implements Runnable {
 	
@@ -10,6 +12,8 @@ public class ServerAttesaRMI implements Runnable {
 	boolean partitaIniziata;
 	long inizio;
 	long ora;
+	
+	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.network");
 	
 
 	public ServerAttesaRMI(IFController controller) {
@@ -30,13 +34,13 @@ public class ServerAttesaRMI implements Runnable {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					logger.log(Level.SEVERE, "Errore di IO", e);
 					e.printStackTrace();
 				}
 				ora=System.currentTimeMillis();
 			}
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
+			logger.log(Level.SEVERE, "Errore di rete", e);
 			e.printStackTrace();
 		}
 		System.out.println("partita iniziata!!!");
@@ -44,7 +48,7 @@ public class ServerAttesaRMI implements Runnable {
 		try {
 			controller.iniziaPartita();
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
+			logger.log(Level.SEVERE, "Errore di rete", e);
 			e.printStackTrace();
 		}
 		

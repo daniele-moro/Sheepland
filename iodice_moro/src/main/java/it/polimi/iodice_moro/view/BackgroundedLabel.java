@@ -3,12 +3,16 @@ package it.polimi.iodice_moro.view;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 
 public class BackgroundedLabel extends JLabel {
 	
+	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.view");
 	/**
 	 * 
 	 */
@@ -19,7 +23,10 @@ public class BackgroundedLabel extends JLabel {
 		super(); //crea un JPanel con doubleBuffered true
 		try{
 			setImage(ImageIO.read(f));
-		} catch(Exception e) {
+		} catch(IOException e) {
+			logger.log(Level.SEVERE, "Errore di IO", e);
+		} catch (IllegalArgumentException e) {
+			logger.log(Level.SEVERE, "Parameter is null", e);
 		}
 	}
 	

@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 //Utilizzato dalla view "remota", cioè dal client
@@ -35,6 +37,8 @@ public class ControllerSocket implements IFController{
 	PrintWriter output;
 	BufferedReader input;
 	static boolean threadSuspended;
+	
+	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.network");
 	
 	public ControllerSocket(String host, int port) throws UnknownHostException, IOException{
 		//inizializza i parametri della connessione
@@ -98,6 +102,7 @@ public class ControllerSocket implements IFController{
 				try {
 					Thread.sleep(10);
 				} catch (InterruptedException e) {
+					logger.log(Level.SEVERE, "Errore nella thread sleep", e);
 					e.printStackTrace();
 				}
 			}
@@ -111,6 +116,7 @@ public class ControllerSocket implements IFController{
 			try {
 				risp = input.readLine();
 			} catch (IOException e) {
+				logger.log(Level.SEVERE, "Errore di IO", e);
 				e.printStackTrace();
 			}
 			if(risp.equals("NO")){
@@ -121,7 +127,7 @@ public class ControllerSocket implements IFController{
 				System.out.println("colore assegnato: " + colore);
 			}			
 		}catch(IOException e ){
-			System.out.println("ECCEZIONE");
+			logger.log(Level.SEVERE, "Errore di IO", e);
 			e.printStackTrace();
 		}
 		
@@ -145,7 +151,7 @@ public class ControllerSocket implements IFController{
 			try {
 				risposta = input.readLine();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				logger.log(Level.SEVERE, "Errore di IO", e);
 				e.printStackTrace();
 			}
 			System.out.println("MOSSA POSSIBILE? "+ risposta);
@@ -186,7 +192,7 @@ public class ControllerSocket implements IFController{
 			try {
 				risposta = input.readLine();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				logger.log(Level.SEVERE, "Errore di IO", e);
 				e.printStackTrace();
 			}
 			System.out.println("rispostar icveuto ");
@@ -197,7 +203,7 @@ public class ControllerSocket implements IFController{
 				try {
 					risposta = input.readLine();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					logger.log(Level.SEVERE, "Errore di IO", e);
 					e.printStackTrace();
 				}
 				parametri = risposta.split("#");
@@ -220,7 +226,7 @@ public class ControllerSocket implements IFController{
 			try {
 				risposta = input.readLine();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				logger.log(Level.SEVERE, "Errore di IO", e);
 				e.printStackTrace();
 			}
 			String[] parametri = risposta.split("#");
@@ -230,7 +236,7 @@ public class ControllerSocket implements IFController{
 				try {
 					risposta = input.readLine();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					logger.log(Level.SEVERE, "Errore di IO", e);
 					e.printStackTrace();
 				}
 				parametri = risposta.split("#");
@@ -252,7 +258,7 @@ public class ControllerSocket implements IFController{
 			try {
 				risposta=input.readLine();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				logger.log(Level.SEVERE, "Errore di IO", e);
 				e.printStackTrace();
 			}
 			while(!risposta.equals("END")){
@@ -260,7 +266,7 @@ public class ControllerSocket implements IFController{
 				try {
 					risposta=input.readLine();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					logger.log(Level.SEVERE, "Errore di IO", e);
 					e.printStackTrace();
 				}
 			}
@@ -282,7 +288,7 @@ public class ControllerSocket implements IFController{
 			try {
 				risposta = input.readLine();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				logger.log(Level.SEVERE, "Errore di IO", e);
 				e.printStackTrace();
 			}
 			System.out.println(risposta);
@@ -295,7 +301,7 @@ public class ControllerSocket implements IFController{
 				try {
 					risposta = input.readLine();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					logger.log(Level.SEVERE, "Errore di IO", e);
 					e.printStackTrace();
 				}
 				parametri = risposta.split("#");
@@ -327,7 +333,7 @@ public class ControllerSocket implements IFController{
 		try {
 			socket.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			logger.log(Level.SEVERE, "Errore di IO", e);
 			e.printStackTrace();
 		}
 		

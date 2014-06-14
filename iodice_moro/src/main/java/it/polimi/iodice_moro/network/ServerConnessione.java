@@ -14,6 +14,8 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ServerConnessione implements Runnable {
 
@@ -22,6 +24,8 @@ public class ServerConnessione implements Runnable {
 	private Map<Color, Socket> socketGiocatori = new HashMap<Color, Socket>();
 	boolean partitaIniziata;
 	private ViewSocket view;
+	
+	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.network");
 	
 	public ServerConnessione(Controller controller, ViewSocket view, ServerSocket server) {
 		this.controller=controller;
@@ -80,6 +84,7 @@ public class ServerConnessione implements Runnable {
 								t.start();
 							} catch (PartitaIniziataException e) {
 								//Comunico l'errore di connessione
+								logger.log(Level.SEVERE, "Partita iniziata", e);
 								out.println("NO");
 								out.flush();
 								nuovoGiocatore.close();
@@ -109,7 +114,7 @@ public class ServerConnessione implements Runnable {
 								try {
 									view.attendiGiocatori();
 								} catch (IOException e) {
-									// TODO Auto-generated catch block
+									logger.log(Level.SEVERE, "Errore di IO", e);
 									e.printStackTrace();
 								}
 							}
@@ -130,6 +135,7 @@ public class ServerConnessione implements Runnable {
 							Thread t2 = new Thread(messageReader);
 							t2.start();
 						} catch (PartitaIniziataException e) {
+							logger.log(Level.SEVERE, "Partita iniziata", e);
 							//Comunico l'errore di connessione
 							out.println("NO");
 							out.flush();
@@ -139,7 +145,7 @@ public class ServerConnessione implements Runnable {
 					}
 				}
 			}catch(InterruptedException | IOException e){
-				//TODO
+				logger.log(Level.SEVERE, "Errore di IO", e);
 				e.printStackTrace();
 			}
 		}
