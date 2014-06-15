@@ -115,7 +115,7 @@ public class ServerConnessione implements Runnable {
 									view.attendiGiocatori();
 								} catch (IOException e) {
 									logger.log(Level.SEVERE, "Errore di IO", e);
-									e.printStackTrace();
+									//e.printStackTrace();
 								}
 							}
 						});
@@ -146,7 +146,7 @@ public class ServerConnessione implements Runnable {
 				}
 			}catch(InterruptedException | IOException e){
 				logger.log(Level.SEVERE, "Errore di IO", e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 	}

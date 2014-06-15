@@ -991,7 +991,7 @@ public class View extends UnicastRemoteObject implements IFView {
 			//metto in pausa il thread per dare la sensazione che si stia lanciando il dado
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			logger.log(Level.SEVERE, "Errore nell'esecuzione della thread sleep", e);
 		}
 		lblDado.setIcon(null);
@@ -1000,7 +1000,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			logger.log(Level.SEVERE, "Errore nell'esecuzione della thread sleep", e);
 		}
 		lblDado.setText("    ");

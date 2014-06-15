@@ -587,7 +587,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			view.setGiocatori(gioc);
 			}catch(RemoteException e){
 				logger.log(Level.SEVERE, "Problema di rete", e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			
 			//inizializzo la mappa nelal view
@@ -733,7 +733,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 				view.visualizzaPunteggi(punteggiOrdinati);
 			}catch(RemoteException e){
 				logger.log(Level.SEVERE, "Problemi di rete");
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 		
@@ -761,7 +761,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			view.setPosizioniStrade(posStrade);
 		} catch (RemoteException e1) {
 			logger.log(Level.SEVERE, "Problemi di rete");
-			e1.printStackTrace();
+			//e1.printStackTrace();
 		}
 		
 		
@@ -805,7 +805,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 				view.modQtaTessera(tipoTessere.get(statoPartita.getGiocatori().indexOf(g)), 1, g.getColore());
 			} catch (RemoteException e) {
 				logger.log(Level.SEVERE, "Problemi di rete", e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 		
@@ -824,7 +824,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			view.setGiocatoreCorrente(statoPartita.getGiocatoreCorrente().getColore());
 		} catch (RemoteException e) {
 			logger.log(Level.SEVERE, "Problemi di rete", e);
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 

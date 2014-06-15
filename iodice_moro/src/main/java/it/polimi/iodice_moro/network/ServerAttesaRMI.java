@@ -35,13 +35,13 @@ public class ServerAttesaRMI implements Runnable {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					logger.log(Level.SEVERE, "Errore di IO", e);
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 				ora=System.currentTimeMillis();
 			}
 		} catch (RemoteException e) {
 			logger.log(Level.SEVERE, "Errore di rete", e);
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		System.out.println("partita iniziata!!!");
 		partitaIniziata=true;
@@ -49,7 +49,7 @@ public class ServerAttesaRMI implements Runnable {
 			controller.iniziaPartita();
 		} catch (RemoteException e) {
 			logger.log(Level.SEVERE, "Errore di rete", e);
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		
 	}

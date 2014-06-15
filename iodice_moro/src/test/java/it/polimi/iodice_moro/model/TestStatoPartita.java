@@ -209,6 +209,11 @@ public class TestStatoPartita {
 		assertEquals(statoPartita.getPosPecoraNera(),statoPartita.getRegioni().get(0));
 	}
 	
+	public void testSetPosLupo() {
+		statoPartita.setPosLupo(statoPartita.getRegioni().get(0));
+		assertEquals(statoPartita.getPosPecoraNera(), statoPartita.getRegioni().get(0));
+	}
+	
 	@Test
 	public void testSetGiocatoreCorrente() throws RemoteException{
 		//Controlliamo che setGiocatoreCorrente funzioni correttamente
@@ -272,7 +277,43 @@ public class TestStatoPartita {
 		
 		nextGamer=statoPartita.getNextGamer();
 		assertEquals(gamers.get(0),nextGamer);
-		statoPartita.setGiocatoreCorrente(nextGamer);
+		statoPartita.setGiocatoreCorrente(nextGamer);		
+	}
+	
+	@Test
+	public void testGetRegioniADStrada() {
+		//Controlliamo che il metodo getRegioniADStrada funzioni correttamente
+		List<Regione> regioniAdiacenti= new ArrayList<Regione>();
+		List<Regione> regioni=statoPartita.getRegioni();
+		List<Strada> strade = statoPartita.getStrade();
+		//Ci costruiamo l'array con le presunte regioni adiacenti alla strada id=1
+		regioniAdiacenti.add(regioni.get(0));
+		regioniAdiacenti.add(regioni.get(1));
+		
+		//Verifico che le regioni adiacenti aggiunte da noi siano le stesse.
+		assertEquals(statoPartita.getRegioniADStrada(strade.get(0)).size(),regioniAdiacenti.size());
+		List<Regione> regAd= statoPartita.getRegioniADStrada(strade.get(0));
+		assertEquals(regAd,regioniAdiacenti);
+		assertTrue(regAd.containsAll(regioniAdiacenti));
+	}
+	
+	@Test
+	public void testGetRegioneByID() {
+		List<Regione> regioni = statoPartita.getRegioni();
+		
+		assertEquals(regioni.get(0), statoPartita.getRegioneByID("ffd20000"));
+		assertEquals(regioni.get(1), statoPartita.getRegioneByID("ff7c48ad"));
+		assertEquals(regioni.get(2), statoPartita.getRegioneByID("ff005473"));
+		
+	}
+	
+	@Test
+	public void testGetStradaByID() {
+		List<Strada> strade = statoPartita.getStrade();
+		
+		assertEquals(strade.get(0), statoPartita.getStradaByID("ff3c00ff"));
+		assertEquals(strade.get(1), statoPartita.getStradaByID("ffb4808e"));
+		assertEquals(strade.get(2), statoPartita.getStradaByID("fffb8f9b"));
 		
 	}
 }

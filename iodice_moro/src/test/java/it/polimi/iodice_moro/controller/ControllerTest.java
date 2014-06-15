@@ -6,13 +6,19 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import it.polimi.iodice_moro.exceptions.NotAllowedMoveException;
+import it.polimi.iodice_moro.exceptions.PartitaIniziataException;
 import it.polimi.iodice_moro.model.Giocatore;
 import it.polimi.iodice_moro.model.Regione;
 import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.Strada;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
+import it.polimi.iodice_moro.view.IFView;
+import it.polimi.iodice_moro.view.View;
 
+import java.awt.Color;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.List;
 
@@ -33,6 +39,7 @@ public class ControllerTest{
 		statoPartitaT= new StatoPartita();
 		controllerTest = new Controller(statoPartitaT);
 		
+		
 		List<Regione> listaRegioni = statoPartitaT.getRegioni();
 		List<Strada> listaStrade = statoPartitaT.getStrade();
 		
@@ -52,6 +59,7 @@ public class ControllerTest{
 		statoPartitaT.setGiocatoreCorrente(statoPartitaT.getGiocatori().get(0));
 		giocatoreTest=statoPartitaT.getGiocatoreCorrente();
 		regione1.setNumPecore(2);
+	
 	}
 
 	@Test
@@ -59,10 +67,28 @@ public class ControllerTest{
 			assertSame(statoPartitaT, controllerTest.getStatoPartita());
 	}
 	
+	@Test
+	public void testCostruttoreDue() throws RemoteException {
+		IFView viewProva = new View(controllerTest);
+		Controller controllerTestDue = new Controller(viewProva);
+	}
+	
+	@Test
+	public void testAggiungiRecinto() throws RemoteException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Class myTarget = Controller.class;
+		Class params[] = new Class[1];
+		params[0] = Strada.class;
+		Method aggiungiRecinto = myTarget.getDeclaredMethod("aggiungiRecinto", params[0]);
+		aggiungiRecinto.setAccessible(true);
+		
+		aggiungiRecinto.invoke(controllerTest, strada0);
+		assertTrue(strada0.isRecinto());
+		assertFalse(strada1.isRecinto());
+	}
 	
 	
 	@Test
-	public void testSpostaPecora() throws Exception {
+	public void testSpostaPecora() throws RemoteException, NotAllowedMoveException {
 		
 		int numOfPecoreBefore=regione1.getNumPecore();
 		controllerTest.spostaPecora(regione1);
@@ -128,6 +154,33 @@ public class ControllerTest{
 		}
 	}
 	
+	public void testSpostaLupo() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		Class myTarget = Controller.class;
+		Class params[] = new Class[2];
+		params[0] = Regione.class;
+		params[1] = Regione.class;
+		Method spostaLupo = myTarget.getDeclaredMethod("spostaLupo", params);
+		spostaLupo.setAccessible(true);
+		
+		//Aggiungo il lupo alla regione.
+		regione0.addLupo();
+		
+		spostaLupo.invoke(controllerTest, regione0);
+		//Controllo che il lupo sia stato spostato in una delle regioni adiacenti e che
+		//ce ne sia soltano uno.
+		Boolean lupoPresente = false;
+		int numeroLupo = 0;
+		for(Regione regione : statoPartitaT.getRegioniAdiacenti(regione0)) {
+			if(regione.isLupo()) {
+				lupoPresente = true;
+				numeroLupo++;
+			}
+		}
+		assertTrue(lupoPresente);
+		assertEquals(1, numeroLupo);
+		assertFalse(regione0.isLupo());
+	}
+	
 
 	@Test
 	public void testAcquistaTessera() throws Exception {
@@ -168,6 +221,7 @@ public class ControllerTest{
 			fail("Problemi di rete, "+"Messaggio: "+e.getMessage());
 		}
 		
+		
 		giocatoreTest.decrSoldi(1);
 		//Provo ad acquistare tessere quando il giocatore ha 0 soldi
 		try {
@@ -178,11 +232,22 @@ public class ControllerTest{
 		} catch (RemoteException e) {
 			fail("Problemi di rete, "+"Messaggio: "+e.getMessage());
 		}
+		
+
 	}
 	
 	@Test
-	public void testAcquistaTesseraWhichCantBeBought() {
+	public void testAcquistaTesseraWhichCantBeBought() throws RemoteException {
 		TipoTerreno tipo1=regione1.getTipo();
+		
+		//Provo ad acquistare tessera di sheepsburg.
+		try {
+			controllerTest.acquistaTessera(TipoTerreno.SHEEPSBURG);
+			fail("Should have thrown exception");
+		} catch (NotAllowedMoveException e) {
+			
+		}
+		
 		for(int i=0; i<5; i++) {
 			statoPartitaT.incCostoTessera(tipo1);
 		}
@@ -265,7 +330,7 @@ public class ControllerTest{
 		controllerTest.creaGiocatore("Prova", strada0);
 
 		assertEquals("Prova", statoPartitaT.getGiocatori().get(0).getNome());
-		assertEquals(strada0, statoPartitaT.getGiocatori().get(0).getPosition());		
+		assertEquals(strada0, statoPartitaT.getGiocatori().get(0).getPosition());
 	}
 	
 	@Test
@@ -287,7 +352,7 @@ public class ControllerTest{
 		assertEquals(numMossePrima+1, giocatoreTest.getNumMosse());
 		assertTrue(giocatoreTest.isPastoreSpostato());	
 		
-	}	
+	}
 	
 	@Test
 	public void testCheckTurnoGiocatore() throws RemoteException{

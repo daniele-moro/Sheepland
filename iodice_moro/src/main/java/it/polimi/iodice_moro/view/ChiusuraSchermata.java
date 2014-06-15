@@ -29,7 +29,7 @@ public class ChiusuraSchermata extends WindowAdapter {
 				controller.end();
 			} catch (RemoteException e1) {
 				logger.log(Level.SEVERE, "Parameter is null", e1);
-				e1.printStackTrace();
+				//e1.printStackTrace();
 			}
 			e.getWindow().dispose();
 			System.exit(0);

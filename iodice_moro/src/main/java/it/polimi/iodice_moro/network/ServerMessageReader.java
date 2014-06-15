@@ -44,7 +44,7 @@ public class ServerMessageReader implements Runnable {
 				Thread.sleep(10);
 			} catch (InterruptedException e2) {
 				logger.log(Level.SEVERE, "Errore nella thread.sleep", e2);
-				e2.printStackTrace();
+				//e2.printStackTrace();
 			}
 			try {
 				if(input.ready())
@@ -181,7 +181,7 @@ public class ServerMessageReader implements Runnable {
 				}
 			} catch (IOException e) {
 				logger.log(Level.SEVERE, "Errore di IO", e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 		System.out.println("Chiusura thread di attesa dei comandi del client");

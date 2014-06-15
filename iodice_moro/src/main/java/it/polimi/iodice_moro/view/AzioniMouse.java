@@ -40,7 +40,7 @@ class AzioniMouse extends MouseAdapter{
 			System.out.println(image.getName()+"  "+image.getPath()+"  READ?"+image.canRead()+" WRITE?"+image.canWrite()+" EXECUTE?"+image.canExecute());
 			this.image= ImageIO.read(image);
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			logger.log(Level.SEVERE, "Errore di IO", e);
 		}
 		this.view=view;
@@ -121,7 +121,7 @@ class AzioniMouse extends MouseAdapter{
 									view.getLBLOutput().setText(e2.getMessage());
 									logger.log(Level.SEVERE, "Area non clickabile", e2);
 								} catch (RemoteException e) {
-									e.printStackTrace();
+									//e.printStackTrace();
 									logger.log(Level.SEVERE, "Errore di rete", e);
 								}
 							}
@@ -145,7 +145,7 @@ class AzioniMouse extends MouseAdapter{
 									logger.log(Level.SEVERE, "Area non clickabile", e1);
 								} catch (RemoteException e) {
 									logger.log(Level.SEVERE, "Errore di rete", e);
-									e.printStackTrace();
+									//e.printStackTrace();
 								}
 								
 							}
@@ -196,10 +196,10 @@ class AzioniMouse extends MouseAdapter{
 												controller.spostaPecora(Integer.toHexString(c));
 											} catch (RemoteException e) {
 												logger.log(Level.SEVERE, "Errore di rete", e);
-												e.printStackTrace();
+												//e.printStackTrace();
 											} catch (NotAllowedMoveException e) {
 												logger.log(Level.SEVERE, "Mossa proibita", e);
-												e.printStackTrace();
+												//e.printStackTrace();
 											}
 										}
 									});
@@ -228,7 +228,7 @@ class AzioniMouse extends MouseAdapter{
 				}
 			}catch(RemoteException e1){
 				logger.log(Level.SEVERE, "Errore di rete", e1);
-				e1.printStackTrace();
+				//e1.printStackTrace();
 			}
 			System.out.println("Presente");
 

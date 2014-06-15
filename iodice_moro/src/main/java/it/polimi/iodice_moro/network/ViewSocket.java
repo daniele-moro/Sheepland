@@ -15,6 +15,7 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -27,6 +28,8 @@ public class ViewSocket implements IFView {
 	Map<Color, PrintWriter> writerGiocatori = new HashMap<Color,PrintWriter>();
 	private long inizio;
 	ServerConnessione attesaConnessioni;
+	
+	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.network");
 	
 	/**
 	 * Metodo per ricevere tutte le mosse dei giocatori, cioè dei client
@@ -188,7 +191,8 @@ public class ViewSocket implements IFView {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
+				logger.log(Level.SEVERE, "Errore con la thread sleep");
 			}
 			ora=System.currentTimeMillis();
 		}

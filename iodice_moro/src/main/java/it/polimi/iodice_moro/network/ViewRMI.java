@@ -36,7 +36,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.initMappa();
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 				logger.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
@@ -49,7 +49,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.cambiaGiocatore(color);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 				logger.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
@@ -68,7 +68,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.disattivaGiocatore();
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 				logger.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
@@ -79,7 +79,7 @@ public class ViewRMI implements IFView {
 			listaView.get(giocatoreDaDisattivare).disattivaGiocatore();
 		} catch (RemoteException e) {
 			logger.log(Level.SEVERE, "Errore di rete", e);
-			e.printStackTrace();
+			//e.printStackTrace();
 		}				
 	}
 	
@@ -101,7 +101,7 @@ public class ViewRMI implements IFView {
 				view.addCancelloNormale(stradaID);
 			} catch (RemoteException e) {
 				logger.log(Level.SEVERE, "Errore di rete", e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 
@@ -114,7 +114,7 @@ public class ViewRMI implements IFView {
 				view.addCancelloFinale(stradaID);
 			} catch (RemoteException e) {
 				logger.log(Level.SEVERE, "Errore di rete", e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 
@@ -127,7 +127,7 @@ public class ViewRMI implements IFView {
 				view.spostaPecoraBianca(s, d);
 			} catch (RemoteException e) {
 				logger.log(Level.SEVERE, "Errore di rete", e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 
@@ -142,7 +142,7 @@ public class ViewRMI implements IFView {
 				view.spostaPastore(s, d, colore);
 			} catch (RemoteException e) {
 				logger.log(Level.SEVERE, "Errore di rete", e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 	}
@@ -154,7 +154,7 @@ public class ViewRMI implements IFView {
 				view.spostaPecoraNera(s, d);
 			} catch (RemoteException e) {
 				logger.log(Level.SEVERE, "Errore di rete", e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 	}
@@ -166,7 +166,7 @@ public class ViewRMI implements IFView {
 				view.spostaLupo(s, d);
 			} catch (RemoteException e) {
 				logger.log(Level.SEVERE, "Errore di rete", e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 		
@@ -179,7 +179,7 @@ public class ViewRMI implements IFView {
 				view.modificaQtaPecora(idReg, num);
 			} catch (RemoteException e) {
 				logger.log(Level.SEVERE, "Errore di rete", e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 	}
@@ -190,7 +190,7 @@ public class ViewRMI implements IFView {
 			listaView.get(colore).modQtaTessera(tess, num, colore);
 		} catch (RemoteException e) {
 			logger.log(Level.SEVERE, "Errore di rete", e);
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		
 
@@ -203,7 +203,7 @@ public class ViewRMI implements IFView {
 				view.modSoldiGiocatore(coloreGiocatoreDaModificare, soldi);
 			} catch (RemoteException e) {
 				logger.log(Level.SEVERE, "Errore di rete", e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 
@@ -216,7 +216,7 @@ public class ViewRMI implements IFView {
 				view.incPrezzoTessera(tess);
 			} catch (RemoteException e) {
 				logger.log(Level.SEVERE, "Errore di rete", e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 	}
@@ -227,7 +227,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.visualizzaPunteggi(punteggiOrdinati);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 				logger.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
@@ -240,7 +240,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.setGiocatoreCorrente(colore);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 				logger.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
@@ -282,7 +282,7 @@ public class ViewRMI implements IFView {
 				view.visRisDado(numero);
 			} catch (RemoteException e) {
 				logger.log(Level.SEVERE, "Errore di rete", e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 	}
@@ -294,7 +294,7 @@ public class ViewRMI implements IFView {
 				view.setPosizioniRegioni(posizioniRegioni);
 			} catch (RemoteException e) {
 				logger.log(Level.SEVERE, "Errore di rete", e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 		
@@ -307,7 +307,7 @@ public class ViewRMI implements IFView {
 				view.setPosizioniStrade(posizioniCancelli);
 			} catch (RemoteException e) {
 				logger.log(Level.SEVERE, "Errore di rete", e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 		
@@ -320,7 +320,7 @@ public class ViewRMI implements IFView {
 				view.setGiocatori(giocatori);
 			} catch (RemoteException e) {
 				logger.log(Level.SEVERE, "Errore di rete", e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 		

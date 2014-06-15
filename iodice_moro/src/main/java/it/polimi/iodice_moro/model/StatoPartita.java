@@ -546,8 +546,6 @@ public class StatoPartita {
 		return giocatori.get(indice);
 	}
 	
-	
-	//AGGIUNTE!!!!
 	/**
 	 * Ritorna le regioni adiacenti ad una strada data
 	 * @param strada Strada di cui cercare le regioni adiacenti

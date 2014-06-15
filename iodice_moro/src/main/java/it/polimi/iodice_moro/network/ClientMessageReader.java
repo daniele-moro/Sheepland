@@ -44,7 +44,7 @@ public class ClientMessageReader implements Runnable{
 				Thread.sleep(10);
 			} catch (InterruptedException e1) {
 				logger.log(Level.SEVERE, "Errore durante la thrad.sleep", e1);
-				e1.printStackTrace();
+				//e1.printStackTrace();
 			}
 			try {
 				//Eseguo il lock sullo stream di input,
@@ -109,7 +109,7 @@ public class ClientMessageReader implements Runnable{
 								messaggio = input.readLine();
 							} catch (IOException e) {
 								logger.log(Level.SEVERE, "Errore di IO", e);
-								e.printStackTrace();
+								//e.printStackTrace();
 							}
 							System.out.println("rispostar icveuto ");
 							String[] valori = messaggio.split("#");
@@ -120,7 +120,7 @@ public class ClientMessageReader implements Runnable{
 									messaggio = input.readLine();
 								} catch (IOException e) {
 									logger.log(Level.SEVERE, "Errore di IO", e);
-									e.printStackTrace();
+									//e.printStackTrace();
 								}
 								valori = messaggio.split("#");
 							}
@@ -136,7 +136,7 @@ public class ClientMessageReader implements Runnable{
 								messaggio = input.readLine();
 							} catch (IOException e) {
 								logger.log(Level.SEVERE, "Errore di IO", e);
-								e.printStackTrace();
+								//e.printStackTrace();
 							}
 							String[] valori = messaggio.split("#");
 							System.out.println(messaggio);
@@ -146,7 +146,7 @@ public class ClientMessageReader implements Runnable{
 									messaggio = input.readLine();
 								} catch (IOException e) {
 									logger.log(Level.SEVERE, "Errore di IO", e);
-									e.printStackTrace();
+									//e.printStackTrace();
 								}
 								valori = messaggio.split("#");
 								System.out.println(messaggio);
@@ -162,7 +162,7 @@ public class ClientMessageReader implements Runnable{
 								messaggio = input.readLine();
 							} catch (IOException e) {
 								logger.log(Level.SEVERE, "Errore di IO", e);
-								e.printStackTrace();
+								//e.printStackTrace();
 							}
 							System.out.println(messaggio);
 							String[] valori = messaggio.split("#");
@@ -175,7 +175,7 @@ public class ClientMessageReader implements Runnable{
 									messaggio = input.readLine();
 								} catch (IOException e) {
 									logger.log(Level.SEVERE, "Errore di IO", e);
-									e.printStackTrace();
+									//e.printStackTrace();
 								}
 								valori = messaggio.split("#");
 							}
@@ -258,7 +258,7 @@ public class ClientMessageReader implements Runnable{
 								risposta = input.readLine();
 							} catch (IOException e) {
 								logger.log(Level.SEVERE, "Errore di IO", e);
-								e.printStackTrace();
+								//e.printStackTrace();
 							}
 							System.out.println(risposta);
 							parametri = risposta.split("#");
@@ -274,7 +274,7 @@ public class ClientMessageReader implements Runnable{
 									risposta = input.readLine();
 								} catch (IOException e) {
 									logger.log(Level.SEVERE, "Errore di IO", e);
-									e.printStackTrace();
+									//e.printStackTrace();
 								}
 								parametri = risposta.split("#");
 							}
@@ -291,7 +291,7 @@ public class ClientMessageReader implements Runnable{
 				}
 			} catch (NumberFormatException | IOException e) {
 				logger.log(Level.SEVERE, "Errore di IO", e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 		System.out.println("CHIUSURA THREAD CONTROLLER CLIENT");
