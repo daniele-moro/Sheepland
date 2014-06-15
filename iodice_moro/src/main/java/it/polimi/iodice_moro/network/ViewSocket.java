@@ -300,6 +300,14 @@ public class ViewSocket implements IFView {
 			giocatore.getValue().flush();
 		}
 	}
+	
+	public void spostaLupo(String s, String d) {
+		//Deve effettuare il movimento della pecora nera su tutti i client collegati alla partita
+		for(Entry<Color, PrintWriter> giocatore :writerGiocatori.entrySet()){
+			giocatore.getValue().println("SPOSTA_LUPO#"+s+"#"+d);
+			giocatore.getValue().flush();
+		}
+	}
 
 	@Override
 	public void modificaQtaPecora(String idReg, int num) {

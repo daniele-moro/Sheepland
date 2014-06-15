@@ -152,7 +152,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * Metodo che sposta la pecora nera dala regione in cui si trova alla regione adiacente
 	 * @param regionePecora Regione dove si trova la pecora.
 	 * @param regAdiacente Regione dove deve essere spostata le pecora.
-	 * @throws Exception se non ci sono pecore nere da spostare.
+	 * @throws NotAllowedMoveException se non ci sono pecore nere da spostare.
 	 * @see #checkSpostamentoNera
 	 */
 	public synchronized void spostaPecoraNera(Regione regionePecora, Regione regAdiacente) throws NotAllowedMoveException, RemoteException {
@@ -183,6 +183,29 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		view.spostaPecoraNera(regionePecora.getColore(), regAdiacente.getColore());
 		
 		checkTurnoGiocatore(TipoMossa.SPOSTA_PECORA);
+	}
+	
+	
+	/**
+	 * Spostamento lupo.
+	 * @param regioneLupo Posizione attuale lupo.
+	 * @param regAdiacente Nuova posizione lupo.
+	 * @throws NotAllowedMoveException se non ci sono lupi.
+	 * @throws RemoteException
+	 */
+	private synchronized void spostaLupo(Regione regioneLupo, Regione regAdiacente) throws NotAllowedMoveException, RemoteException {
+		if(regioneLupo.isLupo()) {
+			regioneLupo.removeLupo();
+			regAdiacente.addLupo();
+			statoPartita.setPosLupo(regAdiacente);
+			if(regAdiacente.getNumPecore()>0) {
+				regAdiacente.removePecora();
+				System.out.println("Il lupo mangia la pecora");
+				view.modificaQtaPecora(regAdiacente.getColore(), regAdiacente.getNumPecore());
+			}
+		} else {
+			throw new NotAllowedMoveException("Non ci sono lupi.");
+		}
 	}
 
 	/**
@@ -360,9 +383,76 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		}
 	}
 	
+	public synchronized void checkSpostaLupo() throws RemoteException {
+		boolean soloRecinti=false;
+		boolean puoScavalcare=false;
+		int valoreDado = lanciaDado();
+		System.out.println("VALORE DADO: "+ valoreDado);
+		
+		
+		
+		/*
+		 * Preleviamo la posizione del lupo
+		 * e delle regioni che circondano la regione in cui si trova.
+		 */
+		Regione posLupo=statoPartita.getPosLupo();
+		List<Strada> stradeConfini=statoPartita.getStradeConfini(posLupo);
+		
+		/*
+		 * Controllo se siamo nel caso che tutte le regioni hanno recinti.
+		 */
+		int numeroStradeSenzaRecinto=stradeConfini.size();
+		for(Strada strada : stradeConfini) {
+			if(strada.isRecinto()) {
+				numeroStradeSenzaRecinto--;
+			}	
+		}
+		if(numeroStradeSenzaRecinto==0) {
+			puoScavalcare=true;
+		}
+		/*
+		 * Controllo se nelle strade che circondano la regione in cui si trova la nera c'è una strada che 
+		 * come numero di casella corrisponda a quella che ho generato con il metodo lanciaDado()
+		 * Se è cosi, allora sposto la pecora nera nella regione speculare
+		 * alla strada rispetto alla regione in cui si trova la nera
+		 */
+		
+		for(Strada strada : stradeConfini) {
+			if(strada.getnCasella()==valoreDado) {
+				if(!strada.isRecinto()) {
+					//Controllo che non la pecora non si debba spostare su strade in cui ci sono presenti pastori
+					for(Giocatore g : statoPartita.getGiocatori()){
+						if(strada==g.getPosition() || strada==g.getPosition2()){
+							return;
+						}
+					}
+				}
+				//Se la strada ha un recinto e il lupo non può scavalcare dev'esssere
+				//rilanciato il dado.
+				else if(strada.isRecinto() && !puoScavalcare) {
+					checkSpostaLupo();
+					return;
+				}
+
+				Regione nuovaRegioneLupo=statoPartita.getAltraRegione(posLupo, strada);
+				try {
+					spostaLupo(posLupo, nuovaRegioneLupo);
+					if(view!=null){
+						System.out.println("Spostamento automatico lupo!!");
+						//TODO VIEW.spostaLupo();
+						view.spostaLupo(posLupo.getColore(), nuovaRegioneLupo.getColore());
+					}
+					return;
+				} catch (NotAllowedMoveException e) {
+					logger.log(Level.SEVERE, "Non ci sono pecore da spostare", e);
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Metodo per generare un numero casuale compreso tra 0 (escluso) e 6 (incluso), 
-	 * servirà per generare la posizione in cui si sposta la pecora nera
+	 * servirà per generare la posizione in cui si sposta la pecora nera e il lupo.
 	 * @return Ritorna valore compreso tra 0 e 6 (incluso).
 	 */
 	private int lanciaDado() throws RemoteException {
@@ -496,7 +586,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			try{
 			view.setGiocatori(gioc);
 			}catch(RemoteException e){
-				//TODO
+				logger.log(Level.SEVERE, "Problema di rete", e);
 				e.printStackTrace();
 			}
 			
@@ -504,6 +594,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			System.out.println("INIT MAPPA SERVER");
 			view.initMappa();
 			checkSpostaPecoraNera();
+			checkSpostaLupo();
 			view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
 			//DA qui inizia la partita vera e propria
 		}
@@ -583,7 +674,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 					try{
 						view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
 					}catch (RemoteException e) {
-						//TODO
 						logger.log(Level.SEVERE, "RemoteException errore", e);
 					}
 
@@ -610,6 +700,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 				}
 				//Regione oldNera = statoPartita.getPosPecoraNera();
 				checkSpostaPecoraNera();
+				checkSpostaLupo();
 			}
 		}
 		return statoPartita.getGiocatoreCorrente();
@@ -641,7 +732,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			try{
 				view.visualizzaPunteggi(punteggiOrdinati);
 			}catch(RemoteException e){
-				//TODO
+				logger.log(Level.SEVERE, "Problemi di rete");
 				e.printStackTrace();
 			}
 		}
@@ -669,7 +760,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			view.setPosizioniRegioni(posRegioni);
 			view.setPosizioniStrade(posStrade);
 		} catch (RemoteException e1) {
-			// TODO Auto-generated catch block
+			logger.log(Level.SEVERE, "Problemi di rete");
 			e1.printStackTrace();
 		}
 		
@@ -686,6 +777,8 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			} else {
 				statoPartita.setPosPecoraNera(regione);
 				regione.setPecoraNera(true);
+				statoPartita.setPosLupo(regione);
+				regione.setLupo(true);
 			}
 		}
 		
@@ -711,7 +804,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			try {
 				view.modQtaTessera(tipoTessere.get(statoPartita.getGiocatori().indexOf(g)), 1, g.getColore());
 			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
+				logger.log(Level.SEVERE, "Problemi di rete", e);
 				e.printStackTrace();
 			}
 		}
@@ -730,7 +823,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		try {
 			view.setGiocatoreCorrente(statoPartita.getGiocatoreCorrente().getColore());
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
+			logger.log(Level.SEVERE, "Problemi di rete", e);
 			e.printStackTrace();
 		}
 	}
@@ -838,7 +931,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			cont.setView(view);
 			view.riceviMossa();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			logger.log(Level.SEVERE, "Problemi di IO", e);
 			e.printStackTrace();
 		}
 	}*/

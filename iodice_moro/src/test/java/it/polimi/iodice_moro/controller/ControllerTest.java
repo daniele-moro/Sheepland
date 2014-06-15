@@ -293,7 +293,9 @@ public class ControllerTest{
 	public void testCheckTurnoGiocatore() throws RemoteException{
 		controllerTest.creaGiocatore("Giocatore2", strada2);
 		statoPartitaT.setPosPecoraNera(regione1);
+		statoPartitaT.setPosLupo(regione1);
 		regione1.addPecoraNera();
+		regione1.addLupo();
 		Giocatore secondoGiocatore = statoPartitaT.getGiocatori().get(1);
 		Giocatore provaGiocatore = controllerTest.checkTurnoGiocatore(TipoMossa.COMPRA_TESSERA);
 		//Controllo che se il giocatore può fare altre mosse venga ritornato

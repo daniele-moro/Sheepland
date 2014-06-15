@@ -127,6 +127,7 @@ public class View extends UnicastRemoteObject implements IFView {
 	private Map<String,Point> posizioniCancelli = new HashMap<String, Point>();
 	Map<Color,String>gioc;
 	private JLabel pecoraNera;
+	private JLabel lupo;
 	private JLabel lblOutput = new JLabel();
 	private JLabel lblDado;
 	
@@ -339,6 +340,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		//Usata solo per sapere le dimensioni dell'immagine della pecora bianca
 		ImageIcon iconBianca = new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pecora_bianca.png"));
 		ImageIcon pecNera = new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pecora_nera.png"));
+		ImageIcon iconLupo = new ImageIcon(this.getClass().getClassLoader().getResource("immagini/lupo.png"));
 		for(String s: posizioniRegioni.keySet()){
 			Point p = posizioniRegioni.get(s);
 			if(s.equals("ff002e73")){
@@ -352,6 +354,13 @@ public class View extends UnicastRemoteObject implements IFView {
 				BackgroundedLabel lblPecora = new BackgroundedLabel(pecBianca);
 				lblPecora.setBounds(p.x, p.y, iconBianca.getIconWidth(), iconBianca.getIconHeight());
 				lblRegioni.put(s,lblPecora);
+				//posiziono anche il lupo.
+				JLabel lblLupo = new JLabel();
+				lblLupo.setIcon(iconLupo);
+				//TODO
+				lblLupo.setBounds(p.x-25, p.y+20, iconLupo.getIconWidth(), iconLupo.getIconHeight());
+				mappa.add(lblLupo);
+				lupo=lblLupo;
 			}else{
 				//Visualizzo le pecore bianche
 				BackgroundedLabel lblPecora = new BackgroundedLabel(pecBianca);
@@ -820,6 +829,20 @@ public class View extends UnicastRemoteObject implements IFView {
 	}
 	
 	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFView#spostaPecoraNeraLupo(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void spostaLupo(String s, String d){
+		Point sorg= posizioniRegioni.get(s);
+		Point dest= posizioniRegioni.get(d);
+		
+		//Avvio il Thread per l'animazione sulla schermata
+		ThreadAnimazioneLupo r = new ThreadAnimazioneLupo(this, mappa, lupo, sorg, dest);
+		Thread t = new Thread(r);
+		t.start();
+	}
+	
+	/* (non-Javadoc)
 	 * @see it.polimi.iodice_moro.view.IFView#modificaQtaPecora(java.lang.String, int)
 	 */
 	@Override
@@ -939,6 +962,10 @@ public class View extends UnicastRemoteObject implements IFView {
 	public JLabel getLBLPecoraNera() {
 		return pecoraNera;
 	}
+	
+	public JLabel getLBLLupo() {
+		return lupo;
+	}
 
 	public JFrame getFrame() {
 		return frame;
@@ -964,7 +991,6 @@ public class View extends UnicastRemoteObject implements IFView {
 			//metto in pausa il thread per dare la sensazione che si stia lanciando il dado
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			logger.log(Level.SEVERE, "Errore nell'esecuzione della thread sleep", e);
 		}
@@ -974,7 +1000,6 @@ public class View extends UnicastRemoteObject implements IFView {
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			logger.log(Level.SEVERE, "Errore nell'esecuzione della thread sleep", e);
 		}
@@ -1016,6 +1041,5 @@ public class View extends UnicastRemoteObject implements IFView {
 	}
 
 
-	
 
 }

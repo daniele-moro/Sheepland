@@ -59,7 +59,14 @@ public interface IFView extends Remote{
 	 * @param d ID della regione su cui spostare la pecora
 	 */
 	public abstract void spostaPecoraNera(String s, String d) throws RemoteException;
-
+	
+	/**
+	 * Animazione spostamento lupo.
+	 * @param s ID della regione da cui spostare il lupo.
+	 * @param d ID della regione su cui spostare il lupo.
+	 */
+	public abstract void spostaLupo(String s, String d) throws RemoteException;
+	
 	/**
 	 * Cambia il numero di pecore della regione con ID passato come parametro
 	 * @param idReg Id della regione di cui cambiare il numero di pecore

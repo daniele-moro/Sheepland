@@ -89,6 +89,12 @@ public class ClientMessageReader implements Runnable{
 							System.out.println("spostamento pecora nera!!");
 							view.spostaPecoraNera(parametri[1], parametri[2]);
 							break;
+							
+						case "SPOSTA_LUPO":
+							//Animazione di spostamento del lupo.
+							System.out.println("spostamento lupo!!");
+							view.spostaLupo(parametri[1], parametri[2]);
+							break;
 
 						case "SPOSTA_PASTORE":
 							//Animazione di spostamento del pastore

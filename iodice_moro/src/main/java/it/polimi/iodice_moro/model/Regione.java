@@ -21,9 +21,16 @@ public class Regione extends VerticeGrafo{
 	private boolean pecoraNera;
 	
 	/**
+	 * Presneta lupo nella regione.
+	 */
+	private boolean lupo;
+	
+	/**
 	 * Tipo del terreno. Attributo immutabile.
 	 */
 	private final TipoTerreno tipo;
+	
+	
 	
 	
 	
@@ -68,12 +75,27 @@ public class Regione extends VerticeGrafo{
 	public boolean isPecoraNera() {
 		return pecoraNera;
 	}
+	
+	/**
+	 * @return Presenza o meno del lupo nella regione.
+	 */
+	public boolean isLupo(){
+		return lupo;
+	}
 	/**
 	 * @param pecoraNera Valore che indica la presenza o meno della pecora nera
 	 */
 	public void setPecoraNera(boolean pecoraNera) {
 		this.pecoraNera = pecoraNera;
 	}
+	
+	/**
+	 * @param lupo Valore che indica la presenza o meno del lupo.
+	 */
+	public void setLupo(boolean lupo) {
+		this.lupo = lupo;
+	}
+	
 	/**
 	 * @return Ritorna il numero di pecore presente nella regione
 	 */
@@ -100,7 +122,7 @@ public class Regione extends VerticeGrafo{
 	@Override
 	public String toString() {
 		return "Regione [numPecore=" + numPecore + ", pecoraNera=" + pecoraNera
-				+ ", tipo=" + tipo + "]" +"\n";
+				+ ", lupo=" + lupo + ", tipo=" + tipo + "]" +"\n";
 	}
 
 	/**
@@ -134,10 +156,24 @@ public class Regione extends VerticeGrafo{
 	}
 	
 	/**
-	 * Aggiunge pecora nera.
+	 * Aggiunge pecora nera alla regione.
 	 */
 	public void addPecoraNera() {
 		setPecoraNera(true);	
+	}
+	
+	/**
+	 * Rimuove il lupo dalla regione.
+	 */
+	public void removeLupo() {
+		setLupo(false);
+	}
+	
+	/**
+	 * Aggiunge il lupo alla regione.
+	 */
+	public void addLupo() {
+		setLupo(true);
 	}
 
 }

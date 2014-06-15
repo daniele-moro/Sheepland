@@ -158,6 +158,19 @@ public class ViewRMI implements IFView {
 			}
 		}
 	}
+	
+	@Override
+	public void spostaLupo(String s, String d) throws RemoteException {
+		for(IFView view : listaView.values()) {
+			try {
+				view.spostaLupo(s, d);
+			} catch (RemoteException e) {
+				logger.log(Level.SEVERE, "Errore di rete", e);
+				e.printStackTrace();
+			}
+		}
+		
+	}
 
 	@Override
 	public void modificaQtaPecora(String idReg, int num) {
@@ -320,7 +333,6 @@ public class ViewRMI implements IFView {
 		}
 		
 	}
-
 
 
 }

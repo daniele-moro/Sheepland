@@ -77,6 +77,11 @@ public class StatoPartita {
 	private Regione posPecoraNera;
 	
 	/**
+	 * Posizione del lupo.
+	 */
+	private Regione posLupo;
+	
+	/**
 	 * Giocatore corrente che sta giocando il turno attuale
 	 */
 	private Giocatore giocatoreCorrente;
@@ -98,6 +103,7 @@ public class StatoPartita {
 	public StatoPartita(String file) {
 		initTessere();
 		posPecoraNera=null;
+		posLupo=null;
 		giocatoreCorrente=null;
 		numRecinti=NUM_RECINTI_MAX;
 		turnoFinale=false;
@@ -409,6 +415,13 @@ public class StatoPartita {
 	public Regione getPosPecoraNera() {
 		return posPecoraNera;
 	}
+	
+	/**
+	 * @return Ritorna la regione dove è posizionato il lupo.
+	 */
+	public Regione getPosLupo() {
+		return posLupo;
+	}
 
 	/**
 	 * @param posPecoraNera Posizione della pecora nera
@@ -416,7 +429,14 @@ public class StatoPartita {
 	public void setPosPecoraNera(Regione posPecoraNera) {
 		this.posPecoraNera = posPecoraNera;
 	}
-
+	
+	/**
+	 * @param posLupo Posizione del lupo.
+	 */
+	public void setPosLupo(Regione posLupo) {
+		this.posLupo = posLupo;
+	}
+	
 	/**
 	 * @return Ritorna il giocatore che sta giocando nel turno corrente
 	 */
