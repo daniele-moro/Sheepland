@@ -16,6 +16,7 @@ public class FakeView implements IFView {
 	private Map<Color, String> posGiocatori;
 	private Map<String,Point> posStrade;
 	private Map<String, Point> posRegioni;
+	private int lancioDado;
 	
 	public FakeView() {
 		posGiocatori = new HashMap<Color, String>();
@@ -25,6 +26,10 @@ public class FakeView implements IFView {
 
 	public Map<Color, String> getPosGiocatori() {
 		return posGiocatori;
+	}
+	
+	public int getLancioDado() {
+		return lancioDado;
 	}
 
 	public Map<String, Point> getPosStrade() {
@@ -37,120 +42,100 @@ public class FakeView implements IFView {
 
 	@Override
 	public void initMappa() throws RemoteException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void cambiaGiocatore(Color color) throws RemoteException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void attivaGiocatore() throws RemoteException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void disattivaGiocatore() throws RemoteException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void addCancelloNormale(String stradaID) throws RemoteException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void addCancelloFinale(String stradaID) throws RemoteException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void spostaPecoraBianca(String s, String d) throws RemoteException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void spostaPastore(String s, String d, Color colore)
 			throws RemoteException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void spostaPecoraNera(String s, String d) throws RemoteException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void spostaLupo(String s, String d) throws RemoteException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void modificaQtaPecora(String idReg, int num) throws RemoteException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void modQtaTessera(TipoTerreno tess, int num, Color colore)
 			throws RemoteException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void modSoldiGiocatore(Color coloreGiocatoreDaModificare, int soldi)
 			throws RemoteException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void incPrezzoTessera(TipoTerreno tess) throws RemoteException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void visualizzaPunteggi(Map<Giocatore, Integer> punteggiOrdinati)
 			throws RemoteException {
-		// TODO Auto-generated method stub
-
+	
 	}
 
 	@Override
 	public void setGiocatoreCorrente(Color colore) throws RemoteException {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
 	public void attendiGiocatori() throws IOException {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void visRisDado(int numero) throws RemoteException {
-		// TODO Auto-generated method stub
+		lancioDado=numero;
 
 	}
 
 	@Override
 	public void setColore(Color coloreGiocatore) throws RemoteException {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import it.polimi.iodice_moro.exceptions.IllegalClickException;
 import it.polimi.iodice_moro.exceptions.NotAllowedMoveException;
 import it.polimi.iodice_moro.exceptions.PartitaIniziataException;
 import it.polimi.iodice_moro.model.Giocatore;
@@ -23,6 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -672,6 +674,155 @@ public class ControllerTest{
 		assertEquals(30, statoPartitaT.getGiocatori().get(1).getSoldi());
 	}
 	
+	@Test
+	public void testAccoppiamento1() throws RemoteException, NotAllowedMoveException, IllegalClickException {
+		int lancio;
+		Regione regionex = statoPartitaT.getRegioniADStrada(statoPartitaT.getGiocatoreCorrente().getPosition()).get(0);
+		int numPecore = 2;
+		regionex.setNumPecore(numPecore);
+		
+		
+		//Testo per tre volte il giusto funzionamento di accoppiamento1().
+		controllerTest.accoppiamento1(regionex.getColore());
+		lancio = ((FakeView)fakeView).getLancioDado();
+		if(lancio == statoPartitaT.getGiocatoreCorrente().getPosition().getnCasella()) {
+			numPecore++;
+			assertEquals(numPecore, regionex.getNumPecore());
+			
+		}
+		
+		giocatoreTest.azzeraTurno();
+		controllerTest.accoppiamento1(regionex.getColore());
+		lancio = ((FakeView)fakeView).getLancioDado();
+		if(lancio == statoPartitaT.getGiocatoreCorrente().getPosition().getnCasella()) {
+			numPecore++;
+			assertEquals(numPecore, regionex.getNumPecore());
+			
+		}
+		
+		giocatoreTest.azzeraTurno();
+		controllerTest.accoppiamento1(regionex.getColore());
+		lancio = ((FakeView)fakeView).getLancioDado();
+		if(lancio == statoPartitaT.getGiocatoreCorrente().getPosition().getnCasella()) {
+			numPecore++;
+			assertEquals(numPecore, regionex.getNumPecore());
+		}
+	}
 	
+	@Test
+	public void testAccoppiamento1WithNotAllowedMoveExc() {
+		Regione regionex = statoPartitaT.getRegioniADStrada(statoPartitaT.getGiocatoreCorrente().getPosition()).get(0);
+		int numPecore = 1;
+		regionex.setNumPecore(numPecore);
+		try {
+			controllerTest.accoppiamento1(regionex.getColore());
+			fail("Should have thrown exception");
+		} catch (RemoteException e) {
+			fail();
+		} catch (NotAllowedMoveException e) {
+			
+		} catch (IllegalClickException e) {
+			fail();
+		}
+		
+	}
 	
+	@Test
+	public void testAccoppiamento1WithIllegalClickExc () {
+		try {
+			controllerTest.accoppiamento1("fafian");
+			fail("Should have thrown exception");
+		} catch (RemoteException e) {
+			fail();
+		} catch (NotAllowedMoveException e) {
+			fail();
+		} catch (IllegalClickException e) {
+			
+		}
+	}
+	
+	@Test
+	public void testSparatoria1() throws RemoteException, NotAllowedMoveException, IllegalClickException {
+		int lancio;
+		Regione regionex = statoPartitaT.getRegioniADStrada(statoPartitaT.getGiocatoreCorrente().getPosition()).get(0);
+		int numPecore = 2;
+		regionex.setNumPecore(numPecore);
+		
+		//Testo per tre volte il giusto funzionamento di accoppiamento1().
+		controllerTest.sparatoria1(regionex.getColore());
+		lancio = ((FakeView)fakeView).getLancioDado();
+		System.out.println(lancio);
+		if(lancio == statoPartitaT.getGiocatoreCorrente().getPosition().getnCasella()) {
+			numPecore--;
+			assertEquals(numPecore, regionex.getNumPecore());
+		}
+		
+		giocatoreTest.azzeraTurno();
+		controllerTest.sparatoria1(regionex.getColore());
+		lancio = ((FakeView)fakeView).getLancioDado();
+		System.out.println(lancio);
+		if(lancio == statoPartitaT.getGiocatoreCorrente().getPosition().getnCasella()) {
+			numPecore--;
+			assertEquals(numPecore, regionex.getNumPecore());	
+			
+		}
+		
+		giocatoreTest.azzeraTurno();
+		controllerTest.sparatoria1(regionex.getColore());
+		lancio = ((FakeView)fakeView).getLancioDado();
+		System.out.println(lancio);
+		if(lancio == statoPartitaT.getGiocatoreCorrente().getPosition().getnCasella()) {
+			numPecore--;
+			assertEquals(numPecore, regionex.getNumPecore());
+		}
+	}
+	
+	@Test
+	public void testSparatoria1WithNotAllowedMoveExc() {
+		Regione regionex = statoPartitaT.getRegioniADStrada(statoPartitaT.getGiocatoreCorrente().getPosition()).get(0);
+		int numPecore = 0;
+		regionex.setNumPecore(numPecore);
+		try {
+			controllerTest.sparatoria1(regionex.getColore());
+			fail("Should have thrown exception");
+		} catch (RemoteException e) {
+			fail();
+		} catch (NotAllowedMoveException e) {
+			
+		} catch (IllegalClickException e) {
+			fail();
+		}
+		
+	}
+	
+	@Test
+	public void testSparatoria1WithIllegalClickExc () {
+		try {
+			controllerTest.accoppiamento1("facian");
+			fail("Should have thrown exception");
+		} catch (RemoteException e) {
+			fail();
+		} catch (NotAllowedMoveException e) {
+			fail();
+		} catch (IllegalClickException e) {
+			
+		}
+	}
+	
+	@Test
+	public void testSortByValue() {
+		//Creo una lista, la ordino usando l'algoritmo e controllo che l'ordine sia giusto.
+		Map<Giocatore, Integer> punteggi = new HashMap<Giocatore, Integer>();
+		punteggi.put(new Giocatore("Third"), 10);
+		punteggi.put(new Giocatore("First"), 50);
+		punteggi.put(new Giocatore("Second"), 30);
+		punteggi.put(new Giocatore("Fourth"), 1);
+		punteggi=Controller.sortByValue(punteggi);
+		Iterator<Entry<Giocatore, Integer>> iterator = punteggi.entrySet().iterator();
+		assertEquals((Integer)50, iterator.next().getValue());	
+		assertEquals((Integer)30, iterator.next().getValue());
+		assertEquals((Integer)10, iterator.next().getValue());
+		assertEquals((Integer)1, iterator.next().getValue());
+		
+	}
 }
