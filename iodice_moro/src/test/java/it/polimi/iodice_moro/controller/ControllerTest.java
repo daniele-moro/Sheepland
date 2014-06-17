@@ -13,14 +13,19 @@ import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.Strada;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
+import it.polimi.iodice_moro.network.ViewRMI;
 import it.polimi.iodice_moro.view.IFView;
 import it.polimi.iodice_moro.view.View;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +36,8 @@ public class ControllerTest{
 	Giocatore giocatoreTest;
 	Controller controllerTest;
 	
+	IFView fakeView;
+	
 	Regione regione0, regione1, regione2, regione3, regione4;
 	Strada strada0, strada1, strada2, strada3, strada4;
 	
@@ -38,6 +45,8 @@ public class ControllerTest{
 	public void setUp() throws Exception {
 		statoPartitaT= new StatoPartita();
 		controllerTest = new Controller(statoPartitaT);
+		fakeView = new FakeView();
+		controllerTest.setView(fakeView);
 		
 		
 		List<Regione> listaRegioni = statoPartitaT.getRegioni();
@@ -333,6 +342,17 @@ public class ControllerTest{
 		assertEquals(strada0, statoPartitaT.getGiocatori().get(0).getPosition());
 	}
 	
+	
+	@Test
+	public void testCreaGiocatoreWithColors() throws RemoteException, PartitaIniziataException {		
+		Color colore = controllerTest.creaGiocatore("Prova_x");
+		//Controllo che il secondo giocatore della partita
+		assertEquals("Prova_x", statoPartitaT.getGiocatori().get(1).getNome());
+		assertFalse(statoPartitaT.getGiocatori().get(1).getColore().equals(null));
+		assertEquals(colore, statoPartitaT.getGiocatori().get(1).getColore());
+	}
+	
+	
 	@Test
 	public void testAggiornaTurno() throws RemoteException {
 		int numMossePrima = giocatoreTest.getNumMosse();
@@ -474,6 +494,184 @@ public class ControllerTest{
 		assertFalse(controllerTest.mossaPossibile(TipoMossa.SPOSTA_PECORA));
 		giocatoreTest.azzeraTurno();
 	}
+	
+	@Test
+	public void testPagaSpostamento() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Class myTarget = Controller.class;
+		Class params[] = new Class[2];
+		params[0] = Strada.class;
+		params[1] = Giocatore.class;
+		Method pagaSpostamento = myTarget.getDeclaredMethod("pagaSpostamento", params);
+		pagaSpostamento.setAccessible(true);
+		
+		List<Strada> stradaAdiacenti = statoPartitaT.getStradeAdiacenti(giocatoreTest.getPosition());
+		
+		//Aggiungo il lupo alla regione.
+		regione0.addLupo();
+		
+		Boolean result = (Boolean)pagaSpostamento.invoke(controllerTest, stradaAdiacenti.get(0), giocatoreTest);
+		Boolean result2= (Boolean)pagaSpostamento.invoke(controllerTest, strada4, giocatoreTest);
+		
+		assertFalse(result);
+		assertTrue(result2);
+	}
+	
+	@Test
+	public void testLanciaDado()  throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Class myTarget = Controller.class;
+		Method lanciaDado = myTarget.getDeclaredMethod("lanciaDado");
+		lanciaDado.setAccessible(true);
+		int result;
+		for(int i=0; i<20; i++) {
+			result=(int)lanciaDado.invoke(controllerTest);
+			assertTrue(result >0 && result <7);
+		}
+	}
+	
+	@Test
+	@SuppressWarnings("deprecation")
+	public void testGetPosRegioni() {
+		Map<String, Point> posRegioni = controllerTest.getPosRegioni();
+		double x,y;
+		//Verifico per 4 regioni
+		//Regione ID ffd20000
+		x=posRegioni.get("ffd20000").getX();
+		y=posRegioni.get("ffd20000").getY();
+		assertEquals(52, x,0);
+		assertEquals(170,y,0);
+		//Regione ID ff005473
+		x=posRegioni.get("ff005473").getX();
+		y=posRegioni.get("ff005473").getY();
+		assertEquals(173, x, 0);
+		assertEquals(383,y, 0);
+		//Regione ID ffff2323
+		x=posRegioni.get("ffff2323").getX();
+		y=posRegioni.get("ffff2323").getY();
+		assertEquals(174, x, 0);
+		assertEquals(144,y, 0);
+		//Regione ID ffff23aa
+		x=posRegioni.get("ffff23aa").getX();
+		y=posRegioni.get("ffff23aa").getY();
+		assertEquals(370, x, 0);
+		assertEquals(120,y, 0);	
+	}
+	
+	@Test
+	@SuppressWarnings("deprecation")
+	public void testGetPosStrade() {
+		Map<String, Point> posStrade = controllerTest.getPosStrade();
+		double x,y;
+		//Verifico per 4 strade
+		//Strada ID ff3c00ff
+		x=posStrade.get("ff3c00ff").getX();
+		y=posStrade.get("ff3c00ff").getY();
+		assertEquals(71, x, 0);
+		assertEquals(246,y, 0);
+		//Strada ID fffb8f9b
+		x=posStrade.get("fffb8f9b").getX();
+		y=posStrade.get("fffb8f9b").getY();
+		assertEquals(142, x, 0);
+		assertEquals(215,y,0);
+		//Strada ID ffff2323
+		x=posStrade.get("ffb4808e").getX();
+		y=posStrade.get("ffb4808e").getY();
+		assertEquals(113, x, 0);
+		assertEquals(167,y, 0);
+		//Strada ID ffd27f52
+		x=posStrade.get("ffd27f52").getX();
+		y=posStrade.get("ffd27f52").getY();
+		assertEquals(254, x, 0);
+		assertEquals(503,y, 0);
+	}
+	
+	@Test
+	public void testGetIDRegioniByAd() {
+		List<String> regioniAdiacenti=controllerTest.getIDRegioniAd();
+		List<Regione> regioniAdiacentiReali=statoPartitaT.getRegioniADStrada(statoPartitaT.getGiocatoreCorrente().getPosition());
+		assertTrue(regioniAdiacenti.contains(regioniAdiacentiReali.get(0).getColore()));
+		assertTrue(regioniAdiacenti.contains(regioniAdiacentiReali.get(1).getColore()));
+		
+	}
+	
+	@Test 
+	public void testAddView() throws RemoteException, PartitaIniziataException {
+		//Creo ViewRMI e gli aggiungo una view.
+		IFView viewrmi = new ViewRMI(controllerTest);;
+		Color colore = controllerTest.creaGiocatore("X");
+		controllerTest.setView(viewrmi);
+		controllerTest.addView(fakeView, colore);
+		//Controllo che la view restituita in base al colore sia quella giusta.
+		assertEquals(fakeView, ((ViewRMI)viewrmi).getViews().get(colore));
+	}
+	
+	@Test
+	public void testGetGiocatori() {
+		Map<Color, String> mappaGiocatori = controllerTest.getGiocatori();
+		List<Giocatore> listaGiocatori = statoPartitaT.getGiocatori();
+		for(Giocatore g : listaGiocatori) {
+			assertTrue(mappaGiocatori.keySet().contains(g.getColore()));
+		}
+	}
+	
+	@Test
+	public void testIniziaPartita() throws RemoteException {
+		
+		controllerTest.iniziaPartita();
+		
+		//Controllo che vengano inizializzate nel modo giusto le strade e le regioni.
+		Map<String,Point> posRegioni = new HashMap<String,Point>();
+		Map<String, Point> posStrade = new HashMap<String,Point>();
+		
+		for(Regione r: statoPartitaT.getRegioni()){
+			posRegioni.put(r.getColore(),r.getPosizione());
+		}
+		
+		for(Strada s: statoPartitaT.getStrade()){
+			posStrade.put(s.getColore(),s.getPosizione());
+		}
+		
+		assertEquals(posRegioni, ((FakeView)fakeView).getPosRegioni());
+		assertEquals(posStrade, ((FakeView)fakeView).getPosStrade());
+		
+		//Controllo che il numero delle pecore sia inizializzato nel modo giusto.
+		for(Regione regione : statoPartitaT.getRegioni()) {
+			if(!(regione.getTipo().equals(TipoTerreno.SHEEPSBURG))) {
+				assertEquals(1, regione.getNumPecore());
+			}
+			else {
+				//Controllo che la posizione del lupo e della pecora sia in sheepland.
+				assertTrue(regione.isLupo());
+				assertTrue(regione.isPecoraNera());
+				assertEquals(statoPartitaT.getPosLupo(), regione);
+				assertEquals(statoPartitaT.getPosPecoraNera(),  regione);
+			}
+			//Controllo che il numero delle tessere di ogni giocatore sia maggiore di zero
+			//cioè gli sia stata assegnata la tessera iniziale.
+			Boolean result = true;
+			for(Giocatore giocatore : statoPartitaT.getGiocatori()) {
+				for(Entry<String, Integer> entry : giocatore.getTesserePossedute().entrySet()) {
+					int value = entry.getValue();
+					if(value<0 || value>1) {
+						result = false;
+					}
+				}
+			assertTrue(result);
+				
+			}
+			
+			assertEquals(statoPartitaT.getGiocatoreCorrente(), statoPartitaT.getGiocatori().get(0));
+		}
+	}
+	
+	@Test
+	public void testIniziaPartitaWithTwoPlayers() throws RemoteException, PartitaIniziataException {
+		controllerTest.creaGiocatore("x");
+		assertEquals(2, statoPartitaT.getGiocatori().size());
+		controllerTest.iniziaPartita();
+		assertEquals(30, statoPartitaT.getGiocatori().get(0).getSoldi());
+		assertEquals(30, statoPartitaT.getGiocatori().get(1).getSoldi());
+	}
+	
 	
 	
 }

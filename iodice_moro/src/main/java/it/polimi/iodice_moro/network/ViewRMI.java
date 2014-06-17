@@ -1,5 +1,7 @@
 package it.polimi.iodice_moro.network;
 
+import it.polimi.iodice_moro.controller.Controller;
+import it.polimi.iodice_moro.controller.IFController;
 import it.polimi.iodice_moro.exceptions.PartitaIniziataException;
 import it.polimi.iodice_moro.model.Giocatore;
 import it.polimi.iodice_moro.model.TipoTerreno;
@@ -17,7 +19,10 @@ import java.util.logging.Logger;
 public class ViewRMI implements IFView {
 	
 	Map<Color, IFView> listaView;
-	ServerAttesaRMI server;
+	IFController controller;
+	
+	long inizio;
+	Boolean partitaIniziata;
 	
 	private static final Logger logger = Logger.getLogger("it.polimi.iodice_moro.view");
 
@@ -26,9 +31,10 @@ public class ViewRMI implements IFView {
 		
 	}
 	
-	public ViewRMI(ServerAttesaRMI server) {
+	public ViewRMI(IFController controller) {
 		this();
-		this.server=server;
+		this.controller=controller;
+		partitaIniziata=false;
 	}
 
 	public void initMappa() {
@@ -248,13 +254,17 @@ public class ViewRMI implements IFView {
 	
 	//Aggiunge istanza View alla lista della View. Utilizzato in implementazione View RMI.
 	public void addView(IFView view, Color coloreGiocatore) throws RemoteException, PartitaIniziataException {
-		if(!server.isIniziata()) {
-			server.setInizio();
+		if(!isIniziata()) {
+			setInizio();
 			listaView.put(coloreGiocatore, view);
 		} else {
 			throw new PartitaIniziataException("Partita già iniziata");
 		}
 		
+	}
+
+	private void setInizio() {
+		inizio=System.currentTimeMillis();	
 	}
 
 	@Override
@@ -271,8 +281,33 @@ public class ViewRMI implements IFView {
 
 	@Override
 	public void attendiGiocatori() throws IOException {
-		// TODO Auto-generated method stub
-		
+		long ora = System.currentTimeMillis();
+		inizio=0;
+		try {
+			while(inizio==0 ||
+					(inizio!=0 &&
+						!(controller.getGiocatori().size()>=4 || (controller.getGiocatori().size()>=2 && ora-inizio>30000)))){
+				//System.out.println("attesaGiocatori");
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					logger.log(Level.SEVERE, "Errore di IO", e);
+					//e.printStackTrace();
+				}
+				ora=System.currentTimeMillis();
+			}
+		} catch (RemoteException e) {
+			logger.log(Level.SEVERE, "Errore di rete", e);
+			//e.printStackTrace();
+		}
+		System.out.println("partita iniziata!!!");
+		partitaIniziata=true;
+		try {
+			controller.iniziaPartita();
+		} catch (RemoteException e) {
+			logger.log(Level.SEVERE, "Errore di rete", e);
+			//e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -333,6 +368,13 @@ public class ViewRMI implements IFView {
 		}
 		
 	}
+	
+	public Boolean isIniziata() {
+		return partitaIniziata;
+	}
 
+	public Map<Color, IFView> getViews() {
+		return listaView;
+	}
 
 }
