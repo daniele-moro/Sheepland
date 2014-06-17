@@ -23,6 +23,7 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -169,14 +170,13 @@ public class View extends UnicastRemoteObject implements IFView {
 		frame.setBackground(new Color(43,163,250));
 		frame.setLayout(new BorderLayout());
 		frame.addWindowListener(new ChiusuraSchermata(controller));
-		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		//frame.setAlwaysOnTop(true);
 		
 		//CENTRALPANEL
 		mappa = new JLabel();
-		mappa.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/game_board.png")));
-		
-		mouse = new AzioniMouse(new File(this.getClass().getClassLoader().getResource("immagini/game_board_back.png").getPath()), this, controller);
+		mappa.setIcon(new ImageIcon(this.getClass().getResource("/immagini/game_board.png")));
+		mouse = new AzioniMouse(this.getClass().getResourceAsStream("/immagini/game_board_back.png"), this, controller);
 		mouse.setRegioni("", "");
 		mappa.addMouseListener(mouse);
 		mappa.addMouseMotionListener(mouse);
@@ -191,11 +191,12 @@ public class View extends UnicastRemoteObject implements IFView {
 		AzioniBottoni action = new AzioniBottoni();
 		
 		btnSpostaPecora = new JButton("<html>SPOSTA <br>PECORA</html>");
-		btnSpostaPecora.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pecora.png")));
+		btnSpostaPecora.setIcon(new ImageIcon(this.getClass().getResource("/immagini/pecora.png")));
 		btnSpostaPecora.setActionCommand(TipoMossa.SPOSTA_PECORA.toString());
 		btnSpostaPecora.addActionListener(action);
 		
 		btnSpostaPastore = new JButton("<html>SPOSTA <br>PASTORE</html>");
+		btnSpostaPastore.setIcon(new ImageIcon(this.getClass().getResource("/immagini/pastore.png")));
 		btnSpostaPastore.setActionCommand(TipoMossa.SPOSTA_PASTORE.toString());
 		btnSpostaPastore.addActionListener(action);
 		
@@ -209,7 +210,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		
 		btnSparatoria1 = new JButton("<html>SPARATORIA <br>1</html>");
 		btnSparatoria1.setActionCommand(TipoMossa.SPARATORIA1.toString());
-		btnSparatoria1.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pistola.png")));
+		btnSparatoria1.setIcon(new ImageIcon(this.getClass().getResource("/immagini/pistola.png")));
 		btnSparatoria1.addActionListener(action);
 		
 		//Disattivo i bottoni che per ora non servono
@@ -234,7 +235,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		
 		JLabel lbltemp = new JLabel();
 		JLabel lbltext = new JLabel();
-		lbltemp.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/bosco.png")));
+		lbltemp.setIcon(new ImageIcon(this.getClass().getResource("/immagini/bosco.png")));
 		lbltemp.setBorder(new EmptyBorder(5,5,5,5));
 		lbltext = new JLabel();
 		lbltext.setText("0");
@@ -249,7 +250,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		leftPanel.add(lbltemp,c);
 		
 		lbltemp = new JLabel();
-		lbltemp.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/coltivazione.png")));
+		lbltemp.setIcon(new ImageIcon(this.getClass().getResource("/immagini/coltivazione.png")));
 		lbltemp.setBorder(new EmptyBorder(5,5,5,5));
 		lbltext = new JLabel();
 		lbltext.setText("0");
@@ -264,7 +265,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		leftPanel.add(lbltemp,c);
 		
 		lbltemp = new JLabel();
-		lbltemp.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/montagne.png")));
+		lbltemp.setIcon(new ImageIcon(this.getClass().getResource("/immagini/montagne.png")));
 		lbltemp.setBorder(new EmptyBorder(5,5,5,5));
 		lbltext = new JLabel();
 		lbltext.setText("0");
@@ -279,7 +280,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		leftPanel.add(lbltemp,c);
 		
 		lbltemp = new JLabel();
-		lbltemp.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/paludi.png")));
+		lbltemp.setIcon(new ImageIcon(this.getClass().getResource("/immagini/paludi.png")));
 		lbltemp.setBorder(new EmptyBorder(5,5,5,5));
 		lbltext = new JLabel();
 		lbltext.setText("0");
@@ -294,7 +295,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		leftPanel.add(lbltemp,c);
 		
 		lbltemp = new JLabel();
-		lbltemp.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pianura.png")));
+		lbltemp.setIcon(new ImageIcon(this.getClass().getResource("/immagini/pianura.png")));
 		lbltemp.setBorder(new EmptyBorder(5,5,5,5));
 		lbltext = new JLabel();
 		lbltext.setText("0");
@@ -309,7 +310,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		leftPanel.add(lbltemp,c);
 		
 		lbltemp = new JLabel();
-		lbltemp.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/sabbia.png")));
+		lbltemp.setIcon(new ImageIcon(this.getClass().getResource("/immagini/sabbia.png")));
 		lbltemp.setBorder(new EmptyBorder(5,5,5,5));
 		lbltext = new JLabel();
 		lbltext.setText("0");
@@ -356,11 +357,11 @@ public class View extends UnicastRemoteObject implements IFView {
 		
 		//Visualizzo tutte le pecore
 		//File da passare al BackgroundedLabel per l'immagine di sfondo
-		File pecBianca = new File(this.getClass().getClassLoader().getResource("immagini/pecora_bianca.png").getPath());
+		//InputStream pecBianca = this.getClass().getResourceAsStream("/immagini/pecora_bianca.png");
 		//Usata solo per sapere le dimensioni dell'immagine della pecora bianca
-		ImageIcon iconBianca = new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pecora_bianca.png"));
-		ImageIcon pecNera = new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pecora_nera.png"));
-		ImageIcon iconLupo = new ImageIcon(this.getClass().getClassLoader().getResource("immagini/lupo.png"));
+		ImageIcon iconBianca = new ImageIcon(this.getClass().getResource("/immagini/pecora_bianca.png"));
+		ImageIcon pecNera = new ImageIcon(this.getClass().getResource("/immagini/pecora_nera.png"));
+		ImageIcon iconLupo = new ImageIcon(this.getClass().getResource("/immagini/lupo.png"));
 		for(String s: posizioniRegioni.keySet()){
 			Point p = posizioniRegioni.get(s);
 			if(s.equals("ff002e73")){
@@ -371,7 +372,7 @@ public class View extends UnicastRemoteObject implements IFView {
 				mappa.add(lblNera);
 				pecoraNera=lblNera;
 				//comunque devo inizializzare la label per la pecora normale, però senza numero di pecore
-				BackgroundedLabel lblPecora = new BackgroundedLabel(pecBianca);
+				BackgroundedLabel lblPecora = new BackgroundedLabel(this.getClass().getResourceAsStream("/immagini/pecora_bianca.png"));
 				lblPecora.setBounds(p.x, p.y, iconBianca.getIconWidth(), iconBianca.getIconHeight());
 				lblRegioni.put(s,lblPecora);
 				//posiziono anche il lupo.
@@ -383,7 +384,7 @@ public class View extends UnicastRemoteObject implements IFView {
 				lupo=lblLupo;
 			}else{
 				//Visualizzo le pecore bianche
-				JLabel lblPecora = new BackgroundedLabel(pecBianca);
+				JLabel lblPecora = new BackgroundedLabel(this.getClass().getResourceAsStream("/immagini/pecora_bianca.png"));
 				lblPecora.setText("      1");
 				mappa.add(lblPecora);
 				lblPecora.setBounds(p.x, p.y, iconBianca.getIconWidth(), iconBianca.getIconHeight());
@@ -705,14 +706,14 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void addCancelloNormale(String stradaID){
-		mettiCancello(stradaID, new ImageIcon(this.getClass().getClassLoader().getResource("immagini/cancello.png")));
+		mettiCancello(stradaID, new ImageIcon(this.getClass().getResource("/immagini/cancello.png")));
 	}
 	/* (non-Javadoc)
 	 * @see it.polimi.iodice_moro.view.IFView#addCancelloFinale(java.lang.String)
 	 */
 	@Override
 	public void addCancelloFinale(String stradaID){
-		mettiCancello(stradaID, new ImageIcon(this.getClass().getClassLoader().getResource("immagini/cancello_finale.png")));
+		mettiCancello(stradaID, new ImageIcon(this.getClass().getResource("/immagini/cancello_finale.png")));
 	}
 	
 	/**
@@ -879,7 +880,7 @@ public class View extends UnicastRemoteObject implements IFView {
 			return;
 		}
 		JLabel lblDanaro = new JLabel();
-		ImageIcon imgDanaro = new ImageIcon(this.getClass().getClassLoader().getResource("immagini/danaro.png"));
+		ImageIcon imgDanaro = new ImageIcon(this.getClass().getResource("/immagini/danaro.png"));
 		lblDanaro.setIcon(imgDanaro);
 		lblTessera.add(lblDanaro);
 		lblDanaro.setBounds(posx, 0, imgDanaro.getIconWidth(), imgDanaro.getIconHeight());
@@ -974,7 +975,7 @@ public class View extends UnicastRemoteObject implements IFView {
 
 	@Override
 	public void visRisDado(int numero) {
-		if(giocatoreCorrente.equals(coloreGamer)){
+		/*if(giocatoreCorrente.equals(coloreGamer)){
 			disattivaGiocatore();
 		}
 		lblDado.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/dado.gif")));
@@ -999,8 +1000,9 @@ public class View extends UnicastRemoteObject implements IFView {
 		frame.repaint();
 		if(giocatoreCorrente.equals(coloreGamer)){
 			attivaGiocatore();
-		}
-		
+		}*/
+		//JOptionPane.showMessageDialog(frame, "Risultato dado: "+numero);
+		lblOutput.setText("Risultato dado: "+numero);
 	}
 	
 	public void addPedinaGiocatore(Color colore, JLabel pedGiocatore) {

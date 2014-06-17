@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,7 +20,7 @@ public class BackgroundedLabel extends JLabel {
 	private static final long serialVersionUID = 1L;
 	BufferedImage img;
 	
-	public BackgroundedLabel(File f){
+	public BackgroundedLabel(InputStream f){
 		super(); //crea un JPanel con doubleBuffered true
 		try{
 			setImage(ImageIO.read(f));

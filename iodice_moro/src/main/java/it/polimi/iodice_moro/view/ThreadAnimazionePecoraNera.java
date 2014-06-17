@@ -32,7 +32,7 @@ public class ThreadAnimazionePecoraNera implements Runnable {
 		sorg2.x+=10;
 		dest2.y-=20;
 		dest2.x+=10;
-		view.spostaImmagine(sorg2,dest2, new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pecora_nera.png")));
+		view.spostaImmagine(sorg2,dest2, new ImageIcon(this.getClass().getResource("/immagini/pecora_nera.png")));
 		mappa.add(pecoraNera);
 		pecoraNera.setBounds(dest2.x, dest2.y, pecoraNera.getWidth(), pecoraNera.getHeight());
 	}

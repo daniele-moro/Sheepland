@@ -29,16 +29,16 @@ public class ThreadAnimazionePastore implements Runnable {
 		ImageIcon img = null;
 		//carico l'icona della pedina corretta
 		if(colore.equals(new Color(255,0,0))){
-			img=new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pedinarossa.png"));
+			img=new ImageIcon(this.getClass().getResource("/immagini/pedinarossa.png"));
 		}
 		if(colore.equals(new Color(0,255,0))){
-			img=new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pedinaverde.png"));
+			img=new ImageIcon(this.getClass().getResource("/immagini/pedinaverde.png"));
 		}
 		if(colore.equals(new Color(0,0,255))){
-			img=new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pedinaazzurra.png"));
+			img=new ImageIcon(this.getClass().getResource("/immagini/pedinaazzurra.png"));
 		}
 		if(colore.equals(new Color(255,255,0))){
-			img=new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pedinagialla.png"));
+			img=new ImageIcon(this.getClass().getResource("/immagini/pedinagialla.png"));
 		}
 
 		if(pedGiocatore!=null){

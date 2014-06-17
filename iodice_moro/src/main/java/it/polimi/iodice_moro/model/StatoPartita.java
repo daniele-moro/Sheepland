@@ -136,7 +136,7 @@ public class StatoPartita {
 	 */
 	private void caricaMappa(String file){
 		try {
-			parseMappaXML(this.getClass().getClassLoader().getResource(file));
+			parseMappaXML("/"+file);
 		} catch (JDOMException e)  {
 			/*
 			 * L'eccezione viene loggata nel logger del model
@@ -157,20 +157,17 @@ public class StatoPartita {
 	 * @throws IOException 
 	 * @throws JDOMException 
 	 */
-	private void parseMappaXML(URL url) throws JDOMException, IOException{
+	private void parseMappaXML(String file) throws JDOMException, IOException{
 		Map<Integer,VerticeGrafo> nodi = new HashMap<Integer, VerticeGrafo>();
 		/*
 		 * SAXBuilder usato per creare oggetti JDOM2
 		 */
 		SAXBuilder jdomBuilder = new SAXBuilder();
-		/*
-		 * Apertura del file xml in cui e' contenuta la mappa
-		 */
-		File xmlFile = new File(url.getPath());
+		
 		/*
 		 * jdomDocument e' l'oggetto JDOM2
 		 */
-		Document jdomDocument = (Document) jdomBuilder.build(xmlFile);
+		Document jdomDocument = (Document) jdomBuilder.build(this.getClass().getResourceAsStream(file));
 		
 		/*
 		 * Prelevo il nodo ROOT

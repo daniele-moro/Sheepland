@@ -31,7 +31,7 @@ public class ThreadAnimazioneLupo implements Runnable {
 		sorg2.x+=10;
 		dest2.y-=20;
 		dest2.x+=10;
-		view.spostaImmagine(sorg2,dest2, new ImageIcon(this.getClass().getClassLoader().getResource("immagini/lupo.png")));
+		view.spostaImmagine(sorg2,dest2, new ImageIcon(this.getClass().getResource("/immagini/lupo.png")));
 		mappa.add(lupo);
 		lupo.setBounds(dest2.x, dest2.y, lupo.getWidth(), lupo.getHeight());
 	}

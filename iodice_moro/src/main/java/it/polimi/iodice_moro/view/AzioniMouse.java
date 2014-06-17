@@ -6,12 +6,14 @@ import it.polimi.iodice_moro.exceptions.NotAllowedMoveException;
 import it.polimi.iodice_moro.model.TipoMossa;
 
 import java.awt.Cursor;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,12 +34,11 @@ class AzioniMouse extends MouseAdapter{
 	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.view");
 
 	BufferedImage image;
-	public AzioniMouse(File image, View view, IFController controller){
+	public AzioniMouse(InputStream image, View view, IFController controller){
 		super();
 		reg1="";
 		reg2="";
 		try {
-			System.out.println(image.getName()+"  "+image.getPath()+"  READ?"+image.canRead()+" WRITE?"+image.canWrite()+" EXECUTE?"+image.canExecute());
 			this.image= ImageIO.read(image);
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, "Errore di IO", e);

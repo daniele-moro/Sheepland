@@ -628,7 +628,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		
 		//Controllo se la fase di selezione delle posizioni iniziali sia finita
 		if(statoPartita.getGiocatori().indexOf(statoPartita.getGiocatoreCorrente())!=0
-				|| (statoPartita.getGiocatori().indexOf(statoPartita.getGiocatoreCorrente())==0 && statoPartita.getGiocatoreCorrente().getPosition2()==null)){
+				|| (statoPartita.getGiocatori().size()==2 && statoPartita.getGiocatori().indexOf(statoPartita.getGiocatoreCorrente())==0 && statoPartita.getGiocatoreCorrente().getPosition2()==null)){
 			System.out.println("Selezione del nuovo giocatore che deve selezionare la posizione");
 			view.setGiocatoreCorrente(statoPartita.getGiocatoreCorrente().getColore());
 			
