@@ -58,7 +58,7 @@ public class ServerConnessione implements Runnable {
 						}
 					}
 					String nome = in.readLine();
-					if(tuttiConnessi){// && !partitaIniziata){
+					if(tuttiConnessi){
 						if(partitaIniziata){
 						//se sono tutti connessi e la partita è gia iniziata, devo rifiutare la connessione
 						out.println("NO");
@@ -115,7 +115,6 @@ public class ServerConnessione implements Runnable {
 									view.attendiGiocatori();
 								} catch (IOException e) {
 									logger.log(Level.SEVERE, "Errore di IO", e);
-									//e.printStackTrace();
 								}
 							}
 						});
@@ -146,7 +145,6 @@ public class ServerConnessione implements Runnable {
 				}
 			}catch(InterruptedException | IOException e){
 				logger.log(Level.SEVERE, "Errore di IO", e);
-				//e.printStackTrace();
 			}
 		}
 	}

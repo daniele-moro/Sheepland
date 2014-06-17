@@ -32,152 +32,6 @@ public class ViewSocket implements IFView {
 	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.network");
 	
 	/**
-	 * Metodo per ricevere tutte le mosse dei giocatori, cioè dei client
-	 */
-	/*public void riceviMossa(){
-		int cont=0;
-		while(!serverSocket.isClosed()){
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			}
-			for(Entry<Color, BufferedReader> entry : scannerGiocatori.entrySet()){
-				try {
-					if(entry.getValue().ready())
-					{
-						System.out.println("Attesa input da stream ");
-						String mossa = entry.getValue().readLine();
-						String [] parametri=mossa.split("#");
-						PrintWriter giocaRisposta= writerGiocatori.get(entry.getKey());
-						switch(parametri[0]){
-
-						case "COMPRA_TESSERA":
-							try {
-								System.out.println("Acquista Tessera");
-								controller.acquistaTessera(parametri[1]);
-							} catch (Exception e) {
-								giocaRisposta.println("EXCEPTION#"+e.getMessage()+"\n");
-							}
-							break;
-
-						case "SELEZ_POSIZ":
-							System.out.println("SELEZ_POSIZ SERVER");
-							try {
-								controller.setStradaGiocatore(new Color(Integer.parseInt(parametri[1])), parametri[2]);
-								//giocaRisposta.println("OK#"+"Inserimento avvenuto con successo");
-							} catch (Exception e1) {
-								System.out.println("eccezione");
-								giocaRisposta.println("EXCEPTION#"+e1.getMessage());
-							}
-							break;
-
-						case "SPOSTA_PASTORE":
-							try {
-								System.out.println("spostaPastore");
-								controller.spostaPedina(parametri[1]);
-							} catch (Exception e) {
-								giocaRisposta.println("EXCEPTION#"+e.getMessage()+"\n");
-							}
-							break;
-
-						case "SPOSTA_PECORA":
-							try {
-								System.out.println("sposta Pecora");
-								controller.spostaPecora(parametri[1]);
-							} catch (Exception e) {
-								giocaRisposta.println("EXCEPTION#"+e.getMessage()+"\n");
-							}
-							break;
-
-						case "SPOSTA_PECORA_NERA":
-							try {
-								System.out.println("sposta pecora nera");
-								controller.spostaPecoraNera(parametri[1]);
-							} catch (Exception e) {
-								giocaRisposta.println("EXCEPTION#"+e.getMessage()+"\n");
-							}
-							break;
-
-						case "MOSSA_POSSIBILE":
-							try {
-
-								Boolean risp = controller.mossaPossibile(TipoMossa.parseInput(parametri[1]));
-								System.out.println("mossapossibile   "+ risp.toString());
-								giocaRisposta.println("OK#"+risp.toString());
-							} catch (Exception e) {
-								System.out.println("ERRORE nella mossa possibile!!");
-								giocaRisposta.println("ERROR#"+e.getMessage()+"\n");
-							}
-							break;
-
-						case "INIZIA_PARTITA":
-							//devo attendere che tutti i giocatori siano pronti a giocare
-							cont++;
-							if(cont==socketGiocatori.size()){
-								cont=0;
-								controller.iniziaPartita();
-							}
-							break;
-
-						case "POS_STRADE":
-							System.out.println("POS_STRADE");
-							for(Entry<String,Point> str : controller.getPosStrade().entrySet()){
-								giocaRisposta.println(str.getKey()+"#"+str.getValue().x+"#"+str.getValue().y);
-								giocaRisposta.flush();
-							}
-							giocaRisposta.println("END");
-							break;
-
-						case "POS_REGIONI":
-							System.out.println("POS_REGIONI");
-							for(Entry<String,Point> reg : controller.getPosRegioni().entrySet()){
-								giocaRisposta.println(reg.getKey()+"#"+reg.getValue().x+"#"+reg.getValue().y);
-								giocaRisposta.flush();
-							}
-							giocaRisposta.println("END");
-							break;
-
-						case "GET_GIOCATORI":
-							System.out.println("GET GIOCATORI");
-							for(Entry<Color,String> reg : controller.getGiocatori().entrySet()){
-								giocaRisposta.println(reg.getKey().getRGB()+"#"+reg.getValue());
-								giocaRisposta.flush();
-							}
-							giocaRisposta.println("END");
-							break;	
-						case "GET_ID_REG_AD":
-							List<String> reg= controller.getIDRegioniAd();
-							for(String r : reg){
-								giocaRisposta.println(r);
-								giocaRisposta.flush();
-							}
-							giocaRisposta.println("END");
-							break;
-							
-						case "END":
-							cont++;
-							socketGiocatori.get(entry.getKey()).close();
-							if(cont==socketGiocatori.size()){
-								//FINITA LA PARTITA
-								serverSocket.close();
-							}
-							break;
-						default:
-							break;
-						}
-						giocaRisposta.flush();
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-	}*/
-	
-	/**
 	 * Metodo che si mette in attesa che i client si connettano,
 	 * quando c'è un determinato numero di utenti connessi parte chiamando iniziaPartita
 	 */
@@ -186,12 +40,9 @@ public class ViewSocket implements IFView {
 		while(inizio==0 ||
 				(inizio!=0 &&
 					!(socketGiocatori.size()>=4 || (socketGiocatori.size()>=2 && ora-inizio>30000)))){
-			//System.out.println("attesaGiocatori");
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
 				logger.log(Level.SEVERE, "Errore con la thread sleep");
 			}
 			ora=System.currentTimeMillis();
@@ -236,26 +87,9 @@ public class ViewSocket implements IFView {
 		//ATTIVO solo il giocatore che deve giocare in questo turno
 		//DISATTIVO comunico di disattivarsi a tutti gli altri giocatori
 		for(Entry<Color, PrintWriter> giocatore :writerGiocatori.entrySet()){
-			/*if(giocatore.getKey().equals(color)){
-				giocatore.getValue().println("ATTIVA#"+color.getRGB());
-			}else{
-				giocatore.getValue().println("DISATTIVA#"+color.getRGB());
-			}*/
 			giocatore.getValue().println("CAMBIA_GIOCATORE#"+color.getRGB());
 			giocatore.getValue().flush();
 		}
-	}
-
-	@Override
-	public void attivaGiocatore() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void disattivaGiocatore() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -371,7 +205,6 @@ public class ViewSocket implements IFView {
 	public void setGiocatoreCorrente(Color colore) {
 		for(Entry<Color, PrintWriter> g : writerGiocatori.entrySet()){
 			System.out.println("comunicazione giocatore corrente COLORE" + colore);
-			//PrintWriter g =writerGiocatori.get(colore);
 			System.out.println(g);
 			g.getValue().println("GIOC_CORR#"+colore.getRGB());
 			g.getValue().flush();

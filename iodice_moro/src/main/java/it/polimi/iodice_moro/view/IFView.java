@@ -23,16 +23,6 @@ public interface IFView extends Remote{
 	public abstract void cambiaGiocatore(Color color) throws RemoteException;
 
 	/**
-	 * Attiva il giocatore collegato alla schermata di questa istanza
-	 */
-	public abstract void attivaGiocatore() throws RemoteException ;
-
-	/**
-	 * Disattiva il giocatore collegato alla schermata di questa istanza
-	 */
-	public abstract void disattivaGiocatore() throws RemoteException;
-
-	/**
 	 * Aggiunta del cancello normale alla strada collegata all'ID
 	 * @param stradaID
 	 */

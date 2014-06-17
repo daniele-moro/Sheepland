@@ -292,17 +292,7 @@ class AzioniMouse extends MouseAdapter{
 			}catch(RemoteException e1){
 				logger.log(Level.SEVERE, "Errore di rete", e1);
 			}
-			System.out.println("Presente");
 
-		}
-
-		switch(color){
-		case 0x00ffffff:
-			System.out.println("VUOTO");
-			break;
-		case 0xff000000:
-			System.out.println("STRADA");
-			break;
 		}
 	}
 

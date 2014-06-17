@@ -14,7 +14,7 @@ public class ChiusuraSchermata extends WindowAdapter {
 
 	private IFController controller;
 	
-	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.view");
+	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.view");
 
 	public ChiusuraSchermata(IFController controller) {
 		this.controller=controller;
@@ -28,8 +28,7 @@ public class ChiusuraSchermata extends WindowAdapter {
 			try {
 				controller.end();
 			} catch (RemoteException e1) {
-				logger.log(Level.SEVERE, "Parameter is null", e1);
-				//e1.printStackTrace();
+				LOGGER.log(Level.SEVERE, "Parameter is null", e1);
 			}
 			e.getWindow().dispose();
 			System.exit(0);

@@ -159,24 +159,16 @@ public class StatoPartita {
 	 */
 	private void parseMappaXML(String file) throws JDOMException, IOException{
 		Map<Integer,VerticeGrafo> nodi = new HashMap<Integer, VerticeGrafo>();
-		/*
-		 * SAXBuilder usato per creare oggetti JDOM2
-		 */
+		// SAXBuilder usato per creare oggetti JDOM2
 		SAXBuilder jdomBuilder = new SAXBuilder();
 		
-		/*
-		 * jdomDocument e' l'oggetto JDOM2
-		 */
+		//jdomDocument e' l'oggetto JDOM2
 		Document jdomDocument = (Document) jdomBuilder.build(this.getClass().getResourceAsStream(file));
 		
-		/*
-		 * Prelevo il nodo ROOT
-		 */
+		//Prelevo il nodo ROOT
 		Element rootNode=jdomDocument.getRootElement();
 
-		/*
-		 * Itero sulle regioni
-		 */
+		//Itero sulle regioni
 		for (Element i : rootNode.getChildren("regione")){
 			/*
 			 * Prelevo i dati memorizzati nell'xml
@@ -187,27 +179,20 @@ public class StatoPartita {
 			int posx = Integer.parseInt(i.getAttributeValue("x"));
 			int posy = Integer.parseInt(i.getAttributeValue("y"));
 			Point posizione = new Point(posx,posy);
-			/*
-			 * Istanzio la nuova classe Regione
-			 */
+			
+			//Istanzio la nuova classe Regione
 			Regione nuovaReg= new Regione(tipo, colore, posizione);
-			/*
-			 * Aggiugo l'istanza alla HashMap dei nodi e al vettore delle regioni
-			 */
+			//Aggiugo l'istanza alla HashMap dei nodi e al vettore delle regioni
 			nodi.put(id,nuovaReg);
 			regioni.add(nuovaReg);
-			/*
-			 * Aggingo l'istanza al grafo (come vettore
-			 */
+			
+			//Aggingo l'istanza al grafo (come vettore
 			mappa.addVertex(nuovaReg);
 		}
-		/*
-		 * Itero sulle starde e applico lo stesso ragionamento delle regioni
-		 */
+		
+		//Itero sulle starde e applico lo stesso ragionamento delle regioni
 		for (Element i : rootNode.getChildren("strada")){
-			/*
-			 * Prelevo i dati memorizzati nell'xml
-			 */
+			//Prelevo i dati memorizzati nell'xml
 			int id= Integer.parseInt(i.getAttributeValue("id"));
 			int ncas = Integer.parseInt(i.getAttributeValue("ncasella"));
 			String colore = i.getAttributeValue("colore");
@@ -220,32 +205,20 @@ public class StatoPartita {
 			strade.add(nuovaStr);
 			mappa.addVertex(nuovaStr);
 		}
-		/*
-		 * itero sui link tra strade
-		 */
+		
+		//itero sui link tra strade
 		for (Element i : rootNode.getChildren("arco")){
-			//		int id= Integer.parseInt(i.getAttributeValue("id")); //ID dell'arco non usato
-			/*
-			 * Memorizzo id del source e della destinazione
-			 */
+			//Memorizzo id del source e della destinazione
 			int idSource = Integer.parseInt(i.getAttributeValue("source"));
 			int idDest = Integer.parseInt(i.getAttributeValue("dest"));
 
-			/*
-			 * prelevo dalla hashmap gli oggetti correlati a quell'id
-			 */
+			//prelevo dalla hashmap gli oggetti correlati a quell'id
 			VerticeGrafo nodoSource = nodi.get(idSource);
 			VerticeGrafo nodoDest = nodi.get(idDest);
 
-			/*
-			 * Aggiungo al grafo l'arco corrispondente
-			 */
+			//Aggiungo al grafo l'arco corrispondente
 			mappa.addEdge((VerticeGrafo)nodoSource, (VerticeGrafo)nodoDest);
 		}
-		//DEBUG DEL GRAFO
-		//System.out.println(mappa.toString());
-		//System.out.println(mappa.edgesOf(nodi.get(1)).toString());
-
 	}
 
 	/**
@@ -254,15 +227,11 @@ public class StatoPartita {
 	 * @return Ritorna le Strade adiacenti
 	 */
 	public List<Strada> getStradeAdiacenti(Strada strada){
-		/*
-		 * Prelevo tutti gli archi che partono dalla strada di cui devo trovare le adiacenti
-		 */
+		//Prelevo tutti gli archi che partono dalla strada di cui devo trovare le adiacenti
 		Set<DefaultEdge> archi =mappa.edgesOf(strada);
 		List<Strada> stradeAdiacenti = new ArrayList<Strada>();
 		
-		/*
-		 * itero sugli archi ottenuti
-		 */
+		//itero sugli archi ottenuti
 		for(DefaultEdge arc : archi){
 			/*
 			 * Per ogni arco prelevo la sorgente dell'arco e 
@@ -273,9 +242,8 @@ public class StatoPartita {
 			if(!destArco.isRegione() && !destArco.equals(strada)){
 				stradeAdiacenti.add((Strada) destArco);
 			}
-			/*
-			 * stesso ragionamento di prima solo per la destinazione dell'arco
-			 */
+			
+			//stesso ragionamento di prima solo per la destinazione dell'arco
 			destArco = mappa.getEdgeTarget(arc);
 			if(!destArco.isRegione() && !destArco.equals(strada)){
 				stradeAdiacenti.add((Strada)destArco);
@@ -290,14 +258,11 @@ public class StatoPartita {
 	 * @return Lista di strade che confinano con la regione passata
 	 */
 	public List<Strada> getStradeConfini(Regione regione){
-		/*
-		 * Prelevo tutti gli archi che partono dalla regione di cui devo trovare le strade confinanti
-		 */
+		//Prelevo tutti gli archi che partono dalla regione di cui devo trovare le strade confinanti
 		Set<DefaultEdge> archi = mappa.edgesOf(regione);
 		List<Strada> stradeConfini = new ArrayList<Strada>();
-		/*
-		 * itero sugli archi ottenuti
-		 */
+		
+		//itero sugli archi ottenuti
 		for(DefaultEdge arc : archi){
 			/*
 			 *per ogni arco prelevo la sorgente dell'arco e 
@@ -308,9 +273,8 @@ public class StatoPartita {
 			if(!destArco.isRegione()){
 				stradeConfini.add((Strada) destArco);
 			}
-			/*
-			 * stesso ragionamento di prima solo per la destinazione dell'arco
-			 */
+			
+			//stesso ragionamento di prima solo per la destinazione dell'arco
 			destArco = mappa.getEdgeTarget(arc);
 			if(!destArco.isRegione()){
 				stradeConfini.add((Strada)destArco);
@@ -363,9 +327,7 @@ public class StatoPartita {
 	 * @return Elenco delle regioni che confinano con il parametro passato
 	 */
 	public List<Regione> getRegioniAdiacenti(Regione regione){
-		/*
-		 * Prelevo tutti gli archi che partono dalla regione di cui devo trovare le regioni adiacenti
-		 */
+		//Prelevo tutti gli archi che partono dalla regione di cui devo trovare le regioni adiacenti
 		List<Strada> stradeConfini = getStradeConfini(regione);
 		List<Regione> regioniConfini = new ArrayList<Regione>();
 		

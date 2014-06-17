@@ -47,17 +47,6 @@ public class FakeView implements IFView {
 
 	}
 
-	@Override
-	public void attivaGiocatore() throws RemoteException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void disattivaGiocatore() throws RemoteException {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void addCancelloNormale(String stradaID) throws RemoteException {

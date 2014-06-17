@@ -31,9 +31,6 @@ public class Regione extends VerticeGrafo{
 	private final TipoTerreno tipo;
 	
 	
-	
-	
-	
 	private String colore;
 	
 	private Point posizione;

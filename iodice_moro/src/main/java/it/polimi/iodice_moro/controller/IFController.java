@@ -15,25 +15,19 @@ import java.util.Map;
 
 public interface IFController extends Remote{
 
-	//OK
 	public abstract void spostaPecora(String idRegione) throws NotAllowedMoveException, RemoteException, IllegalClickException;
 	
 	public abstract void accoppiamento1(String idRegione) throws NotAllowedMoveException,RemoteException, IllegalClickException;
+	
 	public abstract void sparatoria1(String idRegione) throws NotAllowedMoveException, RemoteException, IllegalClickException;
 
-	//OK
 	public abstract void spostaPecoraNera(String idRegPecoraNera)
 			throws NotAllowedMoveException, RemoteException;
 	
-	//OK
 	public abstract void acquistaTessera(String idRegione) throws IllegalClickException, NotAllowedMoveException, RemoteException;
 
-	
-	//OK
 	public abstract void spostaPedina(String idStrada) throws IllegalClickException, NotAllowedMoveException, RemoteException;
 
-	
-	//OK
 	public abstract Color creaGiocatore(String nome) throws RemoteException, PartitaIniziataException;
 
 	
@@ -47,7 +41,6 @@ public interface IFController extends Remote{
 	 */
 	public abstract void setStradaGiocatore(Color colore, String idStrada) throws IllegalClickException, NotAllowedMoveException, RemoteException;
 	
-	//OK
 	/**
 	 * Stabilisce se una mossa può essere effettuata.
 	 * @param mossaDaEffettuare Mossa che il giocatore vuole effettuare.
@@ -56,36 +49,24 @@ public interface IFController extends Remote{
 	public abstract boolean mossaPossibile(TipoMossa mossaDaEffettuare) throws RemoteException;
 
 	
-	//OK
 	public abstract void iniziaPartita() throws RemoteException;
 
-	/*
-		List<Giocatore> listaGiocatori = statoPartita.getGiocatori();
-		for (int i = 0; i<listaGiocatori.size(); i++) {
-			listaGiocatori.get(i).setColore(colori[i]);
-		}
-	 */
-	//AGGIUNTE!!!
-	
-	//OK
+
 	/**
 	 * Ritorna l'elenco delle posizioni di tutte le regioni, con i colori loro assegnati
 	 * @return
 	 */
 	public abstract Map<String, Point> getPosRegioni() throws RemoteException;
 
-	//OK
 	public abstract Map<String, Point> getPosStrade() throws RemoteException;
 
 	
-	//OK
 	/**
 	 * Ritorna gli ID delle due regioni adiacenti alla strada in cui si trova il pastore
 	 * @return Ritorna la lista di ID delle regioni adiacenti alla strada in cui si trova il pastore (giocatore corrente)
 	 */
 	public abstract List<String> getIDRegioniAd() throws RemoteException;
 	
-	//OK
 	/**
 	 * Ritorna i colori dei giocatori e i loro nomi
 	 * @return
