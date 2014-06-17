@@ -34,7 +34,6 @@ public class ServerMessageReader implements Runnable {
 		this.socket=socket;
 		this.input=input;
 		this.output=output;
-		//this.input=new BufferedReader(socket.getInputStream());
 	}
 
 	@Override
@@ -44,7 +43,6 @@ public class ServerMessageReader implements Runnable {
 				Thread.sleep(10);
 			} catch (InterruptedException e2) {
 				LOGGER.log(Level.SEVERE, "Errore nella thread.sleep", e2);
-				//e2.printStackTrace();
 			}
 			try {
 				if(input.ready())
@@ -154,42 +152,7 @@ public class ServerMessageReader implements Runnable {
 							output.println("ERROR#"+e.getMessage()+"\n");
 						}
 						break;
-
-					/*case "INIZIA_PARTITA":
-						//devo attendere che tutti i giocatori siano pronti a giocare
-						cont++;
-						if(cont==socketGiocatori.size()){
-							cont=0;
-							controller.iniziaPartita();
-						}
-						break;
-
-					case "POS_STRADE":
-						System.out.println("POS_STRADE");
-						for(Entry<String,Point> str : controller.getPosStrade().entrySet()){
-							giocaRisposta.println(str.getKey()+"#"+str.getValue().x+"#"+str.getValue().y);
-							giocaRisposta.flush();
-						}
-						giocaRisposta.println("END");
-						break;
-
-					case "POS_REGIONI":
-						System.out.println("POS_REGIONI");
-						for(Entry<String,Point> reg : controller.getPosRegioni().entrySet()){
-							giocaRisposta.println(reg.getKey()+"#"+reg.getValue().x+"#"+reg.getValue().y);
-							giocaRisposta.flush();
-						}
-						giocaRisposta.println("END");
-						break;
-
-					case "GET_GIOCATORI":
-						System.out.println("GET GIOCATORI");
-						for(Entry<Color,String> reg : controller.getGiocatori().entrySet()){
-							giocaRisposta.println(reg.getKey().getRGB()+"#"+reg.getValue());
-							giocaRisposta.flush();
-						}
-						giocaRisposta.println("END");
-						break;	*/
+						
 					case "GET_ID_REG_AD":
 						List<String> reg= controller.getIDRegioniAd();
 						for(String r : reg){
@@ -210,12 +173,8 @@ public class ServerMessageReader implements Runnable {
 				}
 			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, "Errore di IO", e);
-				//e.printStackTrace();
 			}
 		}
 		System.out.println("Chiusura thread di attesa dei comandi del client");
-		
-
 	}
-
 }

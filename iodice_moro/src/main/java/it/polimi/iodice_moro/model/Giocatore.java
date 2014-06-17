@@ -37,6 +37,9 @@ public class Giocatore implements Serializable{
 	 */
 	private transient Strada position;
 	
+	/**
+	 * Seconda posizione del giocatore, usato per le partite con due giocatori
+	 */
 	private transient Strada position2;
 	
 	private Color colore;
@@ -70,10 +73,6 @@ public class Giocatore implements Serializable{
 		this.position=position;
 	}
 	
-	public Giocatore (String nome, Strada position, Strada position2) {
-		this(nome, position);
-		this.position2=position2;
-	}
 	public Giocatore (String nome, Color colore) {
 		this(nome);
 		this.colore=colore;
@@ -88,7 +87,10 @@ public class Giocatore implements Serializable{
 			}
 	}
 
-	
+	/**
+	 * Ritorna il Colore del giocatore
+	 * @return Colore del giocatore
+	 */
 	public Color getColore(){
 		return colore;
 	}
@@ -169,18 +171,21 @@ public class Giocatore implements Serializable{
 	}
 	
 	/**
-	 * @return Ritorna posizione giocatore.
+	 * @return Ritorna posizione principale del giocatore
 	 */
 	public Strada getPosition() {
 		return position;
 	}
 	
+	/**
+	 * @return Ritorna la seconda posizione del giocatore
+	 */
 	public Strada getPosition2(){
 		return position2;
 	}
 
 	/**
-	 * Cambia la posizione del giocatore.
+	 * Cambia la posizione del giocatore, cambia la posizione principale
 	 * @param position Nuova posizione giocatore.
 	 */
 	public void setPosition(Strada position) {
@@ -243,18 +248,20 @@ public class Giocatore implements Serializable{
 	 * @return true: Numero di mosse uguale a 3 false: Numero di mosse diverso da 3
 	 */
 	public boolean treMosse(){
-		if(numMosse==3){
-			return true;
-		} else{
-			return false;
-		}
+		return numMosse==3;
 	}
 
+	/**
+	 * @param color Colore che è stato assegnato al giocatore
+	 */
 	public void setColore(Color color) {
 		this.colore=color;
 		
 	}
 
+	/**
+	 * Inizializza i soldi alla quantià di soldi utilizzati per le partite con due giocatori
+	 */
 	public void initSoldiDueGiocatori() {
 		this.soldi=SOLDI_2_GIOCATORI;
 		

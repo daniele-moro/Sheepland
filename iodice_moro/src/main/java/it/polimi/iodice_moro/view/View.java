@@ -123,7 +123,7 @@ public class View extends UnicastRemoteObject implements IFView {
 
 	}
 	
-	public static JFrame frame;
+	private static JFrame frame;
 	
 	private JPanel rightPanel;
 	private JPanel leftPanel;
@@ -143,7 +143,7 @@ public class View extends UnicastRemoteObject implements IFView {
 	private Map<Color,JLabel> pedineGiocatori = new HashMap<Color, JLabel>();
 	private Map<String,JLabel> lblRegioni = new HashMap<String,JLabel>();
 	private Map<String,Point> posizioniCancelli = new HashMap<String, Point>();
-	Map<Color,String>gioc;
+	private Map<Color,String>gioc;
 	private JLabel pecoraNera;
 	private JLabel lupo;
 	private JLabel lblOutput = new JLabel();
@@ -550,7 +550,6 @@ public class View extends UnicastRemoteObject implements IFView {
 							null,
 							"12345");
 				}
-				//while(true){
 				controller = new Controller(statopartita);
 				int porta2 = Integer.parseInt(porta);
 				System.out.println("PORTA DI ASCOLTO: "+porta2);
@@ -559,10 +558,6 @@ public class View extends UnicastRemoteObject implements IFView {
 				controller.setView(view);
 				((ViewSocket)view).attendiGiocatori();
 				break;
-				//System.out.println("ora attendo mosse!");
-				//((ViewSocket)view).riceviMossa();
-				//statopartita = new StatoPartita();
-				//}
 			}
 			//ServerRMI
 			else {
@@ -576,7 +571,6 @@ public class View extends UnicastRemoteObject implements IFView {
 
 				try {
 					controller = new Controller(statopartita);
-					//view = new View(controller);
 					ViewRMI viewRMI = new ViewRMI(controller);
 					//TODO E' da sostituire localhost con i veri ip.
 					Naming.rebind("//"+ip+"/Server", controller);
@@ -640,10 +634,6 @@ public class View extends UnicastRemoteObject implements IFView {
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see it.polimi.iodice_moro.view.IFView#attivaGiocatore()
-	 */
-	@Override
 	public void attivaGiocatore(){
 		btnCompraTessera.setEnabled(true);
 		btnSpostaPastore.setEnabled(true);
@@ -651,10 +641,8 @@ public class View extends UnicastRemoteObject implements IFView {
 		btnAccoppiamento1.setEnabled(true);
 		btnSparatoria1.setEnabled(true);
 	}
-	/* (non-Javadoc)
-	 * @see it.polimi.iodice_moro.view.IFView#disattivaGiocatore()
-	 */
-	@Override
+
+	
 	public void disattivaGiocatore(){
 		btnCompraTessera.setEnabled(false);
 		btnSpostaPastore.setEnabled(false);
@@ -976,7 +964,6 @@ public class View extends UnicastRemoteObject implements IFView {
 	@Override
 	public void setPosizioniRegioni(Map<String, Point> posizioniRegioni) {
 		this.posizioniRegioni=posizioniRegioni;
-		
 	}
 
 	@Override
@@ -996,7 +983,4 @@ public class View extends UnicastRemoteObject implements IFView {
 		JOptionPane.showMessageDialog(frame,"Un utente si è disconnesso, la partita termina qui. \n Chiusura dell'applicazione");
 		System.exit(0);
 	}
-
-
-
 }

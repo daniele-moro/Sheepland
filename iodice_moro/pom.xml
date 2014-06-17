@@ -47,11 +47,6 @@
   							<mainClass>it.polimi.iodice_moro.view.View</mainClass>
   						</manifest>
   					</archive>
-  					<resources>
-      					<resource>
-        					<directory>src/main/resources</directory>
-      					</resource>
-      				</resources>
   					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>

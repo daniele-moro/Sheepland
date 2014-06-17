@@ -42,21 +42,13 @@ public class FakeView implements IFView {
 
 	@Override
 	public void initMappa() throws RemoteException {
+		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void cambiaGiocatore(Color color) throws RemoteException {
-
-	}
-
-	@Override
-	public void attivaGiocatore() throws RemoteException {
-
-	}
-
-	@Override
-	public void disattivaGiocatore() throws RemoteException {
+		// TODO Auto-generated method stub
 
 	}
 
