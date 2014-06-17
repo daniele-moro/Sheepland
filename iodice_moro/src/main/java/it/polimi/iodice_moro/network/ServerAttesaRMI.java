@@ -29,7 +29,7 @@ public class ServerAttesaRMI implements Runnable {
 		try {
 			while(inizio==0 ||
 					(inizio!=0 &&
-						!(controller.getGiocatori().size()>=4 || (controller.getGiocatori().size()>=2 && ora-inizio>30000)))){
+						!(controller.getGiocatori().size()>=4 || (controller.getGiocatori().size()>=2 && ora-inizio>30)))){
 				//System.out.println("attesaGiocatori");
 				try {
 					Thread.sleep(100);

@@ -43,7 +43,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 */
 	private StatoPartita statoPartita;	
 	
-	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.controller");
+	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.controller");
 
 	private static final Color[] vettColori = {new Color(255,0,0), new Color(0,255,0), new Color(0,0,255), new Color(255,255,0)};
 	
@@ -127,11 +127,11 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @see it.polimi.iodice_moro.controller.IFController#spostaPecora(java.lang.String)
 	 */
 	@Override
-	public synchronized void spostaPecora(String idRegione) throws NotAllowedMoveException, RemoteException{
+	public synchronized void spostaPecora(String idRegione) throws NotAllowedMoveException, RemoteException, IllegalClickException{
 		Regione regSorg=statoPartita.getRegioneByID(idRegione);
 		
 		if(regSorg == null){
-			throw new NotAllowedMoveException("Non hai cliccato su una regione!!");
+			throw new IllegalClickException("Non hai cliccato su una regione!!");
 		}
 		
 		System.out.println("Sposta pecora controller");
@@ -145,6 +145,73 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		view.modificaQtaPecora(idregD, statoPartita.getRegioneByID(idregD).getNumPecore());
 		
 		checkTurnoGiocatore(TipoMossa.SPOSTA_PECORA);
+	}
+	
+	public synchronized void accoppiamento1(String idRegione) throws NotAllowedMoveException ,RemoteException, IllegalClickException{
+		Regione reg = statoPartita.getRegioneByID(idRegione);
+		if(reg==null){
+			throw new IllegalClickException("Non hai cliccato su una regione!!");
+		}
+		
+		System.out.println("accoppiamento controller");
+		accoppiamento1(reg);
+		aggiornaTurno(TipoMossa.ACCOPPIAMENTO1);
+		view.modificaQtaPecora(idRegione, reg.getNumPecore());
+		checkTurnoGiocatore(TipoMossa.ACCOPPIAMENTO1);
+		
+	}
+	
+	private synchronized void accoppiamento1(Regione regione) throws NotAllowedMoveException,RemoteException{
+		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
+		//Controlliamo che la regione su cui fare l'accoppiamento sia vicino alla strada dove si trova il giocatore
+		if(!statoPartita.getStradeConfini(regione).contains(giocatore.getPosition())) {
+			throw new NotAllowedMoveException("Non puoi spostare pecore da questa regione");
+		}
+		
+		//Controllo che ci siano almeno due pecore nella regione selezionata
+		if(regione.getNumPecore()<2){
+			throw new NotAllowedMoveException("Non ci sono almeno due pecore su questa regione!!");
+		}
+		//Lancio il dado
+		int num = lanciaDado();
+		//Controllo che il numero generato dal dado sia lo stesso della casella dove si trova il pastore
+		if(num==giocatore.getPosition().getnCasella()){
+			//aumento di uno il numero di pecore nella regione
+			regione.addPecora();
+		}
+	}
+	
+	public synchronized void sparatoria1(String idRegione) throws NotAllowedMoveException, RemoteException, IllegalClickException{
+		Regione reg = statoPartita.getRegioneByID(idRegione);
+		if(reg==null){
+			throw new IllegalClickException("Non hai cliccato su una regione!!");
+		}
+		System.out.println("sparatoria controller");
+		sparatoria1(reg);
+		aggiornaTurno(TipoMossa.SPARATORIA1);
+		view.modificaQtaPecora(idRegione, reg.getNumPecore());
+		checkTurnoGiocatore(TipoMossa.SPARATORIA1);
+	}
+	
+	private synchronized void sparatoria1(Regione regione) throws NotAllowedMoveException, RemoteException{
+		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
+		//Controlliamo che la regione su cui fare la sparatoria sia vicino alla strada dove si trova il giocatore
+		if(!statoPartita.getStradeConfini(regione).contains(giocatore.getPosition())) {
+			throw new NotAllowedMoveException("Non puoi spostare pecore da questa regione");
+		}
+		
+		//controllo che nella regione selezionata ci sia almeno una pecora
+		if(regione.getNumPecore()<1){
+			throw new NotAllowedMoveException("Non c'è almeno una pecora in questa region!!");
+		}
+		
+		//lancio il dado
+		int num = lanciaDado();
+		//Controllo che il numero generato sia uguale al numero della casella su cui è posizionato il pastore
+		if(num==statoPartita.getGiocatoreCorrente().getPosition().getnCasella()){
+			//Decremento il numero di pecore di una unità
+			regione.removePecora();
+		}
 	}
 	
 	
@@ -377,15 +444,16 @@ public class Controller extends UnicastRemoteObject implements IFController {
 					}
 					return;
 				} catch (NotAllowedMoveException e) {
-					logger.log(Level.SEVERE, "Non ci sono pecore da spostare", e);
+					LOGGER.log(Level.SEVERE, "Non ci sono pecore da spostare", e);
 				}
 			}
 		}
 	}
 	
+	
+	//DA REIMPLEMENTARE!!
 	public synchronized void checkSpostaLupo() throws RemoteException {
-		boolean soloRecinti=false;
-		boolean puoScavalcare=false;
+		boolean puoScavalcare=true;
 		int valoreDado = lanciaDado();
 		System.out.println("VALORE DADO: "+ valoreDado);
 		
@@ -401,22 +469,18 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		/*
 		 * Controllo se siamo nel caso che tutte le regioni hanno recinti.
 		 */
-		int numeroStradeSenzaRecinto=stradeConfini.size();
 		for(Strada strada : stradeConfini) {
-			if(strada.isRecinto()) {
-				numeroStradeSenzaRecinto--;
+			if(!strada.isRecinto()) {
+				puoScavalcare=false;
 			}	
 		}
-		if(numeroStradeSenzaRecinto==0) {
-			puoScavalcare=true;
-		}
+		
 		/*
-		 * Controllo se nelle strade che circondano la regione in cui si trova la nera c'è una strada che 
+		 * Controllo se nelle strade che circondano la regione in cui si trova il lupo c'è una strada che 
 		 * come numero di casella corrisponda a quella che ho generato con il metodo lanciaDado()
-		 * Se è cosi, allora sposto la pecora nera nella regione speculare
+		 * Se è cosi, allora sposto il lupo nella regione speculare
 		 * alla strada rispetto alla regione in cui si trova la nera
 		 */
-		
 		for(Strada strada : stradeConfini) {
 			if(strada.getnCasella()==valoreDado) {
 				if(!strada.isRecinto()) {
@@ -439,12 +503,11 @@ public class Controller extends UnicastRemoteObject implements IFController {
 					spostaLupo(posLupo, nuovaRegioneLupo);
 					if(view!=null){
 						System.out.println("Spostamento automatico lupo!!");
-						//TODO VIEW.spostaLupo();
 						view.spostaLupo(posLupo.getColore(), nuovaRegioneLupo.getColore());
 					}
 					return;
 				} catch (NotAllowedMoveException e) {
-					logger.log(Level.SEVERE, "Non ci sono pecore da spostare", e);
+					LOGGER.log(Level.SEVERE, "Non ci sono pecore da spostare", e);
 				}
 			}
 		}
@@ -541,31 +604,36 @@ public class Controller extends UnicastRemoteObject implements IFController {
 				}
 			}
 		}
+		//Inserisco la posizone iniziale del giocatore, controllando che sia nulla la posizione
+		if(statoPartita.getGiocatoreCorrente().getPosition()==null){
+			statoPartita.getGiocatoreCorrente().setPosition(strada);
+		}else{
+			//Se non è nulla allora devo controllare se sono nel caso di due gicatori
+			if(statoPartita.getGiocatori().size()==2){
+				//se ha già selezionato la prima posizione allora setto la seconda posizione
+				statoPartita.getGiocatoreCorrente().setPosition2(strada);
+			} else{
+				throw new NotAllowedMoveException("non puoi posizionare due volte il pastore!!");
+			}
+		}
 		view.spostaPastore("", idStrada, colore);
-		//Setto la posizione del giocatore corrente
-		statoPartita.getGiocatoreCorrente().setPosition(strada);
 		
-		//Ora devo trovare il prossimo giocatore
-		statoPartita.setGiocatoreCorrente(statoPartita.getNextGamer());
+		//Ora devo trovare il prossimo giocatore, nel caso in cui ci siano più di due giocatori,
+		//oppure se ci sono due giocatori e sono già state selezionate entrambe le posizioni dei pastori
+		if(statoPartita.getGiocatori().size()!=2 ||
+				(statoPartita.getGiocatori().size()==2 && statoPartita.getGiocatoreCorrente().getPosition2()!=null)){
+			System.out.println("Cambio gicoatorei");
+			statoPartita.setGiocatoreCorrente(statoPartita.getNextGamer());
+		}
 		
-		if(statoPartita.getGiocatoreCorrente()!=statoPartita.getGiocatori().get(0)){
+		//Controllo se la fase di selezione delle posizioni iniziali sia finita
+		if(statoPartita.getGiocatori().indexOf(statoPartita.getGiocatoreCorrente())!=0
+				|| (statoPartita.getGiocatori().indexOf(statoPartita.getGiocatoreCorrente())==0 && statoPartita.getGiocatoreCorrente().getPosition2()==null)){
 			System.out.println("Selezione del nuovo giocatore che deve selezionare la posizione");
 			view.setGiocatoreCorrente(statoPartita.getGiocatoreCorrente().getColore());
 			
 		}else{
-			
-			//comunico tutte le tessere che ogni giocatore possiede
-			/*
-			for(Giocatore g : statoPartita.getGiocatori()){
-				for(Entry<String,Integer> tessere : g.getTesserePossedute().entrySet()){
-					//comunico alla view il tipo di terreno della tessera, 
-					//il numero di tessere di quel tipo ed il colore del giocatore a cui è associata la tessera
-					if(!tessere.getKey().equals(TipoTerreno.SHEEPSBURG.toString())){
-						view.modQtaTessera(TipoTerreno.parseInput(tessere.getKey()), tessere.getValue(), g.getColore());
-					}
-				}
-			}*/
-			//finito inserimento dei giocatori
+			//Finito inserimento delle posizioni dei giocatori
 			Map<String,Point> posRegioni = new HashMap<String,Point>();
 			for(Regione r: statoPartita.getRegioni()){
 				posRegioni.put(r.getColore(),r.getPosizione());
@@ -584,10 +652,9 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			view.setPosizioniRegioni(posRegioni);
 			view.setPosizioniStrade(posStrade);
 			try{
-			view.setGiocatori(gioc);
+				view.setGiocatori(gioc);
 			}catch(RemoteException e){
-				logger.log(Level.SEVERE, "Problema di rete", e);
-				//e.printStackTrace();
+				LOGGER.log(Level.SEVERE, "Problema di rete", e);
 			}
 			
 			//inizializzo la mappa nelal view
@@ -600,20 +667,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see it.polimi.iodice_moro.controller.IFController#setStradaGiocatore(java.awt.Color, java.lang.String, java.lang.String)
-	 */
-	@Override
-	public void setStradaGiocatore(Color colore, String idStrada, String idStrada2) throws RemoteException {
-		Strada strada = statoPartita.getStradaByID(idStrada);
-		Strada strada2 = statoPartita.getStradaByID(idStrada2);
-		for(Giocatore g: statoPartita.getGiocatori()){
-			if(g.getColore().equals(colore)){
-				g.setPosition(strada, strada2);
-			}
-			
-		}
-	}
 	
 	/* (non-Javadoc)
 	 * @see it.polimi.iodice_moro.controller.IFController#mossaPossibile(it.polimi.iodice_moro.model.TipoMossa)
@@ -622,6 +675,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	public boolean mossaPossibile(TipoMossa mossaDaEffettuare) throws RemoteException  {
 		Giocatore giocatoreCorrente=statoPartita.getGiocatoreCorrente();
 		TipoMossa ultimaMossa=giocatoreCorrente.getUltimaMossa();
+		
 		boolean pastoreSpostato = giocatoreCorrente.isPastoreSpostato();
 		if(ultimaMossa.equals(mossaDaEffettuare)&&!mossaDaEffettuare.equals(TipoMossa.SPOSTA_PASTORE)) {
 			return false;
@@ -671,14 +725,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 				 */
 				statoPartita.setGiocatoreCorrente(statoPartita.getNextGamer());
 				if(view!=null){
-					try{
-						view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
-					}catch (RemoteException e) {
-						logger.log(Level.SEVERE, "RemoteException errore", e);
-					}
 
-					
-					
 					/*for(String t:statoPartita.getGiocatoreCorrente().getTesserePossedute().keySet()){
 						if(!t.equals(TipoTerreno.SHEEPSBURG.toString())){
 							view.modQtaTessera(TipoTerreno.parseInput(t),statoPartita.getGiocatoreCorrente().getTesserePossedute().get(t));
@@ -696,11 +743,17 @@ public class Controller extends UnicastRemoteObject implements IFController {
 							}
 						}
 					}*/
-					
+
+
+					//Regione oldNera = statoPartita.getPosPecoraNera();
+					checkSpostaPecoraNera();
+					checkSpostaLupo();
+					try{
+						view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
+					}catch (RemoteException e) {
+						LOGGER.log(Level.SEVERE, "RemoteException errore", e);
+					}
 				}
-				//Regione oldNera = statoPartita.getPosPecoraNera();
-				checkSpostaPecoraNera();
-				checkSpostaLupo();
 			}
 		}
 		return statoPartita.getGiocatoreCorrente();
@@ -732,8 +785,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			try{
 				view.visualizzaPunteggi(punteggiOrdinati);
 			}catch(RemoteException e){
-				logger.log(Level.SEVERE, "Problemi di rete");
-				//e.printStackTrace();
+				LOGGER.log(Level.SEVERE, "Problemi di rete");
 			}
 		}
 		
@@ -760,8 +812,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			view.setPosizioniRegioni(posRegioni);
 			view.setPosizioniStrade(posStrade);
 		} catch (RemoteException e1) {
-			logger.log(Level.SEVERE, "Problemi di rete");
-			//e1.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Problemi di rete");
 		}
 		
 		
@@ -804,8 +855,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			try {
 				view.modQtaTessera(tipoTessere.get(statoPartita.getGiocatori().indexOf(g)), 1, g.getColore());
 			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Problemi di rete", e);
-				//e.printStackTrace();
+				LOGGER.log(Level.SEVERE, "Problemi di rete", e);
 			}
 		}
 		
@@ -823,14 +873,10 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		try {
 			view.setGiocatoreCorrente(statoPartita.getGiocatoreCorrente().getColore());
 		} catch (RemoteException e) {
-			logger.log(Level.SEVERE, "Problemi di rete", e);
-			//e.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Problemi di rete", e);
 		}
 	}
 
-	
-	//AGGIUNTE!!!
-	//TODO
 	/* (non-Javadoc)
 	 * @see it.polimi.iodice_moro.controller.IFController#getPosRegioni()
 	 */
@@ -887,24 +933,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		return gioc;
 	}
 	
-/*	public Map<TipoTerreno, Integer> getPrezzoRegAdiacenti(){
-		List<Regione> regAD= statoPartita.getRegioniADStrada(statoPartita.getGiocatoreCorrente().getPosition());
-		Map<TipoTerreno, Integer> prezzi = new HashMap<TipoTerreno, Integer>();
-	//	prezzi.put(regAD.get(0).ge\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\, value)statoPartita.getCostoTessera(regAD.get(0));
-		
-		
-	}*/
-
-	/*	public Map<String, Point> getPosStrade() {
-			Map<String,Point> posRegioni = new HashMap<String,Point>();
-			for(Strada s: statoPartita.getStrade()){
-				posRegioni.put(s.getColore(),s.getPosizione());
-			}
-			return posRegioni;
-		}*/
-	
-
-	
 	public static Map<Giocatore, Integer> sortByValue(Map<Giocatore, Integer> map) {
 
 		List<Map.Entry<Giocatore, Integer>> list = new LinkedList<Map.Entry<Giocatore,Integer>>(map.entrySet());    
@@ -922,19 +950,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		}     
 		return result;   
 	}
-	/*public static void main(String args[]) {
-		StatoPartita stato= new StatoPartita();
-		Controller cont=new Controller(stato);
-		ViewSocket view;
-		try {
-			view = new ViewSocket(cont);
-			cont.setView(view);
-			view.riceviMossa();
-		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Problemi di IO", e);
-			e.printStackTrace();
-		}
-	}*/
 	
 	//Precondizione: Metoto chiamato solo dal client in RMI.
 	public void addView(IFView view, Color coloreGiocatore) throws RemoteException, PartitaIniziataException {

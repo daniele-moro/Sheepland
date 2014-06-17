@@ -16,7 +16,10 @@ import java.util.Map;
 public interface IFController extends Remote{
 
 	//OK
-	public abstract void spostaPecora(String idRegione) throws NotAllowedMoveException, RemoteException;
+	public abstract void spostaPecora(String idRegione) throws NotAllowedMoveException, RemoteException, IllegalClickException;
+	
+	public abstract void accoppiamento1(String idRegione) throws NotAllowedMoveException,RemoteException, IllegalClickException;
+	public abstract void sparatoria1(String idRegione) throws NotAllowedMoveException, RemoteException, IllegalClickException;
 
 	//OK
 	public abstract void spostaPecoraNera(String idRegPecoraNera)
@@ -31,19 +34,8 @@ public interface IFController extends Remote{
 
 	
 	//OK
-	public abstract Color creaGiocatore(String nome) throws RemoteException, PartitaIniziataException ;
+	public abstract Color creaGiocatore(String nome) throws RemoteException, PartitaIniziataException;
 
-	
-	//OK
-	/**
-	 * Metodo nel caso di due giocatori in cui ogni pastore ha due pedine
-	 * @param colore
-	 * @param idStrada
-	 * @param idStrada2
-	 */
-	public abstract void setStradaGiocatore(Color colore, String idStrada,
-			String idStrada2) throws RemoteException ;
-	
 	
 	/**
 	 * Setta la posizione del pastore dato il suo colore che lo identifica univocamente

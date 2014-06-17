@@ -87,6 +87,22 @@ public class View extends UnicastRemoteObject implements IFView {
 							mouse.setRegioni(reg.get(0), reg.get(1));
 						}
 						break;
+					case ACCOPPIAMENTO1:
+						lblOutput.setText("ACCOPPIAMENTO 1");
+						mossaAttuale=TipoMossa.ACCOPPIAMENTO1;
+						reg=controller.getIDRegioniAd();
+						if(reg.size()>0 && reg.size()<=2){
+							mouse.setRegioni(reg.get(0), reg.get(1));
+						}
+						break;
+					case SPARATORIA1:
+						lblOutput.setText("SPARATORIA 1");
+						mossaAttuale=TipoMossa.SPARATORIA1;
+						reg=controller.getIDRegioniAd();
+						if(reg.size()>0 && reg.size()<=2){
+							mouse.setRegioni(reg.get(0), reg.get(1));
+						}break;
+						
 					default:
 						lblOutput.setText("Non puoi effettuare questa mossa!!!");
 						mouse.setRegioni("", "");
@@ -119,6 +135,8 @@ public class View extends UnicastRemoteObject implements IFView {
 	private JButton btnSpostaPecora;
 	private JButton btnSpostaPastore;
 	private JButton btnCompraTessera;
+	private JButton	btnAccoppiamento1;
+	private JButton btnSparatoria1;
 	
 	private Map<String,Point> posizioniRegioni = new HashMap<String,Point>();
 	private Map<Color,JLabel> giocatori = new HashMap<Color,JLabel>();
@@ -139,7 +157,6 @@ public class View extends UnicastRemoteObject implements IFView {
 	private Color coloreGamer;
 	
 	public View(IFController controller) throws RemoteException {
-		//super(0);
 		this.controller=controller;
 		mossaAttuale=TipoMossa.SELEZ_POSIZ;
 		initGUI();
@@ -147,20 +164,9 @@ public class View extends UnicastRemoteObject implements IFView {
 	
 	//Inizializzazione della GUI
 	public void initGUI(){
-		/*try {
-			System.out.println("PRELEVO REGIONI");
-			posizioniRegioni=controller.getPosRegioni();
-			System.out.println("PRELEVO STRADE");
-			posizioniCancelli = controller.getPosStrade();
-			gioc=controller.getGiocatori();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-
-		
 		//Inizializzazione del Frame principale
 		frame= new JFrame("SHEEPLAND");
+		frame.setBackground(new Color(43,163,250));
 		frame.setLayout(new BorderLayout());
 		frame.addWindowListener(new ChiusuraSchermata(controller));
 		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -180,34 +186,49 @@ public class View extends UnicastRemoteObject implements IFView {
 		
 		//RIGHTPANEL
 		rightPanel = new JPanel();
-		rightPanel.setLayout(new GridLayout(4,1));
+		rightPanel.setBackground(new Color(43,163,250));
+		rightPanel.setLayout(new GridLayout(5,1));
 		AzioniBottoni action = new AzioniBottoni();
 		
-		btnSpostaPecora = new JButton("SPOSTA PECORA");
+		btnSpostaPecora = new JButton("<html>SPOSTA <br>PECORA</html>");
+		btnSpostaPecora.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pecora.png")));
 		btnSpostaPecora.setActionCommand(TipoMossa.SPOSTA_PECORA.toString());
 		btnSpostaPecora.addActionListener(action);
 		
-		btnSpostaPastore = new JButton("SPOSTA PASTORE");
+		btnSpostaPastore = new JButton("<html>SPOSTA <br>PASTORE</html>");
 		btnSpostaPastore.setActionCommand(TipoMossa.SPOSTA_PASTORE.toString());
 		btnSpostaPastore.addActionListener(action);
 		
-		btnCompraTessera = new JButton("COMPRA TESSERA");
+		btnCompraTessera = new JButton("<html>COMPRA <br>TESSERA</html>");
 		btnCompraTessera.setActionCommand(TipoMossa.COMPRA_TESSERA.toString());
 		btnCompraTessera.addActionListener(action);
+		
+		btnAccoppiamento1 = new JButton("<html>ACCOPPIAMENTO <br>1</html>");
+		btnAccoppiamento1.setActionCommand(TipoMossa.ACCOPPIAMENTO1.toString());
+		btnAccoppiamento1.addActionListener(action);
+		
+		btnSparatoria1 = new JButton("<html>SPARATORIA <br>1</html>");
+		btnSparatoria1.setActionCommand(TipoMossa.SPARATORIA1.toString());
+		btnSparatoria1.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pistola.png")));
+		btnSparatoria1.addActionListener(action);
 		
 		//Disattivo i bottoni che per ora non servono
 		btnSpostaPastore.setEnabled(false);
 		btnSpostaPecora.setEnabled(false);
 		btnCompraTessera.setEnabled(false);
-		
+		btnAccoppiamento1.setEnabled(false);
+		btnSparatoria1.setEnabled(false);
 		
 		rightPanel.add(btnSpostaPecora);
 		rightPanel.add(btnSpostaPastore);
 		rightPanel.add(btnCompraTessera);
+		rightPanel.add(btnAccoppiamento1);
+		rightPanel.add(btnSparatoria1);
 		frame.add(rightPanel, BorderLayout.EAST);
 		
 		//LEFTPANEL
 		leftPanel = new JPanel();
+		leftPanel.setBackground(new Color(43,163,250));
 		leftPanel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		
@@ -305,7 +326,6 @@ public class View extends UnicastRemoteObject implements IFView {
 		//LABEL per il dado
 		lblDado = new JLabel();
 		lblDado.setText("  ");
-		//lblDado.setVisible(false);
 		c.gridx=0;
 		c.gridy=8;
 		c.fill=GridBagConstraints.BOTH;
@@ -363,7 +383,7 @@ public class View extends UnicastRemoteObject implements IFView {
 				lupo=lblLupo;
 			}else{
 				//Visualizzo le pecore bianche
-				BackgroundedLabel lblPecora = new BackgroundedLabel(pecBianca);
+				JLabel lblPecora = new BackgroundedLabel(pecBianca);
 				lblPecora.setText("      1");
 				mappa.add(lblPecora);
 				lblPecora.setBounds(p.x, p.y, iconBianca.getIconWidth(), iconBianca.getIconHeight());
@@ -403,12 +423,7 @@ public class View extends UnicastRemoteObject implements IFView {
 
 	public static void main(String[] args) throws Exception {
 		//CREO tutte le istanze che mi servono per far funzionare il gioco
-		
-		/*		Controller controller = new Controller(statopartita);
-		controller.creaGiocatore("prova");
-		controller.creaGiocatore("prova 2");
-		controller.creaGiocatore("prova 3");
-		controller.creaGiocatore("prova 4");*/
+
 		StatoPartita statopartita= new StatoPartita();
 		IFController controller;
 		IFView view;
@@ -669,6 +684,8 @@ public class View extends UnicastRemoteObject implements IFView {
 		btnCompraTessera.setEnabled(true);
 		btnSpostaPastore.setEnabled(true);
 		btnSpostaPecora.setEnabled(true);
+		btnAccoppiamento1.setEnabled(true);
+		btnSparatoria1.setEnabled(true);
 	}
 	/* (non-Javadoc)
 	 * @see it.polimi.iodice_moro.view.IFView#disattivaGiocatore()
@@ -678,6 +695,8 @@ public class View extends UnicastRemoteObject implements IFView {
 		btnCompraTessera.setEnabled(false);
 		btnSpostaPastore.setEnabled(false);
 		btnSpostaPecora.setEnabled(false);
+		btnAccoppiamento1.setEnabled(false);
+		btnSparatoria1.setEnabled(false);
 		mossaAttuale=TipoMossa.NO_MOSSA;
 	}
 	
@@ -762,42 +781,6 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void spostaPastore(String s, String d, Color colore){
-		/*ImageIcon img = null;
-		//carico l'icona della pedina corretta
-		if(colore.equals(new Color(255,0,0))){
-			img=new ImageIcon("immagini/pedinarossa.png");
-		}
-		if(colore.equals(new Color(0,255,0))){
-			img=new ImageIcon("immagini/pedinaverde.png");
-		}
-		if(colore.equals(new Color(0,0,255))){
-			img=new ImageIcon("immagini/pedinaazzurra.png");
-		}
-		if(colore.equals(new Color(255,255,0))){
-			img=new ImageIcon("immagini/pedinagialla.png");
-		}
-		JLabel pedGiocatore = pedineGiocatori.get(colore);
-		if(pedGiocatore!=null){
-			pedGiocatore.setVisible(false);
-		}
-		//il metodo è usato anche nel caso in cui il pastore non sia ancora stato posizionato,
-		//in questo caso il metodo viene chiamato con parametro s=""
-		if(!s.equals("")){
-			//se abbiamo il primo parametro, significa che dobbiamo far vedere l'animazione del pastore
-			spostaImmagine(posizioniCancelli.get(s), posizioniCancelli.get(d), img);
-		}
-		
-		//se la pedina del giocatore non c'è, la creo e la aggiungo alla Map delle pedine dei giocatori
-		if(pedGiocatore == null){
-			pedGiocatore = new JLabel();
-			pedGiocatore.setIcon(img);
-			mappa.add(pedGiocatore);
-			pedineGiocatori.put(colore, pedGiocatore);
-		} else{
-			pedGiocatore.setVisible(true);
-		}
-		pedGiocatore.setBounds(posizioniCancelli.get(d).x, posizioniCancelli.get(d).y, img.getIconWidth(), img.getIconHeight());
-		*/
 		Point sorg=null;
 		Point dest =posizioniCancelli.get(d);
 		if(!s.equals("")){
@@ -833,6 +816,9 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void spostaLupo(String s, String d){
+		if(giocatoreCorrente.equals(coloreGamer)){
+			disattivaGiocatore();
+		}
 		Point sorg= posizioniRegioni.get(s);
 		Point dest= posizioniRegioni.get(d);
 		
@@ -840,6 +826,9 @@ public class View extends UnicastRemoteObject implements IFView {
 		ThreadAnimazioneLupo r = new ThreadAnimazioneLupo(this, mappa, lupo, sorg, dest);
 		Thread t = new Thread(r);
 		t.start();
+		if(giocatoreCorrente.equals(coloreGamer)){
+			attivaGiocatore();
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -951,7 +940,10 @@ public class View extends UnicastRemoteObject implements IFView {
 			if(mossaAttuale.equals(TipoMossa.SELEZ_POSIZ)){
 				vis+="\nSeleziona la posizione del tuo pastore";
 			}
-			JOptionPane.showMessageDialog(frame, vis,"TURNO" , JOptionPane.INFORMATION_MESSAGE);
+			//JOptionPane.showMessageDialog(frame, vis,"TURNO" , JOptionPane.INFORMATION_MESSAGE);
+			lblOutput.setText(vis);
+		} else{
+			lblOutput.setText("Non è il tuo turno!!");
 		}
 	}
 

@@ -27,7 +27,7 @@ public class ServerMessageReader implements Runnable {
 	private Socket socket;
 	private PrintWriter output;
 	
-	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.network");
+	private static final Logger LOGGER=  Logger.getLogger("it.polimi.iodice_moro.network");
 	
 	public ServerMessageReader(Controller controller, Socket socket, PrintWriter output, BufferedReader input) {
 		this.controller=controller;
@@ -43,7 +43,7 @@ public class ServerMessageReader implements Runnable {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e2) {
-				logger.log(Level.SEVERE, "Errore nella thread.sleep", e2);
+				LOGGER.log(Level.SEVERE, "Errore nella thread.sleep", e2);
 				//e2.printStackTrace();
 			}
 			try {
@@ -60,10 +60,10 @@ public class ServerMessageReader implements Runnable {
 							System.out.println("Acquista Tessera");
 							controller.acquistaTessera(parametri[1]);
 						} catch (IllegalClickException e) {
-							logger.log(Level.SEVERE, "Area non clickabile", e);
+							LOGGER.log(Level.SEVERE, "Area non clickabile", e);
 							output.println("EXCEPTION#"+e.getMessage()+"\n");
 						} catch (NotAllowedMoveException e) {
-							logger.log(Level.SEVERE, "Mossa proibita", e);
+							LOGGER.log(Level.SEVERE, "Mossa proibita", e);
 							output.println("EXCEPTION#"+e.getMessage()+"\n");
 						}
 						break;
@@ -74,7 +74,7 @@ public class ServerMessageReader implements Runnable {
 							controller.setStradaGiocatore(new Color(Integer.parseInt(parametri[1])), parametri[2]);
 							//giocaRisposta.println("OK#"+"Inserimento avvenuto con successo");
 						} catch (NotAllowedMoveException e1) {
-							logger.log(Level.SEVERE, "Mossa proibita", e1);
+							LOGGER.log(Level.SEVERE, "Mossa proibita", e1);
 							System.out.println("eccezione");
 							output.println("EXCEPTION#"+e1.getMessage());
 						}
@@ -85,10 +85,10 @@ public class ServerMessageReader implements Runnable {
 							System.out.println("spostaPastore");
 							controller.spostaPedina(parametri[1]);
 						} catch (IllegalClickException e) {
-							logger.log(Level.SEVERE, "Area non clickabile", e);
+							LOGGER.log(Level.SEVERE, "Area non clickabile", e);
 							output.println("EXCEPTION#"+e.getMessage()+"\n");
 						} catch (NotAllowedMoveException e) {
-							logger.log(Level.SEVERE, "Mossa probita", e);
+							LOGGER.log(Level.SEVERE, "Mossa probita", e);
 							output.println("EXCEPTION#"+e.getMessage()+"\n");
 						}
 						break;
@@ -98,7 +98,10 @@ public class ServerMessageReader implements Runnable {
 							System.out.println("sposta Pecora");
 							controller.spostaPecora(parametri[1]);
 						} catch (NotAllowedMoveException e) {
-							logger.log(Level.SEVERE, "Mossa proibita", e);
+							LOGGER.log(Level.SEVERE, "Mossa proibita", e);
+							output.println("EXCEPTION#"+e.getMessage()+"\n");
+						} catch (IllegalClickException e) {
+							LOGGER.log(Level.SEVERE, "Area non clickabile", e);
 							output.println("EXCEPTION#"+e.getMessage()+"\n");
 						}
 						break;
@@ -108,10 +111,36 @@ public class ServerMessageReader implements Runnable {
 							System.out.println("sposta pecora nera");
 							controller.spostaPecoraNera(parametri[1]);
 						} catch (NotAllowedMoveException e) {
-							logger.log(Level.SEVERE, "Mossa proibita", e);
+							LOGGER.log(Level.SEVERE, "Mossa proibita", e);
 							output.println("EXCEPTION#"+e.getMessage()+"\n");
 						}
 						break;
+					
+					case "ACCOPPIAMENTO1":{
+						try {
+							controller.accoppiamento1(parametri[1]);
+						} catch (NotAllowedMoveException e) {
+							LOGGER.log(Level.SEVERE, "Mossa proibita", e);
+							output.println("EXCEPTION#"+e.getMessage()+"\n");
+						} catch (IllegalClickException e) {
+							LOGGER.log(Level.SEVERE, "Area non clickabile", e);
+							output.println("EXCEPTION#"+e.getMessage()+"\n");
+						}
+						
+					}break;
+					
+					case "SPARATORIA1":{
+						try {
+							controller.sparatoria1(parametri[1]);
+						} catch (NotAllowedMoveException e) {
+							LOGGER.log(Level.SEVERE, "Mossa proibita", e);
+							output.println("EXCEPTION#"+e.getMessage()+"\n");
+						} catch (IllegalClickException e) {
+							LOGGER.log(Level.SEVERE, "Area non clickabile", e);
+							output.println("EXCEPTION#"+e.getMessage()+"\n");
+						}
+						
+					}break;
 
 					case "MOSSA_POSSIBILE":
 						try {
@@ -120,7 +149,7 @@ public class ServerMessageReader implements Runnable {
 							System.out.println("mossapossibile   "+ risp.toString());
 							output.println("OK#"+risp.toString());
 						} catch (RemoteException e) {
-							logger.log(Level.SEVERE, "Errore di rete", e);
+							LOGGER.log(Level.SEVERE, "Errore di rete", e);
 							System.out.println("ERRORE nella mossa possibile. Problemi di rete!!");
 							output.println("ERROR#"+e.getMessage()+"\n");
 						}
@@ -180,7 +209,7 @@ public class ServerMessageReader implements Runnable {
 					output.flush();
 				}
 			} catch (IOException e) {
-				logger.log(Level.SEVERE, "Errore di IO", e);
+				LOGGER.log(Level.SEVERE, "Errore di IO", e);
 				//e.printStackTrace();
 			}
 		}

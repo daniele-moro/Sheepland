@@ -52,7 +52,7 @@ public class ControllerSocket implements IFController{
 	}
 	
 	@Override
-	public void spostaPecora(String idRegione) throws NotAllowedMoveException {
+	public void spostaPecora(String idRegione) throws NotAllowedMoveException , IllegalClickException{
 		output.println("SPOSTA_PECORA#"+idRegione);
 		output.flush();
 	}
@@ -134,11 +134,6 @@ public class ControllerSocket implements IFController{
 		return colore;
 	}
 	
-	
-	//METODO INUTILE!!
-	@Override
-	public void setStradaGiocatore(Color colore, String idStrada, String idStrada2) {
-	}
 
 	@Override
 	public boolean mossaPossibile(TipoMossa mossaDaEffettuare) {
@@ -344,6 +339,19 @@ public class ControllerSocket implements IFController{
 			throws RemoteException {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void accoppiamento1(String idRegione) throws NotAllowedMoveException, RemoteException, IllegalClickException {
+		output.println("ACCOPPIAMENTO1#"+idRegione);
+		output.flush();
+		
+	}
+
+	@Override
+	public void sparatoria1(String idRegione) throws NotAllowedMoveException, RemoteException, IllegalClickException {
+		output.println("SPARATORIA1#"+idRegione);
+		output.flush();
 	}
 
 

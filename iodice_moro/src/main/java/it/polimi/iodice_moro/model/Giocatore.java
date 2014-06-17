@@ -192,8 +192,7 @@ public class Giocatore implements Serializable{
 	 * @param position Nuova posizione giocatore.
 	 * @param position2 Seconda nuova posizione del giocatore.
 	 */
-	public void setPosition(Strada position, Strada position2) {
-		this.setPosition(position);
+	public void setPosition2(Strada position2) {
 		this.position2=position2;
 	}
 	

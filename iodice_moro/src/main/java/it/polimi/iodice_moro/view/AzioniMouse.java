@@ -40,7 +40,6 @@ class AzioniMouse extends MouseAdapter{
 			System.out.println(image.getName()+"  "+image.getPath()+"  READ?"+image.canRead()+" WRITE?"+image.canWrite()+" EXECUTE?"+image.canExecute());
 			this.image= ImageIO.read(image);
 		} catch (IOException e) {
-			//e.printStackTrace();
 			logger.log(Level.SEVERE, "Errore di IO", e);
 		}
 		this.view=view;
@@ -85,7 +84,6 @@ class AzioniMouse extends MouseAdapter{
 				} 
 			});
 			t4.start();
-			
 		}
 
 		//Controllo che il click sia avvenuto all'interno della mappa(quindi o su regioni o su caselle),
@@ -112,7 +110,6 @@ class AzioniMouse extends MouseAdapter{
 							@Override
 							public void run(){
 								try {
-									
 									controller.acquistaTessera(Integer.toHexString(c));
 								} catch (NotAllowedMoveException e2) {
 									view.getLBLOutput().setText(e2.getMessage());
@@ -121,7 +118,6 @@ class AzioniMouse extends MouseAdapter{
 									view.getLBLOutput().setText(e2.getMessage());
 									logger.log(Level.SEVERE, "Area non clickabile", e2);
 								} catch (RemoteException e) {
-									//e.printStackTrace();
 									logger.log(Level.SEVERE, "Errore di rete", e);
 								}
 							}
@@ -130,7 +126,7 @@ class AzioniMouse extends MouseAdapter{
 						break;
 
 
-					case SPOSTA_PASTORE:
+					case SPOSTA_PASTORE:{
 						Thread t1 = new Thread(new Runnable(){
 
 							@Override
@@ -145,77 +141,143 @@ class AzioniMouse extends MouseAdapter{
 									logger.log(Level.SEVERE, "Area non clickabile", e1);
 								} catch (RemoteException e) {
 									logger.log(Level.SEVERE, "Errore di rete", e);
-									//e.printStackTrace();
 								}
-								
 							}
-							
+						});
+						t1.start();
+
+					}break;
+
+
+					case SPOSTA_PECORA:{
+						Point posPecoraNera=view.getLBLPecoraNera().getLocation();
+						if(image.getRGB((int)posPecoraNera.getX()+10,(int)posPecoraNera.getY()+10)==color){
+							System.out.println("PECORA NERA");
+							//In questo caso nel terreno c'è anche la pecora nera,
+							//quindi bisogna far scegliere all'utente cosa spostare
+							Object[] options = {new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pecora_bianca.png")),
+									new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pecora_nera.png"))};
+							int n = JOptionPane.showOptionDialog(null,
+									"Quale pecora vuoi spostare?",
+									"Spostamento Pecora",
+									JOptionPane.YES_NO_CANCEL_OPTION,
+									JOptionPane.QUESTION_MESSAGE,
+									new ImageIcon(this.getClass().getClassLoader().getResource("immagini/question.png")),
+									options,
+									options[0]);
+							switch(n){
+							case 0:{
+								//Pecora Bianca
+								Thread t3 = new Thread(new Runnable(){
+
+									@Override
+									public void run() {
+										try {
+											controller.spostaPecora(Integer.toHexString(c));
+										} catch (RemoteException e) {
+											System.out.println("PROBLEMI DI RETE!!");
+											view.getLBLOutput().setText(e.getMessage());
+											logger.log(Level.SEVERE, "Errore di rete", e);
+										} catch (NotAllowedMoveException e) {
+											System.out.println("ERRORE CLICK MAPPA!!");
+											view.getLBLOutput().setText(e.getMessage());
+										} catch (IllegalClickException e) {
+											view.getLBLOutput().setText(e.getMessage());
+											logger.log(Level.SEVERE, "Area non clickabile", e);
+										}
+									}
+								});
+								t3.start();
+							}break;
+							case 1:{
+								//Pecora Nera
+								Thread t3 = new Thread(new Runnable(){
+									@Override
+									public void run() {
+										try {
+											controller.spostaPecoraNera(Integer.toHexString(c));
+										} catch (RemoteException e) {
+											System.out.println("PROBLEMI DI RETE!!");
+											view.getLBLOutput().setText(e.getMessage());
+											logger.log(Level.SEVERE, "Errore di rete", e);
+										} catch (NotAllowedMoveException e) {
+											System.out.println("ERRORE CLICK MAPPA!!");
+											view.getLBLOutput().setText(e.getMessage());
+										}
+									}
+								});
+								t3.start();
+							}break;
+							}
+						}
+						else{
+							System.out.println("SPOSTAPECORA");
+							Thread t3 = new Thread(new Runnable(){
+
+								@Override
+								public void run() {
+									try {
+										controller.spostaPecora(Integer.toHexString(c));
+									} catch (RemoteException e) {
+										System.out.println("PROBLEMI DI RETE!!");
+										view.getLBLOutput().setText(e.getMessage());
+										logger.log(Level.SEVERE, "Errore di rete", e);
+									} catch (NotAllowedMoveException e) {
+										System.out.println("ERRORE CLICK MAPPA!!");
+										view.getLBLOutput().setText(e.getMessage());
+									} catch (IllegalClickException e) {
+										view.getLBLOutput().setText(e.getMessage());
+										logger.log(Level.SEVERE, "Area non clickabile", e);
+									}
+								}
+							});
+							t3.start();
+						}
+					}break;
+					
+					case ACCOPPIAMENTO1:{
+						System.out.println("ACCOPPIAMENTO 1");
+						Thread t1 = new Thread( new Runnable(){
+							@Override
+							public void run(){
+								try {
+									controller.accoppiamento1(Integer.toHexString(c));
+								} catch (NotAllowedMoveException e2) {
+									view.getLBLOutput().setText(e2.getMessage());
+									logger.log(Level.SEVERE, "Mossa proibita", e2);
+								} catch (IllegalClickException e2) {
+									view.getLBLOutput().setText(e2.getMessage());
+									logger.log(Level.SEVERE, "Area non clickabile", e2);
+								} catch (RemoteException e) {
+									logger.log(Level.SEVERE, "Errore di rete", e);
+								}
+							}
+						});
+						t1.start();
+
+					}break;
+					
+					case SPARATORIA1:{
+						System.out.println("SPARATORIA 1");
+						Thread t1 = new Thread( new Runnable(){
+							@Override
+							public void run(){
+								try {
+									controller.sparatoria1(Integer.toHexString(c));
+								} catch (NotAllowedMoveException e2) {
+									view.getLBLOutput().setText(e2.getMessage());
+									logger.log(Level.SEVERE, "Mossa proibita", e2);
+								} catch (IllegalClickException e2) {
+									view.getLBLOutput().setText(e2.getMessage());
+									logger.log(Level.SEVERE, "Area non clickabile", e2);
+								} catch (RemoteException e) {
+									logger.log(Level.SEVERE, "Errore di rete", e);
+								}
+							}
 						});
 						t1.start();
 						
-						break;
-
-
-					case SPOSTA_PECORA:
-						try {
-							//if(Integer.toHexString(color).equals(reg1) || Integer.toHexString(color).equals(reg2))
-							{
-								Point posPecoraNera=view.getLBLPecoraNera().getLocation();
-								if(image.getRGB((int)posPecoraNera.getX()+10,(int)posPecoraNera.getY()+10)==color){
-									System.out.println("PECORA NERA");
-									//In questo caso nel terreno c'è anche la pecora nera,
-									//quindi bisogna far scegliere all'utente cosa spostare
-									Object[] options = {new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pecora_bianca.png")),
-											new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pecora_nera.png"))};
-									int n = JOptionPane.showOptionDialog(null,
-											"Quale pecora vuoi spostare?",
-											"Spostamento Pecora",
-											JOptionPane.YES_NO_CANCEL_OPTION,
-											JOptionPane.QUESTION_MESSAGE,
-											new ImageIcon(this.getClass().getClassLoader().getResource("immagini/question.png")),
-											options,
-											options[0]);
-									switch(n){
-									case 0:
-										//Pecora Bianca
-										controller.spostaPecora(Integer.toHexString(color));
-										break;
-									case 1:
-										//Pecora Nera
-										controller.spostaPecoraNera(Integer.toHexString(color));
-										break;
-									}
-								}
-								else{
-									System.out.println("SPOSTAPECORA");
-									Thread t3 = new Thread(new Runnable(){
-
-										@Override
-										public void run() {
-											try {
-												controller.spostaPecora(Integer.toHexString(c));
-											} catch (RemoteException e) {
-												logger.log(Level.SEVERE, "Errore di rete", e);
-												//e.printStackTrace();
-											} catch (NotAllowedMoveException e) {
-												logger.log(Level.SEVERE, "Mossa proibita", e);
-												//e.printStackTrace();
-											}
-										}
-									});
-									t3.start();
-									
-								}
-							}
-						} catch (RemoteException e1) {
-							System.out.println("PROBLEMI DI RETE!!");
-							view.getLBLOutput().setText(e1.getMessage());
-							logger.log(Level.SEVERE, "Errore di rete", e);
-						} catch (NotAllowedMoveException e1) {
-							System.out.println("ERRORE CLICK MAPPA!!");
-							view.getLBLOutput().setText(e1.getMessage());
-						}
-						break;
+					}break;
 
 
 					default:
@@ -228,7 +290,6 @@ class AzioniMouse extends MouseAdapter{
 				}
 			}catch(RemoteException e1){
 				logger.log(Level.SEVERE, "Errore di rete", e1);
-				//e1.printStackTrace();
 			}
 			System.out.println("Presente");
 
@@ -253,8 +314,6 @@ class AzioniMouse extends MouseAdapter{
 				return;
 			}
 			int color=image.getRGB(e.getX(),e.getY());
-			//	System.out.println("X:"+e.getX()+" Y:"+e.getY() + "  COLOR:0x"+ Integer.toHexString(color));
-
 			//Controllo se il cursore è in una regione tra quelle che devo evidenziare
 			if(Integer.toHexString(color).equals(reg1) || Integer.toHexString(color).equals(reg2)){
 				lbl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

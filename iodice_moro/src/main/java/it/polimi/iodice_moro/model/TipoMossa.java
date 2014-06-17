@@ -9,7 +9,7 @@ public enum TipoMossa {
 	/*
 	 * Il valore NO_MOSSA rappresenta il fatto che il giocatore debba ancora fare una mossa 
 	 */
-	SPOSTA_PASTORE, SPOSTA_PECORA, COMPRA_TESSERA, NO_MOSSA, SELEZ_POSIZ;
+	SPOSTA_PASTORE, SPOSTA_PECORA, COMPRA_TESSERA, NO_MOSSA, SELEZ_POSIZ, ACCOPPIAMENTO1, SPARATORIA1;
 	
 	/**
 	 * Override del metodo toString.
