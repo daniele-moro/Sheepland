@@ -40,10 +40,17 @@ public class ThreadAnimazionePastore implements Runnable {
 		if(colore.equals(new Color(255,255,0))){
 			img=new ImageIcon(this.getClass().getResource("/immagini/pedinagialla.png"));
 		}
-
-		if(pedGiocatore!=null){
-			pedGiocatore.setVisible(false);
+		//se la pedina del giocatore non c'è, la creo e la aggiungo alla Map delle pedine dei giocatori
+		if(pedGiocatore == null){
+			pedGiocatore = new JLabel();
+			mappa.add(pedGiocatore);
+			view.addPedinaGiocatore(colore, pedGiocatore);
 		}
+		pedGiocatore.setVisible(false);
+		pedGiocatore.setIcon(img);
+		//setto subito la nuova posizione della pedina
+		pedGiocatore.setBounds(dest.x,dest.y, img.getIconWidth(), img.getIconHeight());
+		
 		//è usato anche nel caso in cui il pastore non sia ancora stato posizionato,
 		//in questo caso viene chiamato con sorg = null
 		if(sorg!=null){
@@ -51,18 +58,9 @@ public class ThreadAnimazionePastore implements Runnable {
 			view.spostaImmagine(sorg, dest, img);
 		}
 		
-		//se la pedina del giocatore non c'è, la creo e la aggiungo alla Map delle pedine dei giocatori
-		if(pedGiocatore == null){
-			pedGiocatore = new JLabel();
-			pedGiocatore.setIcon(img);
-			mappa.add(pedGiocatore);
-			view.addPedinaGiocatore(colore, pedGiocatore);
-		} else{
-			pedGiocatore.setVisible(true);
-		}
-		pedGiocatore.setBounds(dest.x,dest.y, img.getIconWidth(), img.getIconHeight());
+		
+		pedGiocatore.setVisible(true);
 		mappa.repaint();
-
 	}
 	
 }

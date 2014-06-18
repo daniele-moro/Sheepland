@@ -10,7 +10,6 @@ import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.Socket;
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -99,6 +98,15 @@ public class ClientMessageReader implements Runnable{
 							case "SPOSTA_PASTORE":
 								//Animazione di spostamento del pastore
 								view.spostaPastore(parametri[1], parametri[2], new Color(Integer.parseInt(parametri[3])));
+								break;
+							
+							case "POS_2_PAST":
+								//Comando il posizionamento della seconda pedina sulla view
+								view.posiziona2Pastore(parametri[1], new Color(Integer.parseInt(parametri[2])));
+								break;
+								
+							case "G2_SELEZ_PAST":
+								view.selezPast(new Color(Integer.parseInt(parametri[1])));
 								break;
 
 							case "SET_POS_REG":{

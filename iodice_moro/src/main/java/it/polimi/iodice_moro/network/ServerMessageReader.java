@@ -77,6 +77,16 @@ public class ServerMessageReader implements Runnable {
 							output.println("EXCEPTION#"+e1.getMessage());
 						}
 						break;
+						
+					case "CAMBIA_PASTORE":{
+						try {
+							controller.cambiaPastore(parametri[1]);
+						} catch (IllegalClickException e) {
+							LOGGER.log(Level.SEVERE, "Mossa proibita", e);
+							System.out.println("eccezione");
+							output.println("EXCEPTION#"+e.getMessage());
+						}
+					}break;
 
 					case "SPOSTA_PASTORE":
 						try {
@@ -139,6 +149,8 @@ public class ServerMessageReader implements Runnable {
 						}
 						
 					}break;
+					
+					
 
 					case "MOSSA_POSSIBILE":
 						try {

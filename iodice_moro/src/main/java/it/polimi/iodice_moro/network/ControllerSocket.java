@@ -338,5 +338,11 @@ public class ControllerSocket implements IFController{
 		output.flush();
 	}
 
+	@Override
+	public void cambiaPastore(String idStrada) throws RemoteException,IllegalClickException {
+		output.println("CAMBIA_PASTORE#"+idStrada);
+		output.flush();	
+	}
+
 
 }

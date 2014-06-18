@@ -601,7 +601,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			if(g.getColore().equals(colore)){
 				for(Giocatore g2: statoPartita.getGiocatori()){
 					if(g2.getPosition()==strada|| g2.getPosition2()==strada){
-						throw new NotAllowedMoveException("non puoi posizionare qui il tuo pastore!!");
+						throw new NotAllowedMoveException("non puoi posizionare qui il tuo pastore, strada occupata!!");
 					}
 				}
 			}
@@ -609,16 +609,18 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		//Inserisco la posizone iniziale del giocatore, controllando che sia nulla la posizione
 		if(statoPartita.getGiocatoreCorrente().getPosition()==null){
 			statoPartita.getGiocatoreCorrente().setPosition(strada);
+			view.spostaPastore("", idStrada, colore);
 		}else{
 			//Se non è nulla allora devo controllare se sono nel caso di due gicatori
 			if(statoPartita.getGiocatori().size()==2){
 				//se ha già selezionato la prima posizione allora setto la seconda posizione
 				statoPartita.getGiocatoreCorrente().setPosition2(strada);
+				view.posiziona2Pastore(idStrada, colore);
 			} else{
 				throw new NotAllowedMoveException("non puoi posizionare due volte il pastore!!");
 			}
 		}
-		view.spostaPastore("", idStrada, colore);
+		
 		
 		//Ora devo trovare il prossimo giocatore, nel caso in cui ci siano più di due giocatori,
 		//oppure se ci sono due giocatori e sono già state selezionate entrambe le posizioni dei pastori
@@ -653,18 +655,29 @@ public class Controller extends UnicastRemoteObject implements IFController {
 
 			view.setPosizioniRegioni(posRegioni);
 			view.setPosizioniStrade(posStrade);
-			try{
-				view.setGiocatori(gioc);
-			}catch(RemoteException e){
-				LOGGER.log(Level.SEVERE, "Problema di rete", e);
-			}
+			view.setGiocatori(gioc);
 			
 			//inizializzo la mappa nelal view
 			System.out.println("INIT MAPPA SERVER");
 			view.initMappa();
+			
+			for(Giocatore g : statoPartita.getGiocatori()){
+				//visualizza soldi modificati sul client
+				if(view!=null){
+					try {
+						view.modSoldiGiocatore(g.getColore(), g.getSoldi());
+					} catch (RemoteException e) {
+						LOGGER.log(Level.SEVERE, "Problemi di rete", e);
+					}
+				}
+			}
+			
 			checkSpostaPecoraNera();
 			checkSpostaLupo();
 			view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
+			if(statoPartita.getGiocatori().size()==2){
+				view.selezPast(statoPartita.getGiocatoreCorrente().getColore());
+			}
 			//DA qui inizia la partita vera e propria
 		}
 	}
@@ -755,6 +768,10 @@ public class Controller extends UnicastRemoteObject implements IFController {
 						view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
 					}catch (RemoteException e) {
 						LOGGER.log(Level.SEVERE, "RemoteException errore", e);
+					}
+					if(statoPartita.getGiocatori().size()==2){
+						//siamo nel caso di due giocatori, vuol dire che il giocatore deve selezionare quale pastore usare
+						view.selezPast(statoPartita.getGiocatoreCorrente().getColore());
 					}
 				}
 			}
@@ -864,14 +881,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		if(statoPartita.getGiocatori().size()==2){
 			for(Giocatore g : statoPartita.getGiocatori()){
 				g.initSoldiDueGiocatori();
-				//visualizza soldi modificati sul client
-				if(view!=null){
-					try {
-						view.modSoldiGiocatore(g.getColore(), g.getSoldi());
-					} catch (RemoteException e) {
-						LOGGER.log(Level.SEVERE, "Problemi di rete", e);
-					}
-				}
 			}
 		}
 
@@ -971,6 +980,26 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		//Usato nel caso un utente si disconnetta dal gioco
 		view.close();
 		
+	}
+	@Override
+	public void cambiaPastore(String idStrada) throws RemoteException, IllegalClickException {
+		//metodo usato per selezionare il pastore che si vuole usare nel caso di due giocatori
+		Strada strada= statoPartita.getStradaByID(idStrada);
+		if(strada==null){
+			throw new IllegalClickException("Non hai cliccato su una strada!!");
+		}
+		Giocatore giocCorr= statoPartita.getGiocatoreCorrente();
+		//Avrò come prima position sempre la posizione che seleziona l'utente, cioè il pastore che vuole usare l'utente
+		if(giocCorr.getPosition2()==strada){
+			giocCorr.setPosition2(giocCorr.getPosition());
+			giocCorr.setPosition(strada);
+		}else{
+			if(giocCorr.getPosition()!=strada){
+				//se nessuna delle due posizioni è la strada cliccata allora c'è un errore
+				throw new IllegalClickException("Non hai cliccato su una posizione dei tuoi pastori!!");
+			}
+		}
+		view.cambiaGiocatore(giocCorr.getColore());
 	}
 	
 }

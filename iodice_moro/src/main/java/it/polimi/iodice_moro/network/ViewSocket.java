@@ -39,7 +39,7 @@ public class ViewSocket implements IFView {
 		long ora = System.currentTimeMillis();
 		while(inizio==0 ||
 				(inizio!=0 &&
-					!(socketGiocatori.size()>=4 || (socketGiocatori.size()>=2 && ora-inizio>30000)))){
+					!(socketGiocatori.size()>=4 || (socketGiocatori.size()>=2 && ora-inizio>30)))){
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
@@ -128,6 +128,24 @@ public class ViewSocket implements IFView {
 			giocatore.getValue().flush();
 		}
 
+	}
+	
+	@Override
+	public void posiziona2Pastore(String idStrada, Color colore) {
+		//Deve poisizionare il secondo pastore su tutti i client collegati alla partita
+		for(Entry<Color, PrintWriter> giocatore :writerGiocatori.entrySet()){
+			giocatore.getValue().println("POS_2_PAST#"+idStrada+"#"+colore.getRGB());
+			giocatore.getValue().flush();
+		}
+	}
+	
+
+	@Override
+	public void selezPast(Color colore) throws RemoteException {
+		//mando solo al client che deve giocare la comunicazione che deve selezionare il pastore
+		PrintWriter g =writerGiocatori.get(colore);
+		g.println("G2_SELEZ_PAST#"+colore.getRGB());
+		g.flush();
 	}
 
 	@Override
@@ -298,6 +316,7 @@ public class ViewSocket implements IFView {
 			}
 		}
 	}
+
 
 
 }

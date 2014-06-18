@@ -1,6 +1,5 @@
 package it.polimi.iodice_moro.network;
 
-import it.polimi.iodice_moro.controller.Controller;
 import it.polimi.iodice_moro.controller.IFController;
 import it.polimi.iodice_moro.exceptions.PartitaIniziataException;
 import it.polimi.iodice_moro.model.Giocatore;
@@ -103,8 +102,6 @@ public class ViewRMI implements IFView {
 
 	@Override
 	public void spostaPastore(String s, String d, Color colore) {
-
-		
 		for(final IFView view : listaView.values()) {
 			try {
 				view.spostaPastore(s, d, colore);
@@ -112,6 +109,24 @@ public class ViewRMI implements IFView {
 				logger.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
+	}
+	
+	@Override
+	public void posiziona2Pastore(String idStrada, Color colore) {
+		for(final IFView view : listaView.values()) {
+			try {
+				view.posiziona2Pastore(idStrada, colore);
+			} catch (RemoteException e) {
+				logger.log(Level.SEVERE, "Errore di rete", e);
+			}
+		}
+	}
+	
+	@Override
+	public void selezPast(Color colore) throws RemoteException {
+		//Mando solo all'interfaccia corretta il comando di selezione del pastore
+		listaView.get(colore).selezPast(colore);
+		
 	}
 
 	@Override
@@ -315,5 +330,4 @@ public class ViewRMI implements IFView {
 	public Map<Color, IFView> getViews() {
 		return listaView;
 	}
-
 }

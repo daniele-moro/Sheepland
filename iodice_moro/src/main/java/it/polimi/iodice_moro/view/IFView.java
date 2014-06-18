@@ -1,7 +1,6 @@
 package it.polimi.iodice_moro.view;
 
 import it.polimi.iodice_moro.model.Giocatore;
-import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.TipoTerreno;
 
 import java.awt.Color;
@@ -98,6 +97,10 @@ public interface IFView extends Remote{
 	public abstract void setGiocatori(Map<Color,String> giocatori) throws RemoteException;
 
 	public abstract void close() throws RemoteException;
+
+	public abstract void posiziona2Pastore(String idStrada, Color colore) throws RemoteException;
+
+	public abstract void selezPast(Color colore) throws RemoteException;
 
 
 }

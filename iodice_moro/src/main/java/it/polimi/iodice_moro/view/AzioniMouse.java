@@ -6,12 +6,10 @@ import it.polimi.iodice_moro.exceptions.NotAllowedMoveException;
 import it.polimi.iodice_moro.model.TipoMossa;
 
 import java.awt.Cursor;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
@@ -55,6 +53,29 @@ class AzioniMouse extends MouseAdapter{
 		}
 		int color=image.getRGB(e.getX(),e.getY());
 		System.out.println("X:"+e.getX()+" Y:"+e.getY() + "  COLOR:0x"+ Integer.toHexString(color));
+		
+		if(view.getMossaAttuale().equals(TipoMossa.G2_SELEZ_PAST) 
+				&& view.getPosizioniCancelli().keySet().contains(Integer.toHexString(color)) 
+				&& view.getGiocatoreCorrente().equals(view.getColoreGamer())){
+			//in questo caso sto selezionando quale dei due pastori voglio usare (sono nel caso di due giocatori)
+			final int c1=color;
+			Thread t4 = new Thread( new Runnable(){
+				@Override
+				public void run(){
+					try {
+						//provo a comunicare quale pastore voglio usare
+						controller.cambiaPastore(Integer.toHexString(c1));
+					} catch (IllegalClickException e1) {
+						view.getLBLOutput().setText( e1.getMessage());
+						logger.log(Level.SEVERE, "Area non clickabile", e1);
+					} catch (RemoteException e1) {
+						view.getLBLOutput().setText( e1.getMessage());
+						logger.log(Level.SEVERE, "Errore di rete", e1);
+					}
+				} 
+			});
+			t4.start();
+		}
 
 		if(view.getMossaAttuale().equals(TipoMossa.SELEZ_POSIZ) 
 				&& view.getPosizioniCancelli().keySet().contains(Integer.toHexString(color)) 
@@ -68,7 +89,6 @@ class AzioniMouse extends MouseAdapter{
 			Thread t4 = new Thread( new Runnable(){
 				@Override
 				public void run(){
-					view.spostaPastore("", Integer.toHexString(c1), view.getGiocatoreCorrente());
 					try {
 						//provo a settare la strada del Pastore
 						controller.setStradaGiocatore(view.getGiocatoreCorrente(), Integer.toHexString(c1));
@@ -80,7 +100,7 @@ class AzioniMouse extends MouseAdapter{
 						logger.log(Level.SEVERE, "Mossa proibita", e1);
 					} catch (RemoteException e1) {
 						view.getLBLOutput().setText( e1.getMessage());
-						logger.log(Level.SEVERE, "Mossa proibita", e1);
+						logger.log(Level.SEVERE, "Errore di rete", e1);
 					}
 				} 
 			});
@@ -93,7 +113,8 @@ class AzioniMouse extends MouseAdapter{
 		if((view.getPosizioniRegioni().keySet().contains(Integer.toHexString(color))
 				|| view.getPosizioniCancelli().keySet().contains(Integer.toHexString(color)))
 				&& view.getMossaAttuale()!=TipoMossa.NO_MOSSA
-				&& view.getMossaAttuale()!=TipoMossa.SELEZ_POSIZ){
+				&& view.getMossaAttuale()!=TipoMossa.SELEZ_POSIZ
+				&& view.getMossaAttuale()!=TipoMossa.G2_SELEZ_PAST){
 			//&&view.getGiocatoreCorrente().equals(view.getColoreGamer())){
 
 			System.out.println("A");
@@ -103,7 +124,6 @@ class AzioniMouse extends MouseAdapter{
 					System.out.println("B");
 					final int c=color;
 					switch(view.getMossaAttuale()){
-
 
 					case COMPRA_TESSERA:
 						System.out.println("COMPRA TESSERA");

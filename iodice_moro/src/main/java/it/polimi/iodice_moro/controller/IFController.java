@@ -78,6 +78,8 @@ public interface IFController extends Remote{
 	public abstract void end() throws RemoteException;
 
 	public abstract void addView(IFView view, Color coloreGiocatore) throws RemoteException, PartitaIniziataException;
+
+	public abstract void cambiaPastore(String idStrada) throws RemoteException, IllegalClickException;
 	
 	
 

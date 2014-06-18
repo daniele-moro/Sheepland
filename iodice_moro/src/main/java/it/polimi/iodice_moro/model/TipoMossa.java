@@ -8,8 +8,10 @@ package it.polimi.iodice_moro.model;
 public enum TipoMossa {
 	/*
 	 * Il valore NO_MOSSA rappresenta il fatto che il giocatore debba ancora fare una mossa 
+	 * Il valore SELEZ_POSIZ rappresenta il fatto che il giocatore sta selezionando la posizione iniziale del pastore
+	 * Il vaore G2_SELEZ_PAST rappresenta il fatto che il gicatore sta selezionando quale pastore dei due (nel caso di due giocatori) vuole utilizzare
 	 */
-	SPOSTA_PASTORE, SPOSTA_PECORA, COMPRA_TESSERA, NO_MOSSA, SELEZ_POSIZ, ACCOPPIAMENTO1, SPARATORIA1;
+	SPOSTA_PASTORE, SPOSTA_PECORA, COMPRA_TESSERA, NO_MOSSA, SELEZ_POSIZ, G2_SELEZ_PAST, ACCOPPIAMENTO1, SPARATORIA1;
 	
 	/**
 	 * Override del metodo toString.

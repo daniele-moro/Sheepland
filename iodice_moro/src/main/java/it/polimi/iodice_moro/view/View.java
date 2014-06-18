@@ -21,8 +21,6 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -141,8 +139,12 @@ public class View extends UnicastRemoteObject implements IFView {
 	private Map<String,Point> posizioniRegioni = new HashMap<String,Point>();
 	private Map<Color,JLabel> giocatori = new HashMap<Color,JLabel>();
 	private Map<Color,JLabel> pedineGiocatori = new HashMap<Color, JLabel>();
+	
 	private Map<String,JLabel> lblRegioni = new HashMap<String,JLabel>();
 	private Map<String,Point> posizioniCancelli = new HashMap<String, Point>();
+	//Queste sono le seconde pedine, per quando si gioca con due giocatori
+	private Map<Color,JLabel> pedine2Giocatori = new HashMap<Color,JLabel>();
+	
 	private Map<Color,String>gioc;
 	private JLabel pecoraNera;
 	private JLabel lupo;
@@ -200,6 +202,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		btnSpostaPastore.addActionListener(action);
 		
 		btnCompraTessera = new JButton("<html>COMPRA <br>TESSERA</html>");
+		btnCompraTessera.setIcon(new ImageIcon(this.getClass().getResource("/immagini/compratessere.png")));
 		btnCompraTessera.setActionCommand(TipoMossa.COMPRA_TESSERA.toString());
 		btnCompraTessera.addActionListener(action);
 		
@@ -413,7 +416,6 @@ public class View extends UnicastRemoteObject implements IFView {
 			py++;
 			leftPanel.add(lbltemp2,c);
 			giocatori.put(colore,lbltemp2);
-			
 		}
 		
 		mappa.repaint();
@@ -739,6 +741,11 @@ public class View extends UnicastRemoteObject implements IFView {
 			sorg=posizioniCancelli.get(s);
 		}
 		JLabel pedGiocatore = pedineGiocatori.get(colore);
+		if(pedGiocatore!=null){
+			if(!pedGiocatore.getLocation().equals(sorg)){
+				pedGiocatore=pedine2Giocatori.get(colore);
+			}
+		}
 		ThreadAnimazionePastore r = new ThreadAnimazionePastore(this,
 				mappa,
 				pedGiocatore,
@@ -746,6 +753,18 @@ public class View extends UnicastRemoteObject implements IFView {
 				dest,
 				colore);
 		Thread t = new Thread(r);
+		t.start();
+	}
+	
+	@Override
+	public void posiziona2Pastore(String idStrada, Color colore) {
+		JLabel pedina2= new JLabel();
+		pedine2Giocatori.put(colore, pedina2);
+		pedina2.setIcon(new ImageIcon(this.getClass().getResource("/immagini/pedinagialla.png")));
+		mappa.add(pedina2);
+		Point dest =posizioniCancelli.get(idStrada);
+		ThreadAnimazionePastore p = new ThreadAnimazionePastore(this, mappa, pedina2, null, dest, colore);
+		Thread t = new Thread(p);
 		t.start();
 	}
 	
@@ -983,4 +1002,15 @@ public class View extends UnicastRemoteObject implements IFView {
 		JOptionPane.showMessageDialog(frame,"Un utente si è disconnesso, la partita termina qui. \n Chiusura dell'applicazione");
 		System.exit(0);
 	}
+	
+	@Override
+	public void selezPast(Color colore){
+		if(coloreGamer.equals(colore)){
+			disattivaGiocatore();
+			lblOutput.setText("Seleziona il pastore che vuoi utilizzare!!");
+			mossaAttuale=TipoMossa.G2_SELEZ_PAST;
+		}
+	}
+
+
 }

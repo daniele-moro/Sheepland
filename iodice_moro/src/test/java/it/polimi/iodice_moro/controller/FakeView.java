@@ -156,4 +156,17 @@ public class FakeView implements IFView {
 
 	}
 
+	@Override
+	public void posiziona2Pastore(String idStrada, Color colore)
+			throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void selezPast(Color colore) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
