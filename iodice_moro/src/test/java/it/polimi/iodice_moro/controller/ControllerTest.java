@@ -16,7 +16,6 @@ import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
 import it.polimi.iodice_moro.network.ViewRMI;
 import it.polimi.iodice_moro.view.IFView;
-import it.polimi.iodice_moro.view.View;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -80,8 +79,8 @@ public class ControllerTest{
 	
 	@Test
 	public void testCostruttoreDue() throws RemoteException {
-		IFView viewProva = new View(controllerTest);
-		Controller controllerTestDue = new Controller(viewProva);
+		IFView fakeView_x = new FakeView();
+		Controller controllerTestDue = new Controller(fakeView_x);
 	}
 	
 	@Test
@@ -95,21 +94,29 @@ public class ControllerTest{
 		aggiungiRecinto.invoke(controllerTest, strada0);
 		assertTrue(strada0.isRecinto());
 		assertFalse(strada1.isRecinto());
+		
+		int numRecinti = statoPartitaT.getNumRecinti();
+		for(int i=0; i<numRecinti; i++) {
+			statoPartitaT.decNumRecinti();			
+		}
+		aggiungiRecinto.invoke(controllerTest, strada1);
+		assertTrue(strada1.isRecinto());
+		assertTrue(statoPartitaT.isTurnoFinale());
 	}
 	
 	
 	@Test
-	public void testSpostaPecora() throws RemoteException, NotAllowedMoveException {
+	public void testSpostaPecora() throws RemoteException, NotAllowedMoveException, IllegalClickException {
 		
 		int numOfPecoreBefore=regione1.getNumPecore();
-		controllerTest.spostaPecora(regione1);
+		controllerTest.spostaPecora(regione1.getColore());
 		//Controllo che numero di pecore sia diminuito nella regione d'origine.
 		assertEquals(numOfPecoreBefore-1, regione1.getNumPecore());
 		//Controllo che numero di pecore sia aumentato nella regione d'arrivo.
 		assertEquals(1, statoPartitaT.getAltraRegione(regione1, giocatoreTest.getPosition()).getNumPecore());
 
 		//Faccio l'operazione contraria e controllo se numero di pecore è quello d'origine.
-		controllerTest.spostaPecora(statoPartitaT.getAltraRegione(regione1, giocatoreTest.getPosition()));
+		controllerTest.spostaPecora(statoPartitaT.getAltraRegione(regione1, giocatoreTest.getPosition()).getColore());
 		assertEquals(numOfPecoreBefore, regione1.getNumPecore());
 		assertEquals(0, statoPartitaT.getAltraRegione(regione1, giocatoreTest.getPosition()).getNumPecore());
 	}
@@ -120,32 +127,64 @@ public class ControllerTest{
 		//Giocatore è in posizione dove non può spostare pecora (non adiacente alla regione)
 		//Deve essere lanciata eccezione.
 		try {
-			controllerTest.spostaPecora(regione1);
+			controllerTest.spostaPecora(regione1.getColore());
 			fail("Should have thrown exception");
 		} catch (NotAllowedMoveException e) {
 			
 		} catch (RemoteException e) {
 			fail("Problemi di rete, "+"Messaggio: "+e.getMessage());
+		} catch (IllegalClickException e) {
+			fail();
 		}
+		
+		//Testo eccezione con NotAllowedMoveException quando non ci sono pecore da spostare.
+		Regione regionex = statoPartitaT.getRegioniADStrada(giocatoreTest.getPosition()).get(0);
+		regionex.setNumPecore(0);
+		try {
+			controllerTest.spostaPecora(regionex.getColore());
+			fail("Should have thrown exception");
+		} catch (NotAllowedMoveException e) {
+			
+		} catch (RemoteException e) {
+			fail();
+		} catch (IllegalClickException e) {
+			fail();
+		}
+		
+		//Testo eccezione IllegalClickException con reg=null.
+		try {
+			controllerTest.spostaPecora("faoifan");
+			fail("Should have thrown exception");
+		} catch (IllegalClickException e) {
+			
+		} catch (RemoteException e) {
+			fail();
+		} catch (NotAllowedMoveException e) {
+			fail();
+		}
+		
+		
+		
 	}
 
 	@Test
 	public void testSpostaPecoraNera() throws Exception {
-		statoPartitaT.setPosPecoraNera(regione1);
-		regione1.addPecoraNera();
-		assertTrue(regione1.isPecoraNera());
-		assertEquals(regione1, statoPartitaT.getPosPecoraNera());
+		Regione regionex=statoPartitaT.getRegioniADStrada(giocatoreTest.getPosition()).get(0);
+		statoPartitaT.setPosPecoraNera(regionex);
+		regionex.addPecoraNera();
+		assertTrue(regionex.isPecoraNera());
+		assertEquals(regionex, statoPartitaT.getPosPecoraNera());
 		
 		//Controllo che nella regione d'origine non c'è pecora nera e controllo
 		//che nella regione d'arrivo non c'è.
-		controllerTest.spostaPecoraNera(regione1, statoPartitaT.getRegioniAdiacenti(regione1).get(0));
-		assertFalse(regione1.isPecoraNera());
-		assertTrue(statoPartitaT.getRegioniAdiacenti(regione1).get(0).isPecoraNera());
+		controllerTest.spostaPecoraNera(regionex.getColore());
+		assertFalse(regionex.isPecoraNera());
+		assertTrue(statoPartitaT.getAltraRegione(regionex, giocatoreTest.getPosition()).isPecoraNera());
 		
 		//Faccio il contrario.
-		controllerTest.spostaPecoraNera(statoPartitaT.getRegioniAdiacenti(regione1).get(0), regione1);
-		assertFalse(statoPartitaT.getRegioniAdiacenti(regione1).get(0).isPecoraNera());
-		assertTrue(regione1.isPecoraNera());
+		controllerTest.spostaPecoraNera(statoPartitaT.getAltraRegione(regionex, giocatoreTest.getPosition()).getColore());
+		assertFalse(statoPartitaT.getAltraRegione(regionex, giocatoreTest.getPosition()).isPecoraNera());
+		assertTrue(regionex.isPecoraNera());
 		
 	}
 	
@@ -155,8 +194,9 @@ public class ControllerTest{
 		try {
 			//Provo a spostare una pecora nera in una regione che non c'è.
 			//Dovrebbe lanciare eccezione.
-			regione1.setPecoraNera(false);
-			controllerTest.spostaPecoraNera(regione1, regione4);
+			Regione regionex = statoPartitaT.getRegioniADStrada(giocatoreTest.getPosition()).get(0);
+			regionex.setPecoraNera(false);
+			controllerTest.spostaPecoraNera(regionex.getColore());
 			fail("Should have thrown an exception");
 		} catch (NotAllowedMoveException e) {
 
@@ -195,18 +235,21 @@ public class ControllerTest{
 
 	@Test
 	public void testAcquistaTessera() throws Exception {
-		TipoTerreno tipo1=regione1.getTipo();
+		Regione regionex = statoPartitaT.getRegioniADStrada(giocatoreTest.getPosition()).get(0);
+		TipoTerreno tipo1=regionex.getTipo();
 		int soldiIniziali=giocatoreTest.getSoldi();
 		
 		//Controllo che se nessuna tessera è stata acquistata il costo è zero.
 		assertEquals(0, statoPartitaT.getCostoTessera(tipo1));
-		controllerTest.acquistaTessera(tipo1);
+		controllerTest.acquistaTessera(regionex.getColore());
 		//Controllo che comprando una tessera il cui costo è zero i soldi del 
 		//giocatore non diminuiscano.
 		assertEquals(soldiIniziali, giocatoreTest.getSoldi());
 		
-		controllerTest.acquistaTessera(tipo1);
-		controllerTest.acquistaTessera(tipo1);
+		
+		giocatoreTest.azzeraTurno(); //Azzero il turno per fare in modo che il turno non finisca.
+		controllerTest.acquistaTessera(regionex.getColore());
+		controllerTest.acquistaTessera(regionex.getColore());
 		//Controllo che i soldi del giocatore siano diminuiti di un valore pari al
 		//costo delle tessere acquistate.
 		assertEquals(soldiIniziali-1-2,giocatoreTest.getSoldi());
@@ -223,25 +266,40 @@ public class ControllerTest{
 		giocatoreTest.decrSoldi(giocatoreTest.getSoldi()-1);
 		//Provo ad acquistare tessere quando il giocatore non ha abbastanza soldi per comprare la tessera
 		try {
-			controllerTest.acquistaTessera(tipo1);
+			controllerTest.acquistaTessera(regione1.getColore());
 			fail("Should have thrown exception");
-		}
-		catch (NotAllowedMoveException e) {
+		} catch (NotAllowedMoveException e) {
 
 		} catch (RemoteException e) {
 			fail("Problemi di rete, "+"Messaggio: "+e.getMessage());
+		} catch (IllegalClickException e) {
+			fail();
 		}
 		
 		
 		giocatoreTest.decrSoldi(1);
 		//Provo ad acquistare tessere quando il giocatore ha 0 soldi
 		try {
-			controllerTest.acquistaTessera(tipo1);
+			controllerTest.acquistaTessera(regione1.getColore());
 			fail("Should have thrown exception");
 		} catch (NotAllowedMoveException e) {
 
 		} catch (RemoteException e) {
 			fail("Problemi di rete, "+"Messaggio: "+e.getMessage());
+			
+		} catch (IllegalClickException e) {
+			fail();
+		}
+		
+		try {
+			controllerTest.acquistaTessera("finaiufabni");
+			fail("Should have thrown exception");
+		} catch (NotAllowedMoveException e) {
+			fail();
+		} catch (RemoteException e) {
+			fail();
+		} catch(IllegalClickException e) {
+			
 		}
 		
 
@@ -249,28 +307,30 @@ public class ControllerTest{
 	
 	@Test
 	public void testAcquistaTesseraWhichCantBeBought() throws RemoteException {
-		TipoTerreno tipo1=regione1.getTipo();
-		
-		//Provo ad acquistare tessera di sheepsburg.
+		//Provo ad acquistare tessera di sheepsburg. ID = ff002e73.
 		try {
-			controllerTest.acquistaTessera(TipoTerreno.SHEEPSBURG);
+			controllerTest.acquistaTessera("ff002e73");
 			fail("Should have thrown exception");
 		} catch (NotAllowedMoveException e) {
 			
+		} catch (IllegalClickException e) {
+			fail();
 		}
 		
 		for(int i=0; i<5; i++) {
-			statoPartitaT.incCostoTessera(tipo1);
+			statoPartitaT.incCostoTessera(regione1.getTipo());
 		}
 		//Provo ad acquistare un tipo di tessera che è già esaurito.
 		try {
-			controllerTest.acquistaTessera(tipo1);
+			controllerTest.acquistaTessera(regione1.getColore());
 			fail("Should have thrown exception");
 		}
 		catch (NotAllowedMoveException e) {
 
 		} catch (RemoteException e) {
 			fail("Problemi di rete, "+"Messaggio: "+e.getMessage());
+		} catch (IllegalClickException e) {
+			fail();
 		}
 		
 	}
@@ -281,7 +341,7 @@ public class ControllerTest{
 		Strada giocatorePositionBefore = giocatoreTest.getPosition();
 		Strada giocatorePositionAfterFirst = statoPartitaT.getStradeAdiacenti(giocatorePositionBefore).get(0);
 		int soldiBefore = giocatoreTest.getSoldi();
-		controllerTest.spostaPedina(giocatorePositionAfterFirst);
+		controllerTest.spostaPedina(giocatorePositionAfterFirst.getColore());
 		//Controllo che recinto sia statto messo, posizione del giocatore sia quella giusta
 		//e che soldi non siano diminuiti.
 		assertTrue(giocatorePositionBefore.isRecinto());
@@ -295,13 +355,18 @@ public class ControllerTest{
 		}
 		
 		Strada giocatorePositionAfterSecond = statoPartitaT.getStradeConfini(regione4).get(0);
-		controllerTest.spostaPedina(giocatorePositionAfterSecond);
+		controllerTest.spostaPedina(giocatorePositionAfterSecond.getColore());
 		//Controllo che recinto sia statto messo, posizione del giocatore sia quella giusta
 		//e che soldi siano diminuiti.
 		assertTrue(giocatorePositionAfterFirst.isRecinto());
 		assertEquals(giocatorePositionAfterSecond, giocatoreTest.getPosition());
 		assertEquals(soldiBefore-1, giocatoreTest.getSoldi());
 		assertTrue(statoPartitaT.isTurnoFinale());
+		
+		//Testing nel caso in cui sia il turno finale.
+		statoPartitaT.setTurnoFinale();
+		controllerTest.spostaPedina(statoPartitaT.getStrade().get(10).getColore());
+		
 	}
 
 	@Test
@@ -311,13 +376,14 @@ public class ControllerTest{
 		giocatorePositionAfterFirst.setRecinto(true);
 		//Provo a spostare pastore in una strada occupata da recinto. 
 		try {
-			controllerTest.spostaPedina(giocatorePositionAfterFirst);
+			controllerTest.spostaPedina(giocatorePositionAfterFirst.getColore());
 			fail("Should have caught exception");
-		}
-		catch (NotAllowedMoveException e) {
+		} catch (NotAllowedMoveException e) {
 
 		} catch (RemoteException e) {
 			fail("Problemi di rete, "+"Messaggio: "+e.getMessage());
+		} catch (IllegalClickException e) {
+			fail();
 		}
 		
 		giocatoreTest.decrSoldi((giocatoreTest.getSoldi()));
@@ -325,13 +391,39 @@ public class ControllerTest{
 		//Provo a spostare pastore in una strada non adiacente alla posizione del
 		//giocatore, quando il giocatore non ha soldi.
 		try {
-			controllerTest.spostaPedina(giocatorePositionAfterSecond);
+			controllerTest.spostaPedina(giocatorePositionAfterSecond.getColore());
 			fail("Should have caught the second exception");
-		}
-		catch (NotAllowedMoveException e) {
+		} catch (NotAllowedMoveException e) {
 
 		} catch (RemoteException e) {
 			fail("Problemi di rete, "+"Messaggio: "+e.getMessage());
+		} catch (IllegalClickException e) {
+			fail();
+		}
+		
+		//Testo caso in cui id regione non esiste.
+		try {
+			controllerTest.spostaPedina("xasjnfai");
+			fail("Should have thrown exception");
+		} catch(NotAllowedMoveException e) {
+			fail();
+		} catch (RemoteException e) {
+			fail();
+		} catch(IllegalClickException e) {
+			
+		}
+		
+		//Testo caso in cui la strada sia occupata da un altro giocatore.
+		Giocatore giocatorex = new Giocatore("Occupying", giocatorePositionAfterFirst);
+		try {
+			controllerTest.spostaPedina(giocatorePositionAfterFirst.getColore());
+			fail("Should have thrown exception");
+		} catch (RemoteException e) {
+			fail();
+		} catch(IllegalClickException e) {
+			fail();
+		} catch(NotAllowedMoveException e) {
+			
 		}
 		
 	}	
@@ -531,7 +623,6 @@ public class ControllerTest{
 	}
 	
 	@Test
-	@SuppressWarnings("deprecation")
 	public void testGetPosRegioni() {
 		Map<String, Point> posRegioni = controllerTest.getPosRegioni();
 		double x,y;
@@ -559,7 +650,6 @@ public class ControllerTest{
 	}
 	
 	@Test
-	@SuppressWarnings("deprecation")
 	public void testGetPosStrade() {
 		Map<String, Point> posStrade = controllerTest.getPosStrade();
 		double x,y;
@@ -741,11 +831,28 @@ public class ControllerTest{
 		}
 	}
 	
+	/*
+	 * Test con NotAllowedException con regione non adiacente a posizione giocatore.
+	 */
+	@Test
+	public void testAccoppiamento1WithNotAllowedMoveExcNotAdj() {
+		try {
+			controllerTest.accoppiamento1(regione2.getColore());
+			fail("Should have thrown exception");
+		} catch (RemoteException e) {
+			fail();
+		} catch (NotAllowedMoveException e) {
+			
+		} catch (IllegalClickException e) {
+			fail();
+		}
+	}
+	
 	@Test
 	public void testSparatoria1() throws RemoteException, NotAllowedMoveException, IllegalClickException {
 		int lancio;
 		Regione regionex = statoPartitaT.getRegioniADStrada(statoPartitaT.getGiocatoreCorrente().getPosition()).get(0);
-		int numPecore = 2;
+		int numPecore = 3;
 		regionex.setNumPecore(numPecore);
 		
 		//Testo per tre volte il giusto funzionamento di accoppiamento1().
@@ -795,10 +902,28 @@ public class ControllerTest{
 		
 	}
 	
+	/*
+	 * Test con NotAllowedException con regione non adiacente a posizione giocatore.
+	 */
+	@Test
+	public void testSparatoria1WithNotAllowedMoveExcNotAdj() {
+		try {
+			controllerTest.sparatoria1(regione2.getColore());
+			fail("Should have thrown exception");
+		} catch (RemoteException e) {
+			fail();
+		} catch (NotAllowedMoveException e) {
+			
+		} catch (IllegalClickException e) {
+			fail();
+		}
+		
+	}
+	
 	@Test
 	public void testSparatoria1WithIllegalClickExc () {
 		try {
-			controllerTest.accoppiamento1("facian");
+			controllerTest.accoppiamento1("");
 			fail("Should have thrown exception");
 		} catch (RemoteException e) {
 			fail();

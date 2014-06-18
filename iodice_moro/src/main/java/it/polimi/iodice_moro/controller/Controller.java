@@ -100,7 +100,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @throws Exception Se il giocatore non si trova in una strada confinante
 	 * alla posizione della pecora da spostare o se non ci sono pecore da spostare.
 	 */
-	public synchronized void spostaPecora(Regione regionePecora) throws NotAllowedMoveException, RemoteException {
+	private synchronized void spostaPecora(Regione regionePecora) throws NotAllowedMoveException, RemoteException {
 		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
 		/*
 		 * Controlliamo che la regione da cui prelevare la pecora sia vicino alla strada dove si trova il giocatore
@@ -222,7 +222,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @throws NotAllowedMoveException se non ci sono pecore nere da spostare.
 	 * @see #checkSpostamentoNera
 	 */
-	public synchronized void spostaPecoraNera(Regione regionePecora, Regione regAdiacente) throws NotAllowedMoveException, RemoteException {
+	private synchronized void spostaPecoraNera(Regione regionePecora, Regione regAdiacente) throws NotAllowedMoveException, RemoteException {
 		if(regionePecora.isPecoraNera()) {
 			regionePecora.removePecoraNera();
 			regAdiacente.addPecoraNera();
@@ -281,7 +281,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @param tipo Tipo della tessera che vuole comprare.
 	 * @throws Exception Se il costo della tessera è maggiore dei soldi del giocatore.
 	 */
-	public synchronized void acquistaTessera(TipoTerreno tipo) throws NotAllowedMoveException, RemoteException {
+	private synchronized void acquistaTessera(TipoTerreno tipo) throws NotAllowedMoveException, RemoteException {
 		Giocatore giocatore=statoPartita.getGiocatoreCorrente();
 		int costoTessera=statoPartita.getCostoTessera(tipo);
 		if(tipo.equals(TipoTerreno.SHEEPSBURG)){
@@ -341,7 +341,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @throws Exception Se nuova ìposizione è già occupata da un recinto.
 	 * @throws Exception Se non ha abbastanza soldi per muoversi.
 	 */
-	public synchronized void spostaPedina (Strada nuovastrada) throws NotAllowedMoveException, RemoteException {
+	private synchronized void spostaPedina (Strada nuovastrada) throws NotAllowedMoveException, RemoteException {
 		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
 		for(Giocatore g: statoPartita.getGiocatori()){
 			if(g.getPosition()==nuovastrada){
@@ -653,14 +653,15 @@ public class Controller extends UnicastRemoteObject implements IFController {
 
 			view.setPosizioniRegioni(posRegioni);
 			view.setPosizioniStrade(posStrade);
-			view.setGiocatori(gioc);
+			try{
+				view.setGiocatori(gioc);
+			}catch(RemoteException e){
+				LOGGER.log(Level.SEVERE, "Problema di rete", e);
+			}
 			
-			//inizializzo la mappa nella view
+			//inizializzo la mappa nelal view
 			System.out.println("INIT MAPPA SERVER");
 			view.initMappa();
-			for(Giocatore g: statoPartita.getGiocatori()){
-				view.modSoldiGiocatore(g.getColore(), g.getSoldi());
-			}
 			checkSpostaPecoraNera();
 			checkSpostaLupo();
 			view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
@@ -681,13 +682,13 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		if(ultimaMossa.equals(mossaDaEffettuare)&&!mossaDaEffettuare.equals(TipoMossa.SPOSTA_PASTORE)) {
 			return false;
 		}
-		return mossaDaEffettuare.equals(TipoMossa.SPOSTA_PASTORE)&&giocatoreCorrente.getNumMosse()==2&&!pastoreSpostato;
-		/*if(!mossaDaEffettuare.equals(TipoMossa.SPOSTA_PASTORE)&&giocatoreCorrente.getNumMosse()==2&&!pastoreSpostato) {
+		//return mossaDaEffettuare.equals(TipoMossa.SPOSTA_PASTORE)&&giocatoreCorrente.getNumMosse()==2&&!pastoreSpostato;
+		if(!mossaDaEffettuare.equals(TipoMossa.SPOSTA_PASTORE)&&giocatoreCorrente.getNumMosse()==2&&!pastoreSpostato) {
 			return false;
 		}
 		else {
 			return true;
-		}*/
+		}
 	}
 	
 //___________________________________________________________________________________________________________________
@@ -864,13 +865,13 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			for(Giocatore g : statoPartita.getGiocatori()){
 				g.initSoldiDueGiocatori();
 				//visualizza soldi modificati sul client
-				/*if(view!=null){
+				if(view!=null){
 					try {
 						view.modSoldiGiocatore(g.getColore(), g.getSoldi());
 					} catch (RemoteException e) {
 						LOGGER.log(Level.SEVERE, "Problemi di rete", e);
 					}
-				}*/
+				}
 			}
 		}
 
