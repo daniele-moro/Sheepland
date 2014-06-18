@@ -402,7 +402,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		int py=4;
 		for(Color colore:gioc.keySet()){
 			lbltemp2 = new JLabel();
-			lbltemp2.setText(gioc.get(colore)+" SOLDI: 20");
+			lbltemp2.setText(gioc.get(colore));//+" SOLDI: 20");
 			lbltemp2.setName(gioc.get(colore));
 			lbltemp2.setBackground(colore);
 			lbltemp2.setFont(new Font("Arial", Font.PLAIN, 12));

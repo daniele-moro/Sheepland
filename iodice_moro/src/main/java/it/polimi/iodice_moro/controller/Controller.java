@@ -653,15 +653,14 @@ public class Controller extends UnicastRemoteObject implements IFController {
 
 			view.setPosizioniRegioni(posRegioni);
 			view.setPosizioniStrade(posStrade);
-			try{
-				view.setGiocatori(gioc);
-			}catch(RemoteException e){
-				LOGGER.log(Level.SEVERE, "Problema di rete", e);
-			}
+			view.setGiocatori(gioc);
 			
-			//inizializzo la mappa nelal view
+			//inizializzo la mappa nella view
 			System.out.println("INIT MAPPA SERVER");
 			view.initMappa();
+			for(Giocatore g: statoPartita.getGiocatori()){
+				view.modSoldiGiocatore(g.getColore(), g.getSoldi());
+			}
 			checkSpostaPecoraNera();
 			checkSpostaLupo();
 			view.cambiaGiocatore(statoPartita.getGiocatoreCorrente().getColore());
@@ -865,13 +864,13 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			for(Giocatore g : statoPartita.getGiocatori()){
 				g.initSoldiDueGiocatori();
 				//visualizza soldi modificati sul client
-				if(view!=null){
+				/*if(view!=null){
 					try {
 						view.modSoldiGiocatore(g.getColore(), g.getSoldi());
 					} catch (RemoteException e) {
 						LOGGER.log(Level.SEVERE, "Problemi di rete", e);
 					}
-				}
+				}*/
 			}
 		}
 
