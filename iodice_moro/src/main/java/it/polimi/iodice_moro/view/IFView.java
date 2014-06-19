@@ -88,8 +88,6 @@ public interface IFView extends Remote{
 	
 	public abstract void visRisDado(int numero) throws RemoteException;
 
-	abstract void setColore(Color coloreGiocatore) throws RemoteException;
-
 	public abstract void setPosizioniRegioni(Map<String,Point> posizioniRegioni) throws RemoteException;
 
 	public abstract void setPosizioniStrade(Map<String,Point> posizioniCancelli) throws RemoteException;

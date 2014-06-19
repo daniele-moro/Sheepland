@@ -126,9 +126,6 @@ public class FakeView implements IFView {
 
 	}
 
-	@Override
-	public void setColore(Color coloreGiocatore) throws RemoteException {
-	}
 
 	@Override
 	public void setPosizioniRegioni(Map<String, Point> posizioniRegioni)

@@ -237,12 +237,6 @@ public class ViewSocket implements IFView {
 		}
 		
 	}
-
-	@Override
-	public void setColore(Color coloreGiocatore) throws RemoteException {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	/**
 	 * Usato per aggiungere i client connessi

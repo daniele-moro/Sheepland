@@ -5,6 +5,7 @@ import java.awt.Point;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 
 public class ThreadAnimazionePastore implements Runnable {
 
@@ -12,10 +13,10 @@ public class ThreadAnimazionePastore implements Runnable {
 	private JLabel pedGiocatore;
 	private Point sorg;
 	private Point dest;
-	private JLabel mappa;
+	private JLayeredPane mappa;
 	private Color colore;
 	
-	public ThreadAnimazionePastore(View view,JLabel mappa, JLabel pedGiocatore, Point sorg, Point dest, Color colore ){
+	public ThreadAnimazionePastore(View view,JLayeredPane mappa, JLabel pedGiocatore, Point sorg, Point dest, Color colore ){
 		this.view=view;
 		this.pedGiocatore=pedGiocatore;
 		this.sorg=sorg;
@@ -43,7 +44,7 @@ public class ThreadAnimazionePastore implements Runnable {
 		//se la pedina del giocatore non c'è, la creo e la aggiungo alla Map delle pedine dei giocatori
 		if(pedGiocatore == null){
 			pedGiocatore = new JLabel();
-			mappa.add(pedGiocatore);
+			mappa.add(pedGiocatore, View.SHEPPARD_LAYER);
 			view.addPedinaGiocatore(colore, pedGiocatore);
 		}
 		pedGiocatore.setVisible(false);

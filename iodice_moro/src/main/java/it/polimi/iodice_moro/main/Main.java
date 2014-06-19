@@ -119,7 +119,7 @@ public class Main {
 					//TODO: Gestire il caso in cui il giocatore provi a connettersi
 					//a partita già iniziata (con meno di 4 giocatori).
 					Color coloreGiocatore = controller.creaGiocatore(nome);
-					view.setColore(coloreGiocatore);
+					((View)view).setColore(coloreGiocatore);
 					controller.addView(view, coloreGiocatore);
 				} catch(PartitaIniziataException e) {
 					JOptionPane.showMessageDialog(frame,

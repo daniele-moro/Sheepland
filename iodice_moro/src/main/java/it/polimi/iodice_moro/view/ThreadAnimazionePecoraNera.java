@@ -4,18 +4,19 @@ import java.awt.Point;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 
 
 public class ThreadAnimazionePecoraNera implements Runnable {
 
 	
-	private JLabel mappa;
+	private JLayeredPane mappa;
 	private Point sorg;
 	private Point dest;
 	private JLabel pecoraNera;
 	private View view;
 	
-	public ThreadAnimazionePecoraNera(View view, JLabel mappa,JLabel pecoraNera, Point sorg, Point dest){
+	public ThreadAnimazionePecoraNera(View view, JLayeredPane mappa,JLabel pecoraNera, Point sorg, Point dest){
 		this.mappa=mappa;
 		this.sorg=sorg;
 		this.dest=dest;
@@ -33,7 +34,7 @@ public class ThreadAnimazionePecoraNera implements Runnable {
 		dest2.y-=20;
 		dest2.x+=10;
 		view.spostaImmagine(sorg2,dest2, new ImageIcon(this.getClass().getResource("/immagini/pecora_nera.png")));
-		mappa.add(pecoraNera);
+		mappa.add(pecoraNera,View.SHEEP_LAYER);
 		pecoraNera.setBounds(dest2.x, dest2.y, pecoraNera.getWidth(), pecoraNera.getHeight());
 	}
 

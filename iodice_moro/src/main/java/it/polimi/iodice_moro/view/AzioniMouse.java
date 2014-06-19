@@ -43,6 +43,7 @@ class AzioniMouse extends MouseAdapter{
 		}
 		this.view=view;
 		this.controller=controller;
+		prevPos=0;
 	}
 
 	//Evento di click del mouse
@@ -338,25 +339,45 @@ class AzioniMouse extends MouseAdapter{
 		}
 	}
 
-		//Evento di movimento del mouse all'interno del componente
-		public void mouseMoved(MouseEvent e){
-			JLabel lbl=(JLabel) e.getComponent();
+	//Uso prevPos per memorizzarmi il colore della posizione precedente, 
+	//altrimenti ogni micromovimento del mouse verrebbe invocato il metodo di flashing della regione
+	private int prevPos;
+	
+	//Evento di movimento del mouse all'interno del componente
+	public void mouseMoved(MouseEvent e){
+		JLabel lbl=(JLabel) e.getComponent();
 
-			if(e.getX()< 0 || e.getY()<0 || e.getX()>image.getWidth() || e.getY()>image.getHeight()){
-				lbl.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-				return;
-			}
-			int color=image.getRGB(e.getX(),e.getY());
-			//Controllo se il cursore è in una regione tra quelle che devo evidenziare
+		if(e.getX()< 0 || e.getY()<0 || e.getX()>image.getWidth() || e.getY()>image.getHeight()){
+			lbl.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			return;
+		}
+		int color=image.getRGB(e.getX(),e.getY());
+		//Controllo se il cursore è in una regione tra quelle che devo evidenziare
+		if(color!=prevPos){
 			if(Integer.toHexString(color).equals(reg1) || Integer.toHexString(color).equals(reg2)){
 				lbl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+				((FlashLabel)view.getLBLRegione(Integer.toHexString(color))).flash(1);
 			}else{
 				lbl.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 		}
-
-		public void setRegioni(String reg1, String reg2){
-			this.reg1=reg1;
-			this.reg2=reg2;
-		}
+		prevPos=color;
 	}
+
+	/**
+	 * Metodo usato per settare le regioni adiacenti alla posizione del pastore,
+	 * queste regioni alla selezione, vengono fatte flashare per 3 volte
+	 * @param reg1 Id della prima regione
+	 * @param reg2 Id della seconda regione
+	 */
+	public void setRegioni(String reg1, String reg2){
+		this.reg1=reg1;
+		this.reg2=reg2;
+		//se le due regioni sono effettivamente regioni, allora le faccio flashare
+		if(!reg1.equals("") || !reg2.equals("")){
+			((FlashLabel)view.getLBLRegione(reg1)).flash(3);
+			((FlashLabel)view.getLBLRegione(reg2)).flash(3);
+		}
+
+	}
+}

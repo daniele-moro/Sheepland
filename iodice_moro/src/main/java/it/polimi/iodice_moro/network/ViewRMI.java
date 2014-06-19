@@ -60,10 +60,6 @@ public class ViewRMI implements IFView {
 
 	}
 
-	
-
-	
-
 	@Override
 	public void addCancelloNormale(String stradaID) {
 		for(IFView view : listaView.values()) {
@@ -235,11 +231,6 @@ public class ViewRMI implements IFView {
 		inizio=System.currentTimeMillis();	
 	}
 
-	@Override
-	public void setColore(Color coloreGiocatore) throws RemoteException {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void attendiGiocatori() throws IOException {

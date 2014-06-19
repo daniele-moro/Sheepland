@@ -56,7 +56,7 @@ public class ControllerRMI implements IFController {
 	@Override
 	public void sparatoria1(String idRegione) throws NotAllowedMoveException,
 			RemoteException, IllegalClickException {
-		controller.accoppiamento1(idRegione);
+		controller.sparatoria1(idRegione);
 		
 	}
 

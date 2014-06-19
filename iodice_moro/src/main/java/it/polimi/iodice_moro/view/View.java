@@ -1,20 +1,15 @@
 package it.polimi.iodice_moro.view;
 
 
-import it.polimi.iodice_moro.controller.Controller;
 import it.polimi.iodice_moro.controller.IFController;
-import it.polimi.iodice_moro.exceptions.PartitaIniziataException;
 import it.polimi.iodice_moro.model.Giocatore;
-import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
-import it.polimi.iodice_moro.network.ControllerRMI;
 import it.polimi.iodice_moro.network.ControllerSocket;
-import it.polimi.iodice_moro.network.ViewRMI;
-import it.polimi.iodice_moro.network.ViewSocket;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -22,11 +17,7 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +29,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -46,6 +38,17 @@ import javax.swing.border.MatteBorder;
 
 public class View extends UnicastRemoteObject implements IFView {
 	
+	//costante per il colore di sfondo
+	private static final Color BG_COLOR = new Color(43,163,250);
+	
+	//costati per i layer del JLayeredPane usato per la mappa
+	public static final Integer BACKGROUD_LAYER = new Integer(0);
+	public static final Integer SHEEP_LAYER = new Integer(100);
+	public static final Integer FENCE_LAYER = new Integer(98);
+	public static final Integer SHEPPARD_LAYER = new Integer(99);
+	public static final Integer MOVE_LAYER = new Integer(101);
+	public static final Integer REGION_LAYER = new Integer(50);
+
 	/**
 	 * 
 	 */
@@ -86,6 +89,7 @@ public class View extends UnicastRemoteObject implements IFView {
 							mouse.setRegioni(reg.get(0), reg.get(1));
 						}
 						break;
+						
 					case ACCOPPIAMENTO1:
 						lblOutput.setText("ACCOPPIAMENTO 1");
 						mossaAttuale=TipoMossa.ACCOPPIAMENTO1;
@@ -94,18 +98,26 @@ public class View extends UnicastRemoteObject implements IFView {
 							mouse.setRegioni(reg.get(0), reg.get(1));
 						}
 						break;
+						
 					case SPARATORIA1:
 						lblOutput.setText("SPARATORIA 1");
 						mossaAttuale=TipoMossa.SPARATORIA1;
 						reg=controller.getIDRegioniAd();
 						if(reg.size()>0 && reg.size()<=2){
 							mouse.setRegioni(reg.get(0), reg.get(1));
-						}break;
+						}
+						break;
+						
 					case SPARATORIA2:
 						lblOutput.setText("SPARATORIA 2");
 						mouse.setRegioni("","");
 						mossaAttuale=TipoMossa.SPARATORIA2;
-						break;						
+						reg=controller.getIDRegioniAd();
+						if(reg.size()>0 && reg.size()<=2){
+							mouse.setRegioni(reg.get(0), reg.get(1));
+						}
+						break;
+						
 					default:
 						lblOutput.setText("Non puoi effettuare questa mossa!!!");
 						mouse.setRegioni("", "");
@@ -126,15 +138,20 @@ public class View extends UnicastRemoteObject implements IFView {
 
 	}
 	
+	//Frame su cui viene visualizzata tutta l'interfaccia grafica
 	private static JFrame frame;
 	
+	//Pannelli di destra e di sinistra dell'interfaccia grafica
 	private JPanel rightPanel;
 	private JPanel leftPanel;
 	
+	//Label e JLayeredPane per visualizzare la mappa e tutto ciò che viene posizionato sopra
 	private JLabel mappa;
+	private JLayeredPane layeredMappa;
+	//Label delle tessere dei terreni
 	private Map<TipoTerreno,JLabel> lblTessere = new HashMap<TipoTerreno,JLabel>();
-	private Color giocatoreCorrente;
 	
+	//Bottoni delle mosse che possono essere compiute
 	private JButton btnSpostaPecora;
 	private JButton btnSpostaPastore;
 	private JButton btnCompraTessera;
@@ -142,27 +159,49 @@ public class View extends UnicastRemoteObject implements IFView {
 	private JButton btnSparatoria1;
 	private JButton btnSparatoria2;
 	
+	//Mappe usate per sapere le posizioni delle regioni e dei cancelli/pedine
 	private Map<String,Point> posizioniRegioni = new HashMap<String,Point>();
-	private Map<Color,JLabel> giocatori = new HashMap<Color,JLabel>();
+	private Map<String,Point> posizioniCancelli = new HashMap<String, Point>();
+	
+	//Map per sapere i colori assegnati ad ogni giocatore
+	private Map<Color,String>gioc;
+	
+	//Pedine dei giocatori posizionate sulla mappa
 	private Map<Color,JLabel> pedineGiocatori = new HashMap<Color, JLabel>();
 	
-	private Map<String,JLabel> lblRegioni = new HashMap<String,JLabel>();
-	private Map<String,Point> posizioniCancelli = new HashMap<String, Point>();
+	//Label dei giocatori, per visualizzare per ogni giocatore i danari posseduti e sapere qual'è il giocatore corrente
+	private Map<Color,JLabel> giocatori = new HashMap<Color,JLabel>();
+	
+	//Label delle pecore, presenti in ogni regione
+	private Map<String,JLabel> lblPecore = new HashMap<String,JLabel>();
+	
+	//Label usate per evidenziare le regioni che è possibile premere per effettuare una determinata mossa
+	private Map<String, JLabel> lblRegioni = new HashMap<String,JLabel>();
+	
 	//Queste sono le seconde pedine, per quando si gioca con due giocatori
 	private Map<Color,JLabel> pedine2Giocatori = new HashMap<Color,JLabel>();
 	
-	private Map<Color,String>gioc;
+	//Label della pecora nera e del lupo
 	private JLabel pecoraNera;
 	private JLabel lupo;
+	
+	//label di output per comunicazioni con l'utente
 	private JLabel lblOutput = new JLabel();
+	
 	private JLabel lblDado;
+
 	
-	private TipoMossa mossaAttuale;
-	private IFController controller;
-	
+	//Azioni collegate alle azioni fatte col mouse sulla mappa
 	private AzioniMouse mouse;
 
+	//Colore del giocatore a cui appartiene questa interfaccia grafica
 	private Color coloreGamer;
+	//Colore del giocatore corrente del turno
+	private Color giocatoreCorrente;
+	
+	private TipoMossa mossaAttuale;
+	
+	private IFController controller;
 	
 	public View(IFController controller) throws RemoteException {
 		this.controller=controller;
@@ -174,29 +213,36 @@ public class View extends UnicastRemoteObject implements IFView {
 	public void initGUI(){
 		//Inizializzazione del Frame principale
 		frame= new JFrame("SHEEPLAND");
-		frame.setBackground(new Color(43,163,250));
+		frame.setBackground(BG_COLOR);
 		frame.setLayout(new BorderLayout());
 		frame.addWindowListener(new ChiusuraSchermata(controller));
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		//frame.setAlwaysOnTop(true);
 		
 		//CENTRALPANEL
+		layeredMappa = new JLayeredPane();
 		mappa = new JLabel();
-		mappa.setIcon(new ImageIcon(this.getClass().getResource("/immagini/game_board.png")));
+		ImageIcon img = new ImageIcon(this.getClass().getResource("/immagini/game_board.png"));
+		mappa.setIcon(img);//new ImageIcon(this.getClass().getResource("/immagini/game_board.png")));
+		mappa.setBounds(0, 0, img.getIconWidth(), img.getIconHeight());
+		mappa.setVisible(true);
 		mouse = new AzioniMouse(this.getClass().getResourceAsStream("/immagini/game_board_back.png"), this, controller);
 		mouse.setRegioni("", "");
 		mappa.addMouseListener(mouse);
 		mappa.addMouseMotionListener(mouse);
 		mappa.setLayout(null);
-		
-		frame.add(mappa, BorderLayout.CENTER);
+		layeredMappa.add(mappa, BACKGROUD_LAYER);
+		layeredMappa.setSize(img.getIconWidth(), img.getIconHeight());
+		layeredMappa.setBackground(BG_COLOR);
+		frame.add(layeredMappa, BorderLayout.CENTER);
 		
 		//RIGHTPANEL
 		rightPanel = new JPanel();
-		rightPanel.setBackground(new Color(43,163,250));
+		rightPanel.setBackground(BG_COLOR);
 		rightPanel.setLayout(new GridLayout(6,1));
 		AzioniBottoni action = new AzioniBottoni();
 		
+		//Creazione dei bottoni
 		btnSpostaPecora = new JButton("<html>SPOSTA <br>PECORA</html>");
 		btnSpostaPecora.setIcon(new ImageIcon(this.getClass().getResource("/immagini/pecora.png")));
 		btnSpostaPecora.setActionCommand(TipoMossa.SPOSTA_PECORA.toString());
@@ -244,10 +290,11 @@ public class View extends UnicastRemoteObject implements IFView {
 		
 		//LEFTPANEL
 		leftPanel = new JPanel();
-		leftPanel.setBackground(new Color(43,163,250));
+		leftPanel.setBackground(BG_COLOR);
 		leftPanel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		
+		//Creazione delle Tessere
 		JLabel lbltemp = new JLabel();
 		JLabel lbltext = new JLabel();
 		lbltemp.setIcon(new ImageIcon(this.getClass().getResource("/immagini/bosco.png")));
@@ -350,17 +397,18 @@ public class View extends UnicastRemoteObject implements IFView {
 		
 		frame.add(leftPanel, BorderLayout.WEST);
 
-		//LABEL PER GLI ERRORI
+		//LABEL PER GLI ERRORI e le COMUNICAZIONI CON L'UTENTE
 		lblOutput = new JLabel();
 		lblOutput.setText("  ");
 		lblOutput.setBorder(new EmptyBorder(30,10,0,0));
 		c.anchor=GridBagConstraints.WEST;
 		frame.add(lblOutput,BorderLayout.SOUTH);
 		
+		//setto la dimensione minima della schermata
+		frame.setMinimumSize(new Dimension(900,785));
 		frame.setVisible(true);
 		frame.setResizable(false);
 		frame.pack();
-		
 	}
 	
 	//INIZIALIZZA TUTTI GLI OGGETTI CHE SONO POSIZIONATI SOPRA LA MAPPA E I GIOCATORI
@@ -384,27 +432,41 @@ public class View extends UnicastRemoteObject implements IFView {
 				JLabel lblNera = new JLabel();
 				lblNera.setIcon(pecNera);
 				lblNera.setBounds(p.x+10, p.y-20, pecNera.getIconWidth(), pecNera.getIconHeight());
-				mappa.add(lblNera);
+				layeredMappa.add(lblNera, SHEEP_LAYER);
 				pecoraNera=lblNera;
 				//comunque devo inizializzare la label per la pecora normale, però senza numero di pecore
 				BackgroundedLabel lblPecora = new BackgroundedLabel(this.getClass().getResourceAsStream("/immagini/pecora_bianca.png"));
 				lblPecora.setBounds(p.x, p.y, iconBianca.getIconWidth(), iconBianca.getIconHeight());
-				lblRegioni.put(s,lblPecora);
+				lblPecore.put(s,lblPecora);
 				//posiziono anche il lupo.
 				JLabel lblLupo = new JLabel();
 				lblLupo.setIcon(iconLupo);
 				//TODO
 				lblLupo.setBounds(p.x-25, p.y+20, iconLupo.getIconWidth(), iconLupo.getIconHeight());
-				mappa.add(lblLupo);
+				layeredMappa.add(lblLupo, SHEEP_LAYER);
 				lupo=lblLupo;
 			}else{
 				//Visualizzo le pecore bianche
 				JLabel lblPecora = new BackgroundedLabel(this.getClass().getResourceAsStream("/immagini/pecora_bianca.png"));
 				lblPecora.setText("      1");
-				mappa.add(lblPecora);
+				layeredMappa.add(lblPecora, SHEEP_LAYER);
 				lblPecora.setBounds(p.x, p.y, iconBianca.getIconWidth(), iconBianca.getIconHeight());
-				lblRegioni.put(s,lblPecora);
+				lblPecore.put(s,lblPecora);
 			}
+		}
+		
+		//Caricamento delle immagini di selezione delle regioni
+		ImageIcon imgReg=null;
+		JLabel lblReg=null;
+		for(String s : posizioniRegioni.keySet()){
+			imgReg= new ImageIcon(this.getClass().getResource("/immagini/regioni/regione_"+s+".png"));
+			lblReg = new FlashLabel();
+			lblReg.setIcon(imgReg);
+			lblReg.setOpaque(false);
+			lblReg.setVisible(false);
+			lblReg.setBounds(0, 0, imgReg.getIconWidth(), imgReg.getIconHeight());
+			lblRegioni.put(s,lblReg);
+			layeredMappa.add(lblReg, REGION_LAYER);
 		}
 		
 		//Prelevo i giocatori dal controller e li visualizzo
@@ -523,8 +585,8 @@ public class View extends UnicastRemoteObject implements IFView {
 		lblCancello.setIcon(imgCancello);
 		Point pos = posizioniCancelli.get(stradaID);
 		lblCancello.setBounds(pos.x, pos.y, imgCancello.getIconWidth(), imgCancello.getIconHeight());
-		mappa.add(lblCancello);
-		mappa.repaint();
+		layeredMappa.add(lblCancello, FENCE_LAYER);
+		layeredMappa.repaint();
 	}
 	
 	/**
@@ -546,7 +608,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		double incx=(dest.x-sorg.x)/100.0;
 		double incy=(dest.y-sorg.y)/100.0;
 		try{
-			mappa.add(lblMove);
+			layeredMappa.add(lblMove, MOVE_LAYER);
 			for(int i=0; i<100;i++){
 				lblMove.setBounds((int)posx, (int)posy,image.getIconWidth(),image.getIconHeight());
 				lblMove.setVisible(true);
@@ -554,8 +616,8 @@ public class View extends UnicastRemoteObject implements IFView {
 				posx+=incx;
 				posy+=incy;
 			}
-			mappa.remove(lblMove);
-			mappa.repaint();
+			layeredMappa.remove(lblMove);
+			layeredMappa.repaint();
 		}catch(InterruptedException e){
 			logger.log(Level.SEVERE, "Errore nell'esecuzione della thread sleep", e);
 		}
@@ -591,7 +653,7 @@ public class View extends UnicastRemoteObject implements IFView {
 			}
 		}
 		ThreadAnimazionePastore r = new ThreadAnimazionePastore(this,
-				mappa,
+				layeredMappa,
 				pedGiocatore,
 				sorg,
 				dest,
@@ -605,9 +667,9 @@ public class View extends UnicastRemoteObject implements IFView {
 		JLabel pedina2= new JLabel();
 		pedine2Giocatori.put(colore, pedina2);
 		pedina2.setIcon(new ImageIcon(this.getClass().getResource("/immagini/pedinagialla.png")));
-		mappa.add(pedina2);
+		layeredMappa.add(pedina2, SHEPPARD_LAYER);
 		Point dest =posizioniCancelli.get(idStrada);
-		ThreadAnimazionePastore p = new ThreadAnimazionePastore(this, mappa, pedina2, null, dest, colore);
+		ThreadAnimazionePastore p = new ThreadAnimazionePastore(this, layeredMappa, pedina2, null, dest, colore);
 		Thread t = new Thread(p);
 		t.start();
 	}
@@ -621,7 +683,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		Point dest= posizioniRegioni.get(d);
 		
 		//Avvio il Thread per l'animazione sulla schermata
-		ThreadAnimazionePecoraNera r = new ThreadAnimazionePecoraNera(this, mappa, pecoraNera, sorg, dest);
+		ThreadAnimazionePecoraNera r = new ThreadAnimazionePecoraNera(this, layeredMappa, pecoraNera, sorg, dest);
 		Thread t = new Thread(r);
 		t.start();
 	}
@@ -638,7 +700,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		Point dest= posizioniRegioni.get(d);
 		
 		//Avvio il Thread per l'animazione sulla schermata
-		ThreadAnimazioneLupo r = new ThreadAnimazioneLupo(this, mappa, lupo, sorg, dest);
+		ThreadAnimazioneLupo r = new ThreadAnimazioneLupo(this, layeredMappa, lupo, sorg, dest);
 		Thread t = new Thread(r);
 		t.start();
 		if(giocatoreCorrente.equals(coloreGamer)){
@@ -651,15 +713,15 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void modificaQtaPecora(String idReg, int num){
-		JLabel lblPecore =lblRegioni.get(idReg);
+		JLabel lblPecora =lblPecore.get(idReg);
 		if(num>0){
-			mappa.add(lblPecore);
-			lblPecore.setText("      "+num);
+			layeredMappa.add(lblPecora, SHEEP_LAYER);
+			lblPecora.setText("      "+num);
 		}
 		else{
-			mappa.remove(lblPecore);
+			layeredMappa.remove(lblPecora);
 		}
-		mappa.repaint();
+		layeredMappa.repaint();
 	}
 	
 	/* (non-Javadoc)
@@ -854,6 +916,10 @@ public class View extends UnicastRemoteObject implements IFView {
 			lblOutput.setText("Seleziona il pastore che vuoi utilizzare!!");
 			mossaAttuale=TipoMossa.G2_SELEZ_PAST;
 		}
+	}
+	
+	public JLabel getLBLRegione(String idReg){
+		return lblRegioni.get(idReg);
 	}
 
 
