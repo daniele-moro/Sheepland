@@ -23,7 +23,7 @@ public class ViewRMI implements IFView {
 	long inizio;
 	Boolean partitaIniziata;
 	
-	private static final Logger logger = Logger.getLogger("it.polimi.iodice_moro.view");
+	private static final Logger LOGGER= Logger.getLogger("it.polimi.iodice_moro.view");
 
 	public ViewRMI() {
 		listaView = new HashMap<Color, IFView>();
@@ -41,7 +41,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.initMappa();
 			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Errore di rete", e);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
 
@@ -53,7 +53,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.cambiaGiocatore(color);
 			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Errore di rete", e);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
 
@@ -66,7 +66,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.addCancelloNormale(stradaID);
 			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Errore di rete", e);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
 
@@ -78,7 +78,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.addCancelloFinale(stradaID);
 			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Errore di rete", e);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
 
@@ -90,7 +90,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.spostaPecoraBianca(s, d);
 			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Errore di rete", e);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
 
@@ -102,7 +102,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.spostaPastore(s, d, colore);
 			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Errore di rete", e);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
 	}
@@ -113,7 +113,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.posiziona2Pastore(idStrada, colore);
 			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Errore di rete", e);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
 	}
@@ -131,7 +131,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.spostaPecoraNera(s, d);
 			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Errore di rete", e);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
 	}
@@ -142,7 +142,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.spostaLupo(s, d);
 			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Errore di rete", e);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
 		
@@ -154,7 +154,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.modificaQtaPecora(idReg, num);
 			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Errore di rete", e);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
 	}
@@ -164,7 +164,7 @@ public class ViewRMI implements IFView {
 		try {
 			listaView.get(colore).modQtaTessera(tess, num, colore);
 		} catch (RemoteException e) {
-			logger.log(Level.SEVERE, "Errore di rete", e);
+			LOGGER.log(Level.SEVERE, "Errore di rete", e);
 		}
 		
 
@@ -176,7 +176,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.modSoldiGiocatore(coloreGiocatoreDaModificare, soldi);
 			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Errore di rete", e);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
 
@@ -188,7 +188,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.incPrezzoTessera(tess);
 			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Errore di rete", e);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
 	}
@@ -199,7 +199,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.visualizzaPunteggi(punteggiOrdinati);
 			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Errore di rete", e);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
 
@@ -211,7 +211,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.setGiocatoreCorrente(colore);
 			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Errore di rete", e);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
 	}
@@ -243,19 +243,19 @@ public class ViewRMI implements IFView {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
-					logger.log(Level.SEVERE, "Errore di IO", e);
+					LOGGER.log(Level.SEVERE, "Errore di IO", e);
 				}
 				ora=System.currentTimeMillis();
 			}
 		} catch (RemoteException e) {
-			logger.log(Level.SEVERE, "Errore di rete", e);
+			LOGGER.log(Level.SEVERE, "Errore di rete", e);
 		}
 		System.out.println("partita iniziata!!!");
 		partitaIniziata=true;
 		try {
 			controller.iniziaPartita();
 		} catch (RemoteException e) {
-			logger.log(Level.SEVERE, "Errore di rete", e);
+			LOGGER.log(Level.SEVERE, "Errore di rete", e);
 		}
 	}
 
@@ -265,7 +265,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.visRisDado(numero);
 			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Errore di rete", e);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
 	}
@@ -276,7 +276,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.setPosizioniRegioni(posizioniRegioni);
 			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Errore di rete", e);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
 		
@@ -288,7 +288,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.setPosizioniStrade(posizioniCancelli);
 			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Errore di rete", e);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
 		
@@ -300,7 +300,7 @@ public class ViewRMI implements IFView {
 			try {
 				view.setGiocatori(giocatori);
 			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Errore di rete", e);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
 		
@@ -320,5 +320,18 @@ public class ViewRMI implements IFView {
 
 	public Map<Color, IFView> getViews() {
 		return listaView;
+	}
+
+	@Override
+	public void usaPast2(Color colore) throws RemoteException {
+		//Comunico a tutti che va usato il secondo pastore del giocatore che deve giocare
+		for(IFView view : listaView.values()) {
+			try {
+				view.usaPast2(colore);
+			} catch (RemoteException e) {
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
+			}
+		}
+		
 	}
 }

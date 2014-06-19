@@ -166,4 +166,10 @@ public class FakeView implements IFView {
 		
 	}
 
+	@Override
+	public void usaPast2(Color colore) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

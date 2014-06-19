@@ -972,7 +972,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	public List<String >getIDRegioniAd(){
 		List<String> regAD = new ArrayList<String>();
 		List<Regione> reg=statoPartita.getRegioniADStrada(statoPartita.getGiocatoreCorrente().getPosition());
-		if(reg.size()>0 && reg.size()<=2){
+		if(!reg.isEmpty() && reg.size()<=2){
 			regAD.add(reg.get(0).getColore());
 			regAD.add(reg.get(1).getColore());
 		}
@@ -1039,6 +1039,8 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		if(giocCorr.getPosition2()==strada){
 			giocCorr.setPosition2(giocCorr.getPosition());
 			giocCorr.setPosition(strada);
+			//cambio il pastore utilizzato anche nella view
+			view.usaPast2(statoPartita.getGiocatoreCorrente().getColore());
 		}else{
 			if(giocCorr.getPosition()!=strada){
 				//se nessuna delle due posizioni è la strada cliccata allora c'è un errore

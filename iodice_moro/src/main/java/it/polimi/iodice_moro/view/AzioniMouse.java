@@ -29,7 +29,12 @@ class AzioniMouse extends MouseAdapter{
 	View view;
 	IFController controller;
 	
-	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.view");
+	//Uso prevPos per memorizzarmi il colore della posizione precedente, 
+	//altrimenti ogni micromovimento del mouse verrebbe invocato il metodo di flashing della regione
+	private int prevPos;
+	
+	
+	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.view");
 
 	BufferedImage image;
 	public AzioniMouse(InputStream image, View view, IFController controller){
@@ -39,7 +44,7 @@ class AzioniMouse extends MouseAdapter{
 		try {
 			this.image= ImageIO.read(image);
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Errore di IO", e);
+			LOGGER.log(Level.SEVERE, "Errore di IO", e);
 		}
 		this.view=view;
 		this.controller=controller;
@@ -47,8 +52,7 @@ class AzioniMouse extends MouseAdapter{
 	}
 
 	//Evento di click del mouse
-	public void mouseClicked(MouseEvent e)
-	{
+	public void mouseClicked(MouseEvent e){
 		if(e.getX()< 0 || e.getY()<0 || e.getX()>image.getWidth() || e.getY()>image.getHeight()){
 			return;
 		}
@@ -68,10 +72,10 @@ class AzioniMouse extends MouseAdapter{
 						controller.cambiaPastore(Integer.toHexString(c1));
 					} catch (IllegalClickException e1) {
 						view.getLBLOutput().setText( e1.getMessage());
-						logger.log(Level.SEVERE, "Area non clickabile", e1);
+						LOGGER.log(Level.SEVERE, "Area non clickabile", e1);
 					} catch (RemoteException e1) {
 						view.getLBLOutput().setText( e1.getMessage());
-						logger.log(Level.SEVERE, "Errore di rete", e1);
+						LOGGER.log(Level.SEVERE, "Errore di rete", e1);
 					}
 				} 
 			});
@@ -95,13 +99,13 @@ class AzioniMouse extends MouseAdapter{
 						controller.setStradaGiocatore(view.getGiocatoreCorrente(), Integer.toHexString(c1));
 					} catch (IllegalClickException e1) {
 						view.getLBLOutput().setText( e1.getMessage());
-						logger.log(Level.SEVERE, "Area non clickabile", e1);
+						LOGGER.log(Level.SEVERE, "Area non clickabile", e1);
 					} catch (NotAllowedMoveException e1) {
 						view.getLBLOutput().setText( e1.getMessage());
-						logger.log(Level.SEVERE, "Mossa proibita", e1);
+						LOGGER.log(Level.SEVERE, "Mossa proibita", e1);
 					} catch (RemoteException e1) {
 						view.getLBLOutput().setText( e1.getMessage());
-						logger.log(Level.SEVERE, "Errore di rete", e1);
+						LOGGER.log(Level.SEVERE, "Errore di rete", e1);
 					}
 				} 
 			});
@@ -135,12 +139,12 @@ class AzioniMouse extends MouseAdapter{
 									controller.acquistaTessera(Integer.toHexString(c));
 								} catch (NotAllowedMoveException e2) {
 									view.getLBLOutput().setText(e2.getMessage());
-									logger.log(Level.SEVERE, "Mossa proibita", e2);
+									LOGGER.log(Level.SEVERE, "Mossa proibita", e2);
 								} catch (IllegalClickException e2) {
 									view.getLBLOutput().setText(e2.getMessage());
-									logger.log(Level.SEVERE, "Area non clickabile", e2);
+									LOGGER.log(Level.SEVERE, "Area non clickabile", e2);
 								} catch (RemoteException e) {
-									logger.log(Level.SEVERE, "Errore di rete", e);
+									LOGGER.log(Level.SEVERE, "Errore di rete", e);
 								}
 							}
 						});
@@ -157,12 +161,12 @@ class AzioniMouse extends MouseAdapter{
 									controller.spostaPedina(Integer.toHexString(c));
 								} catch (NotAllowedMoveException e1) {
 									view.getLBLOutput().setText(e1.getMessage());
-									logger.log(Level.SEVERE, "Mossa proibita", e1);
+									LOGGER.log(Level.SEVERE, "Mossa proibita", e1);
 								} catch (IllegalClickException e1) {
 									view.getLBLOutput().setText(e1.getMessage());
-									logger.log(Level.SEVERE, "Area non clickabile", e1);
+									LOGGER.log(Level.SEVERE, "Area non clickabile", e1);
 								} catch (RemoteException e) {
-									logger.log(Level.SEVERE, "Errore di rete", e);
+									LOGGER.log(Level.SEVERE, "Errore di rete", e);
 								}
 							}
 						});
@@ -199,13 +203,13 @@ class AzioniMouse extends MouseAdapter{
 										} catch (RemoteException e) {
 											System.out.println("PROBLEMI DI RETE!!");
 											view.getLBLOutput().setText(e.getMessage());
-											logger.log(Level.SEVERE, "Errore di rete", e);
+											LOGGER.log(Level.SEVERE, "Errore di rete", e);
 										} catch (NotAllowedMoveException e) {
 											System.out.println("ERRORE CLICK MAPPA!!");
 											view.getLBLOutput().setText(e.getMessage());
 										} catch (IllegalClickException e) {
 											view.getLBLOutput().setText(e.getMessage());
-											logger.log(Level.SEVERE, "Area non clickabile", e);
+											LOGGER.log(Level.SEVERE, "Area non clickabile", e);
 										}
 									}
 								});
@@ -221,7 +225,7 @@ class AzioniMouse extends MouseAdapter{
 										} catch (RemoteException e) {
 											System.out.println("PROBLEMI DI RETE!!");
 											view.getLBLOutput().setText(e.getMessage());
-											logger.log(Level.SEVERE, "Errore di rete", e);
+											LOGGER.log(Level.SEVERE, "Errore di rete", e);
 										} catch (NotAllowedMoveException e) {
 											System.out.println("ERRORE CLICK MAPPA!!");
 											view.getLBLOutput().setText(e.getMessage());
@@ -243,13 +247,13 @@ class AzioniMouse extends MouseAdapter{
 									} catch (RemoteException e) {
 										System.out.println("PROBLEMI DI RETE!!");
 										view.getLBLOutput().setText(e.getMessage());
-										logger.log(Level.SEVERE, "Errore di rete", e);
+										LOGGER.log(Level.SEVERE, "Errore di rete", e);
 									} catch (NotAllowedMoveException e) {
 										System.out.println("ERRORE CLICK MAPPA!!");
 										view.getLBLOutput().setText(e.getMessage());
 									} catch (IllegalClickException e) {
 										view.getLBLOutput().setText(e.getMessage());
-										logger.log(Level.SEVERE, "Area non clickabile", e);
+										LOGGER.log(Level.SEVERE, "Area non clickabile", e);
 									}
 								}
 							});
@@ -266,12 +270,12 @@ class AzioniMouse extends MouseAdapter{
 									controller.accoppiamento1(Integer.toHexString(c));
 								} catch (NotAllowedMoveException e2) {
 									view.getLBLOutput().setText(e2.getMessage());
-									logger.log(Level.SEVERE, "Mossa proibita", e2);
+									LOGGER.log(Level.SEVERE, "Mossa proibita", e2);
 								} catch (IllegalClickException e2) {
 									view.getLBLOutput().setText(e2.getMessage());
-									logger.log(Level.SEVERE, "Area non clickabile", e2);
+									LOGGER.log(Level.SEVERE, "Area non clickabile", e2);
 								} catch (RemoteException e) {
-									logger.log(Level.SEVERE, "Errore di rete", e);
+									LOGGER.log(Level.SEVERE, "Errore di rete", e);
 								}
 							}
 						});
@@ -288,12 +292,12 @@ class AzioniMouse extends MouseAdapter{
 									controller.sparatoria1(Integer.toHexString(c));
 								} catch (NotAllowedMoveException e2) {
 									view.getLBLOutput().setText(e2.getMessage());
-									logger.log(Level.SEVERE, "Mossa proibita", e2);
+									LOGGER.log(Level.SEVERE, "Mossa proibita", e2);
 								} catch (IllegalClickException e2) {
 									view.getLBLOutput().setText(e2.getMessage());
-									logger.log(Level.SEVERE, "Area non clickabile", e2);
+									LOGGER.log(Level.SEVERE, "Area non clickabile", e2);
 								} catch (RemoteException e) {
-									logger.log(Level.SEVERE, "Errore di rete", e);
+									LOGGER.log(Level.SEVERE, "Errore di rete", e);
 								}
 							}
 						});
@@ -309,19 +313,19 @@ class AzioniMouse extends MouseAdapter{
 								try {
 									controller.sparatoria2(Integer.toHexString(c));
 								} catch (RemoteException e) {
-									logger.log(Level.SEVERE, "Errore di rete", e);
+									LOGGER.log(Level.SEVERE, "Errore di rete", e);
 								} catch (IllegalClickException e) {
 									view.getLBLOutput().setText(e.getMessage());
-									logger.log(Level.SEVERE, "Area non clickabile", e);
+									LOGGER.log(Level.SEVERE, "Area non clickabile", e);
 								} catch (NotAllowedMoveException e) {
 									view.getLBLOutput().setText(e.getMessage());
-									logger.log(Level.SEVERE, "Mossa proibita", e);
+									LOGGER.log(Level.SEVERE, "Mossa proibita", e);
 								}
 								
 							}
 						});
 						t1.start();
-					}
+					}break;
 
 
 					default:
@@ -333,15 +337,12 @@ class AzioniMouse extends MouseAdapter{
 
 				}
 			}catch(RemoteException e1){
-				logger.log(Level.SEVERE, "Errore di rete", e1);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e1);
 			}
 
 		}
 	}
-
-	//Uso prevPos per memorizzarmi il colore della posizione precedente, 
-	//altrimenti ogni micromovimento del mouse verrebbe invocato il metodo di flashing della regione
-	private int prevPos;
+	
 	
 	//Evento di movimento del mouse all'interno del componente
 	public void mouseMoved(MouseEvent e){
@@ -356,7 +357,11 @@ class AzioniMouse extends MouseAdapter{
 		if(color!=prevPos){
 			if(Integer.toHexString(color).equals(reg1) || Integer.toHexString(color).equals(reg2)){
 				lbl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-				((FlashLabel)view.getLBLRegione(Integer.toHexString(color))).flash(1);
+				FlashLabel lblFlash= (FlashLabel) view.getLBLRegione(Integer.toHexString(color));
+				//Controllo che la label non stia già flashando, per farla flashare
+				if(!lblFlash.isFlashing()){
+					lblFlash.flash(1);
+				}
 			}else{
 				lbl.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
@@ -375,8 +380,15 @@ class AzioniMouse extends MouseAdapter{
 		this.reg2=reg2;
 		//se le due regioni sono effettivamente regioni, allora le faccio flashare
 		if(!reg1.equals("") || !reg2.equals("")){
-			((FlashLabel)view.getLBLRegione(reg1)).flash(3);
-			((FlashLabel)view.getLBLRegione(reg2)).flash(3);
+			//controllo prima che le label non stiano gia flashando
+			FlashLabel lblReg1 = (FlashLabel)view.getLBLRegione(reg1);
+			FlashLabel lblReg2 = (FlashLabel)view.getLBLRegione(reg2);
+			if(!lblReg1.isFlashing()){
+				lblReg1.flash(3);
+			}
+			if(!lblReg2.isFlashing()){
+				lblReg2.flash(3);
+			}
 		}
 
 	}

@@ -38,33 +38,43 @@ import javax.swing.border.MatteBorder;
 
 public class View extends UnicastRemoteObject implements IFView {
 	
+	//Costante per la durata delle animazioni
+	private static final int TEMPO_ANIMAZIONI = 2000;
+
 	//costante per il colore di sfondo
 	private static final Color BG_COLOR = new Color(43,163,250);
 	
 	//costati per i layer del JLayeredPane usato per la mappa
-	public static final Integer BACKGROUD_LAYER = new Integer(0);
-	public static final Integer SHEEP_LAYER = new Integer(100);
-	public static final Integer FENCE_LAYER = new Integer(98);
-	public static final Integer SHEPPARD_LAYER = new Integer(99);
-	public static final Integer MOVE_LAYER = new Integer(101);
-	public static final Integer REGION_LAYER = new Integer(50);
+	public static final Integer BACKGROUD_LAYER = Integer.valueOf(0);
+	public static final Integer SHEEP_LAYER = Integer.valueOf(100);
+	public static final Integer FENCE_LAYER = Integer.valueOf(98);
+	public static final Integer SHEPPARD_LAYER = Integer.valueOf(99);
+	public static final Integer MOVE_LAYER = Integer.valueOf(101);
+	public static final Integer REGION_LAYER = Integer.valueOf(50);
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -8928439736905632720L;
 	
-	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.view");
+	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.view");
 
+	/**
+	 * Questa classe è utilizzata per catturare gli eventi collegati ai bottoni per l'esecuzione delle mosse
+	 *
+	 */
 	public class AzioniBottoni implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
+				//prelevo la mossa collegata al bottono premuto
 				TipoMossa mossa = TipoMossa.parseInput(e.getActionCommand());
-				
+				//Controllo se la mossa che si vuole fare è possibile
 				if(controller.mossaPossibile(mossa)){
 					List<String> reg;
+					//In base alla mossa che l'utente vuole fare, setto la mossaAttuale e 
+					//comunico all'utente cosa vuole fare
 					switch(mossa){
 					case COMPRA_TESSERA:
 						lblOutput.setText("COMPRA TESSERA");
@@ -83,7 +93,9 @@ public class View extends UnicastRemoteObject implements IFView {
 					case SPOSTA_PECORA:
 						lblOutput.setText("SPOSTA PECORA");
 						mossaAttuale=TipoMossa.SPOSTA_PECORA;
-						//Setto le due regioni tra cui posso spostare la pecora, l'utente quando ci passerà sopra vedrà comparire la manina
+						//Setto le due regioni tra cui posso spostare la pecora, 
+						//l'utente quando ci passerà sopra vedrà comparire la manina e vedra flashare la regione
+						//Stessa cosa per le mosse ACCOPPIAMENTO1, SPARATORIA1, SPARATORIA2
 						reg=controller.getIDRegioniAd();
 						if(reg.size()>0 && reg.size()<=2){
 							mouse.setRegioni(reg.get(0), reg.get(1));
@@ -132,10 +144,9 @@ public class View extends UnicastRemoteObject implements IFView {
 				}
 				
 			} catch (RemoteException e1) {
-				logger.log(Level.SEVERE, "Errore di rete", e);
+				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
-
 	}
 	
 	//Frame su cui viene visualizzata tutta l'interfaccia grafica
@@ -167,7 +178,7 @@ public class View extends UnicastRemoteObject implements IFView {
 	private Map<Color,String>gioc;
 	
 	//Pedine dei giocatori posizionate sulla mappa
-	private Map<Color,JLabel> pedineGiocatori = new HashMap<Color, JLabel>();
+	private Map<Color,MovableLabel> pedineGiocatori = new HashMap<Color, MovableLabel>();
 	
 	//Label dei giocatori, per visualizzare per ogni giocatore i danari posseduti e sapere qual'è il giocatore corrente
 	private Map<Color,JLabel> giocatori = new HashMap<Color,JLabel>();
@@ -179,11 +190,11 @@ public class View extends UnicastRemoteObject implements IFView {
 	private Map<String, JLabel> lblRegioni = new HashMap<String,JLabel>();
 	
 	//Queste sono le seconde pedine, per quando si gioca con due giocatori
-	private Map<Color,JLabel> pedine2Giocatori = new HashMap<Color,JLabel>();
+	private Map<Color,MovableLabel> pedine2Giocatori = new HashMap<Color,MovableLabel>();
 	
 	//Label della pecora nera e del lupo
-	private JLabel pecoraNera;
-	private JLabel lupo;
+	private MovableLabel pecoraNera;
+	private MovableLabel lupo;
 	
 	//label di output per comunicazioni con l'utente
 	private JLabel lblOutput = new JLabel();
@@ -203,13 +214,20 @@ public class View extends UnicastRemoteObject implements IFView {
 	
 	private IFController controller;
 	
+	/**
+	 * Costruttore a cui passo il controller che verrà utilizzato dall'interfaccia per compiere le mosse
+	 * @param controller Implementazione del controller per poter giocare
+	 * @throws RemoteException
+	 */
 	public View(IFController controller) throws RemoteException {
 		this.controller=controller;
 		mossaAttuale=TipoMossa.SELEZ_POSIZ;
 		initGUI();
 	}
 	
-	//Inizializzazione della GUI
+	/**
+	 * Inizializzazione dei componenti principali dell'interfaccia grafica
+	 */
 	public void initGUI(){
 		//Inizializzazione del Frame principale
 		frame= new JFrame("SHEEPLAND");
@@ -223,7 +241,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		layeredMappa = new JLayeredPane();
 		mappa = new JLabel();
 		ImageIcon img = new ImageIcon(this.getClass().getResource("/immagini/game_board.png"));
-		mappa.setIcon(img);//new ImageIcon(this.getClass().getResource("/immagini/game_board.png")));
+		mappa.setIcon(img);
 		mappa.setBounds(0, 0, img.getIconWidth(), img.getIconHeight());
 		mappa.setVisible(true);
 		mouse = new AzioniMouse(this.getClass().getResourceAsStream("/immagini/game_board_back.png"), this, controller);
@@ -429,25 +447,23 @@ public class View extends UnicastRemoteObject implements IFView {
 			Point p = posizioniRegioni.get(s);
 			if(s.equals("ff002e73")){
 				//devo posizionare la pecora nera perchè sono in sheepsburg
-				JLabel lblNera = new JLabel();
-				lblNera.setIcon(pecNera);
-				lblNera.setBounds(p.x+10, p.y-20, pecNera.getIconWidth(), pecNera.getIconHeight());
-				layeredMappa.add(lblNera, SHEEP_LAYER);
-				pecoraNera=lblNera;
+				pecoraNera = new MovableLabel();
+				pecoraNera.setIcon(pecNera);
+				pecoraNera.setBounds(p.x+10, p.y-20, pecNera.getIconWidth(), pecNera.getIconHeight());
+				layeredMappa.add(pecoraNera, SHEEP_LAYER);
 				//comunque devo inizializzare la label per la pecora normale, però senza numero di pecore
-				BackgroundedLabel lblPecora = new BackgroundedLabel(this.getClass().getResourceAsStream("/immagini/pecora_bianca.png"));
+				JLabel lblPecora = new MovableLabel(this.getClass().getResourceAsStream("/immagini/pecora_bianca.png"));
 				lblPecora.setBounds(p.x, p.y, iconBianca.getIconWidth(), iconBianca.getIconHeight());
 				lblPecore.put(s,lblPecora);
 				//posiziono anche il lupo.
-				JLabel lblLupo = new JLabel();
-				lblLupo.setIcon(iconLupo);
+				lupo = new MovableLabel();
+				lupo.setIcon(iconLupo);
 				//TODO
-				lblLupo.setBounds(p.x-25, p.y+20, iconLupo.getIconWidth(), iconLupo.getIconHeight());
-				layeredMappa.add(lblLupo, SHEEP_LAYER);
-				lupo=lblLupo;
+				lupo.setBounds(p.x-25, p.y+20, iconLupo.getIconWidth(), iconLupo.getIconHeight());
+				layeredMappa.add(lupo, SHEEP_LAYER);
 			}else{
 				//Visualizzo le pecore bianche
-				JLabel lblPecora = new BackgroundedLabel(this.getClass().getResourceAsStream("/immagini/pecora_bianca.png"));
+				JLabel lblPecora = new MovableLabel(this.getClass().getResourceAsStream("/immagini/pecora_bianca.png"));
 				lblPecora.setText("      1");
 				layeredMappa.add(lblPecora, SHEEP_LAYER);
 				lblPecora.setBounds(p.x, p.y, iconBianca.getIconWidth(), iconBianca.getIconHeight());
@@ -469,18 +485,15 @@ public class View extends UnicastRemoteObject implements IFView {
 			layeredMappa.add(lblReg, REGION_LAYER);
 		}
 		
-		//Prelevo i giocatori dal controller e li visualizzo
-		//li prelevo prima in inizia partita Map<Color,String>gioc=controller.getGiocatori();
-		System.out.println("Ricezione dei giocatori");
-		
+		//Visualizzazione delle label dei giocatori
 		GridBagConstraints c = new GridBagConstraints();
 		JLabel lbltemp2;
 		c.gridwidth=2;
 		c.fill=GridBagConstraints.HORIZONTAL;
 		int py=4;
 		for(Color colore:gioc.keySet()){
-			lbltemp2 = new JLabel();
-			lbltemp2.setText(gioc.get(colore));//+" SOLDI: 20");
+			lbltemp2 = new MovableLabel();
+			lbltemp2.setText(gioc.get(colore));
 			lbltemp2.setName(gioc.get(colore));
 			lbltemp2.setBackground(colore);
 			lbltemp2.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -490,29 +503,14 @@ public class View extends UnicastRemoteObject implements IFView {
 			c.gridy=py;
 			py++;
 			leftPanel.add(lbltemp2,c);
-			giocatori.put(colore,lbltemp2);
+			giocatori.put(colore,(MovableLabel) lbltemp2);
 		}
 		
+		//faccio un repaint della mappa
 		mappa.repaint();
 		frame.pack();
+		//setto la mossaAttuale come NO_MOSSA per evitare problemi
 		mossaAttuale=TipoMossa.NO_MOSSA;
-	}
-
-	
-	
-	public void setColore(Color colore) {
-		this.coloreGamer=colore;
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx=0;
-		c.gridy=0;
-		c.gridwidth=2;
-		c.fill=GridBagConstraints.HORIZONTAL;
-		JLabel lblGamer = new JLabel();
-		lblGamer.setText("Questo è il tuo colore!");
-		lblGamer.setBackground(colore);
-		lblGamer.setOpaque(true);
-		lblGamer.setBorder(new MatteBorder(20,20,20,20, colore));
-		leftPanel.add(lblGamer,c);
 	}
 
 	/* (non-Javadoc)
@@ -540,26 +538,6 @@ public class View extends UnicastRemoteObject implements IFView {
 		}
 	}
 	
-	public void attivaGiocatore(){
-		btnCompraTessera.setEnabled(true);
-		btnSpostaPastore.setEnabled(true);
-		btnSpostaPecora.setEnabled(true);
-		btnAccoppiamento1.setEnabled(true);
-		btnSparatoria1.setEnabled(true);
-		btnSparatoria2.setEnabled(true);
-	}
-
-	
-	public void disattivaGiocatore(){
-		btnCompraTessera.setEnabled(false);
-		btnSpostaPastore.setEnabled(false);
-		btnSpostaPecora.setEnabled(false);
-		btnAccoppiamento1.setEnabled(false);
-		btnSparatoria1.setEnabled(false);
-		btnSparatoria2.setEnabled(false);
-		mossaAttuale=TipoMossa.NO_MOSSA;
-	}
-	
 	/* (non-Javadoc)
 	 * @see it.polimi.iodice_moro.view.IFView#addCancelloNormale(java.lang.String)
 	 */
@@ -575,54 +553,6 @@ public class View extends UnicastRemoteObject implements IFView {
 		mettiCancello(stradaID, new ImageIcon(this.getClass().getResource("/immagini/cancello_finale.png")));
 	}
 	
-	/**
-	 * Metodo per aggiungere un cancello alla strada passata come ID
-	 * @param stradaID ID della strada dove aggiungere il cancello
-	 * @param imgCancello Immagine da visualizzare
-	 */
-	private void mettiCancello(String stradaID, ImageIcon imgCancello){
-		JLabel lblCancello = new JLabel();
-		lblCancello.setIcon(imgCancello);
-		Point pos = posizioniCancelli.get(stradaID);
-		lblCancello.setBounds(pos.x, pos.y, imgCancello.getIconWidth(), imgCancello.getIconHeight());
-		layeredMappa.add(lblCancello, FENCE_LAYER);
-		layeredMappa.repaint();
-	}
-	
-	/**
-	 * Animazione di spostamento di un immagine, nel nostro caso sarà una pecora
-	 * @param sorg Point sorgente
-	 * @param dest Point Destinazione
-	 * @param image Sfondo della label da spostare
-	 */
-	void spostaImmagine(Point sorg, Point dest, ImageIcon image){
-		JLabel lblMove = new JLabel();
-		lblMove.setIcon(image);
-		
-		//Posizioni x e y
-		double posx=sorg.x;
-		double posy=sorg.y;
-		lblMove.setLocation((int)posx,(int)posy);
-		lblMove.setVisible(true);
-		//incrementi di ogni passo nei due assi
-		double incx=(dest.x-sorg.x)/100.0;
-		double incy=(dest.y-sorg.y)/100.0;
-		try{
-			layeredMappa.add(lblMove, MOVE_LAYER);
-			for(int i=0; i<100;i++){
-				lblMove.setBounds((int)posx, (int)posy,image.getIconWidth(),image.getIconHeight());
-				lblMove.setVisible(true);
-				Thread.sleep(20);
-				posx+=incx;
-				posy+=incy;
-			}
-			layeredMappa.remove(lblMove);
-			layeredMappa.repaint();
-		}catch(InterruptedException e){
-			logger.log(Level.SEVERE, "Errore nell'esecuzione della thread sleep", e);
-		}
-	}
-	
 	/* (non-Javadoc)
 	 * @see it.polimi.iodice_moro.view.IFView#spostaPecoraBianca(java.lang.String, java.lang.String)
 	 */
@@ -631,9 +561,16 @@ public class View extends UnicastRemoteObject implements IFView {
 		Point sorg= posizioniRegioni.get(s);
 		Point dest= posizioniRegioni.get(d);
 		
-		ThreadAnimazionePecoraBianca r = new ThreadAnimazionePecoraBianca(this, sorg, dest);
-		Thread t = new Thread(r);
-		t.start();
+		//non posso usare direttamente la pecora presente per l'animazione, devo creare una nuova label
+		final MovableLabel lblMovimentoPecora = new MovableLabel();
+		ImageIcon img = new ImageIcon(this.getClass().getResource("/immagini/pecora_bianca.png"));
+		lblMovimentoPecora.setIcon(img);
+		lblMovimentoPecora.setBounds(sorg.x, sorg.y, img.getIconWidth(), img.getIconHeight());
+		layeredMappa.add(lblMovimentoPecora,SHEEP_LAYER);
+		//setto il fatto che la label deve essere rimossa dopo aver terminato l'animazione
+		lblMovimentoPecora.setRemoveAfterAnimation();
+		//Avvio l'animazione della pecora
+		lblMovimentoPecora.moveTo(dest, TEMPO_ANIMAZIONI);
 	}
 	
 	/* (non-Javadoc)
@@ -641,37 +578,44 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void spostaPastore(String s, String d, Color colore){
+		//Il campo s è inutile perchè usando la movableLabel, i movimenti sono fatti a partire dalla posizione in cui si trova ora la pedina
 		Point sorg=null;
 		Point dest =posizioniCancelli.get(d);
 		if(!s.equals("")){
 			sorg=posizioniCancelli.get(s);
 		}
-		JLabel pedGiocatore = pedineGiocatori.get(colore);
-		if(pedGiocatore!=null){
-			if(!pedGiocatore.getLocation().equals(sorg)){
-				pedGiocatore=pedine2Giocatori.get(colore);
-			}
+		MovableLabel pedGiocatore = pedineGiocatori.get(colore);
+		
+		//questo metodo è usato anche nel caso di creazione della pedina, in questo caso,
+		//la pedina non è ancora esistente e viene creata in quel momento
+		if(pedGiocatore==null){
+			//Se la pedina non esiste, 
+			//la creo e la posiziono nella sua posizione che è quella di destinazione
+			pedGiocatore= new MovableLabel();
+			ImageIcon img = getImagePastore(colore);
+			pedGiocatore.setIcon(img);
+			pedGiocatore.setBounds(dest.x, dest.y, img.getIconWidth(), img.getIconHeight());
+			layeredMappa.add(pedGiocatore, View.SHEPPARD_LAYER);
+			//Aggiungo la pedina alla map delle pedine dei giocatori
+			pedineGiocatori.put(colore, pedGiocatore);
+		} else{
+			//Se la pedina esiste, la muovo
+			//Attivo l'animazione della pedina
+			pedGiocatore.moveTo(dest, TEMPO_ANIMAZIONI);
 		}
-		ThreadAnimazionePastore r = new ThreadAnimazionePastore(this,
-				layeredMappa,
-				pedGiocatore,
-				sorg,
-				dest,
-				colore);
-		Thread t = new Thread(r);
-		t.start();
 	}
 	
 	@Override
 	public void posiziona2Pastore(String idStrada, Color colore) {
-		JLabel pedina2= new JLabel();
+		//Creo e posiziono la pedina, per il secondo pastore, nel caso si usino due giocatori
+		MovableLabel pedina2= new MovableLabel();
+		//La aggiunto alla map per le seconde pedine
 		pedine2Giocatori.put(colore, pedina2);
-		pedina2.setIcon(new ImageIcon(this.getClass().getResource("/immagini/pedinagialla.png")));
+		ImageIcon img = getImagePastore(colore);
+		pedina2.setIcon(img);
+		Point dest = posizioniCancelli.get(idStrada);
+		pedina2.setBounds(dest.x, dest.y, img.getIconWidth(), img.getIconHeight());
 		layeredMappa.add(pedina2, SHEPPARD_LAYER);
-		Point dest =posizioniCancelli.get(idStrada);
-		ThreadAnimazionePastore p = new ThreadAnimazionePastore(this, layeredMappa, pedina2, null, dest, colore);
-		Thread t = new Thread(p);
-		t.start();
 	}
 	
 	/* (non-Javadoc)
@@ -679,13 +623,11 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void spostaPecoraNera(String s, String d){
+		//Il campo s diventa inutile usando la movableLabel
 		Point sorg= posizioniRegioni.get(s);
 		Point dest= posizioniRegioni.get(d);
-		
-		//Avvio il Thread per l'animazione sulla schermata
-		ThreadAnimazionePecoraNera r = new ThreadAnimazionePecoraNera(this, layeredMappa, pecoraNera, sorg, dest);
-		Thread t = new Thread(r);
-		t.start();
+		//Avvio l'animazione della pedina
+		pecoraNera.moveTo(dest,TEMPO_ANIMAZIONI);
 	}
 	
 	/* (non-Javadoc)
@@ -696,13 +638,13 @@ public class View extends UnicastRemoteObject implements IFView {
 		if(giocatoreCorrente.equals(coloreGamer)){
 			disattivaGiocatore();
 		}
+		//Il campo s diventa inutile usando la movablelabel
 		Point sorg= posizioniRegioni.get(s);
 		Point dest= posizioniRegioni.get(d);
 		
-		//Avvio il Thread per l'animazione sulla schermata
-		ThreadAnimazioneLupo r = new ThreadAnimazioneLupo(this, layeredMappa, lupo, sorg, dest);
-		Thread t = new Thread(r);
-		t.start();
+		//Attivo l'animazione
+		lupo.moveTo(dest, TEMPO_ANIMAZIONI);
+		
 		if(giocatoreCorrente.equals(coloreGamer)){
 			attivaGiocatore();
 		}
@@ -713,7 +655,10 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void modificaQtaPecora(String idReg, int num){
+		//Prelevo la label di cui modificare il testo
 		JLabel lblPecora =lblPecore.get(idReg);
+		//Controllo se la label va o meno nascosta, 
+		//viene nascosta se il numero di pecore è 0
 		if(num>0){
 			layeredMappa.add(lblPecora, SHEEP_LAYER);
 			lblPecora.setText("      "+num);
@@ -738,10 +683,11 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void modSoldiGiocatore(Color coloreGiocatoreDaModificare, int soldi) {
-		
-		String nome = giocatori.get(coloreGiocatoreDaModificare).getName();
-		giocatori.get(coloreGiocatoreDaModificare).setText(nome+" SOLDI: "+soldi);
-		giocatori.get(coloreGiocatoreDaModificare).repaint();
+		//Prelevo la label di cui modificare i soldi, e modifico i soldi visualizzati
+		JLabel lblGiocModSoldi=giocatori.get(coloreGiocatoreDaModificare);
+		String nome = lblGiocModSoldi.getName();
+		lblGiocModSoldi.setText(nome+" SOLDI: "+soldi);
+		lblGiocModSoldi.repaint();
 	}
 	
 	/* (non-Javadoc)
@@ -749,15 +695,18 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void incPrezzoTessera(TipoTerreno tess){
+		//Prelevo la tessera di cui modificare il prezzo
 		JLabel lblTessera = (JLabel)lblTessere.get(tess).getParent();
 		int posx = 20* (lblTessera.getComponentCount()-1);
 		if(posx<0){
 			lblOutput.setText("ERRORE NELL'INCREMENTO DEL PREZZO TESSERA!!");
 			return;
 		}
+		//Creo la nuova label per visualizzare una moneta per ogni unità di costo
 		JLabel lblDanaro = new JLabel();
 		ImageIcon imgDanaro = new ImageIcon(this.getClass().getResource("/immagini/danaro.png"));
 		lblDanaro.setIcon(imgDanaro);
+		//aggiungo la label con l'immagine del danaro alla label della tessera di cui modificare il prezzo
 		lblTessera.add(lblDanaro);
 		lblDanaro.setBounds(posx, 0, imgDanaro.getIconWidth(), imgDanaro.getIconHeight());
 	}
@@ -766,7 +715,7 @@ public class View extends UnicastRemoteObject implements IFView {
 	 * @see it.polimi.iodice_moro.view.IFView#visualizzaPunteggi(java.util.Map)
 	 */
 	@Override
-	public void visualizzaPunteggi(Map<Giocatore, Integer> punteggiOrdinati) {	
+	public void visualizzaPunteggi(Map<Giocatore, Integer> punteggiOrdinati) {
 		disattivaGiocatore();
 		JTable tabellaPunteggi = new JTable(punteggiOrdinati.size(),2);
 		int row = 0;
@@ -782,27 +731,6 @@ public class View extends UnicastRemoteObject implements IFView {
 			System.out.println("CHIUSURA CONNESSIONE");
 			((ControllerSocket)controller).end();
 		}
-	}
-
-	public Map<String,Point> getPosizioniRegioni() {
-		return posizioniRegioni;
-	}
-
-	public TipoMossa getMossaAttuale() {
-		return mossaAttuale;
-	}
-
-	public JLabel getLBLOutput() {
-		return lblOutput;
-		
-	}
-
-	public void setMossaAttuale(TipoMossa mossa) {
-		mossaAttuale=mossa;	
-	}
-
-	public Map<String, Point> getPosizioniCancelli() {
-		return posizioniCancelli;
 	}
 
 	/* (non-Javadoc)
@@ -824,31 +752,9 @@ public class View extends UnicastRemoteObject implements IFView {
 		}
 	}
 
-	public Color getGiocatoreCorrente() {
-		return giocatoreCorrente;
-	}
-
-	public JLabel getLBLPecoraNera() {
-		return pecoraNera;
-	}
-	
-	public JLabel getLBLLupo() {
-		return lupo;
-	}
-
-	public JFrame getFrame() {
-		return frame;
-	}
-
-	@Override
-	public void attendiGiocatori() {
-		// TODO Auto-generated method stub
-	}
-
-	public Color getColoreGamer() {
-		return coloreGamer;
-	}
-
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFView#visRisDado(int)
+	 */
 	@Override
 	public void visRisDado(int numero) {
 		/*if(giocatoreCorrente.equals(coloreGamer)){
@@ -881,11 +787,9 @@ public class View extends UnicastRemoteObject implements IFView {
 		lblOutput.setText("Risultato dado: "+numero);
 	}
 	
-	public void addPedinaGiocatore(Color colore, JLabel pedGiocatore) {
-		pedineGiocatori.put(colore, pedGiocatore);		
-	}
-
+	
 	//METODI per settare le posizioni delle regioni, dei cancelli e dei giocatori
+	
 	@Override
 	public void setPosizioniRegioni(Map<String, Point> posizioniRegioni) {
 		this.posizioniRegioni=posizioniRegioni;
@@ -918,9 +822,176 @@ public class View extends UnicastRemoteObject implements IFView {
 		}
 	}
 	
+	@Override
+	public void usaPast2(Color colore) throws RemoteException {
+		//metodo usato solo in caso di due giocatori
+		//scambio le pedine tra la prima e la seconda pedina, 
+		//perchè va mossa la seconda pedina e non la prima
+		MovableLabel lblCambio=pedineGiocatori.get(colore);
+		pedineGiocatori.put(colore, pedine2Giocatori.get(colore));
+		pedine2Giocatori.put(colore, lblCambio);
+		
+	}
+	
+	@Override
+	public void attendiGiocatori() {
+		//Nella vera implementazione della view(GUI) non viene usato questo metodo
+	}
+	
+	
+	
+	/**
+	 * Setting del colore del giocatore associato a questa interfaccia grafica
+	 * @param colore
+	 */
+	public void setColore(Color colore) {
+		//assegno il colore all'interfaccia
+		this.coloreGamer=colore;
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx=0;
+		c.gridy=0;
+		c.gridwidth=2;
+		c.fill=GridBagConstraints.HORIZONTAL;
+		JLabel lblGamer = new JLabel();
+		//Visualizzo una label che comunica all'utente qual'è il colore delle sue pedine
+		lblGamer.setText("Questo è il tuo colore!");
+		lblGamer.setBackground(colore);
+		lblGamer.setOpaque(true);
+		lblGamer.setBorder(new MatteBorder(20,20,20,20, colore));
+		leftPanel.add(lblGamer,c);
+	}
+	
+	/**
+	 * Attiva la possibilità di cliccare sui bottoni delle mosse
+	 */
+	private void attivaGiocatore(){
+		btnCompraTessera.setEnabled(true);
+		btnSpostaPastore.setEnabled(true);
+		btnSpostaPecora.setEnabled(true);
+		btnAccoppiamento1.setEnabled(true);
+		btnSparatoria1.setEnabled(true);
+		btnSparatoria2.setEnabled(true);
+	}
+
+	/**
+	 * Disattiva la possibità di cliccare sui bottoni delle mosse
+	 */
+	private void disattivaGiocatore(){
+		btnCompraTessera.setEnabled(false);
+		btnSpostaPastore.setEnabled(false);
+		btnSpostaPecora.setEnabled(false);
+		btnAccoppiamento1.setEnabled(false);
+		btnSparatoria1.setEnabled(false);
+		btnSparatoria2.setEnabled(false);
+		mossaAttuale=TipoMossa.NO_MOSSA;
+	}
+	
+	/**
+	 * Metodo per aggiungere un cancello alla strada passata come ID
+	 * @param stradaID ID della strada dove aggiungere il cancello
+	 * @param imgCancello Immagine da visualizzare
+	 */
+	private void mettiCancello(String stradaID, ImageIcon imgCancello){
+		JLabel lblCancello = new JLabel();
+		//Setto l'icona del cancello adeguata
+		lblCancello.setIcon(imgCancello);
+		//Prelevo la posizione in cui posizionare il cancello
+		Point pos = posizioniCancelli.get(stradaID);
+		//Setto posizione e dimenisone della label
+		lblCancello.setBounds(pos.x, pos.y, imgCancello.getIconWidth(), imgCancello.getIconHeight());
+		//Aggiungo la label alla layeredMappa nel layer dei cancelli
+		layeredMappa.add(lblCancello, FENCE_LAYER);
+		layeredMappa.repaint();
+	}
+	
+	/**
+	 * Utilizzato per prelevare l'immagine della pedina collegata al colore del pastore
+	 * @param colore Colore del pastore di cui si vuole prelevare l'immagine
+	 * @return Immagine della pedina del pastore
+	 */
+	private ImageIcon getImagePastore(Color colore) {
+		ImageIcon img = null;
+		//carico l'icona della pedina corretta
+		if(colore.equals(new Color(255,0,0))){
+			img=new ImageIcon(this.getClass().getResource("/immagini/pedinarossa.png"));
+		}
+		if(colore.equals(new Color(0,255,0))){
+			img=new ImageIcon(this.getClass().getResource("/immagini/pedinaverde.png"));
+		}
+		if(colore.equals(new Color(0,0,255))){
+			img=new ImageIcon(this.getClass().getResource("/immagini/pedinaazzurra.png"));
+		}
+		if(colore.equals(new Color(255,255,0))){
+			img=new ImageIcon(this.getClass().getResource("/immagini/pedinagialla.png"));
+		}
+		return img;
+	}
+	
+	/**
+	 * @return Ritorna l'hashMap delle posizioni dei giocatori collegate ai loro colori
+	 */
+	public Map<String,Point> getPosizioniRegioni() {
+		return posizioniRegioni;
+	}
+	
+	/**
+	 * @return Ritorna la mossa attuale che il giocatore ha intenzione di compiere
+	 */
+	public TipoMossa getMossaAttuale() {
+		return mossaAttuale;
+	}
+
+	/**
+	 * @return Ritorna il riferimento alla label per l'output e la comunicazione con l'utente
+	 */
+	public JLabel getLBLOutput() {
+		return lblOutput;
+		
+	}
+
+	/**
+	 * @param mossa Mossa che vogliamo diventi la mossa attuale
+	 */
+	public void setMossaAttuale(TipoMossa mossa) {
+		mossaAttuale=mossa;	
+	}
+
+	/**
+	 * @return Ritorna l'hashMap delle posizioni dei cancelli
+	 */
+	public Map<String, Point> getPosizioniCancelli() {
+		return posizioniCancelli;
+	}
+	
+	/**
+	 * @param idReg ID della regione di cui voglio prelevare la label associata(quella della pecora)
+	 * @return Label associata alla regione
+	 */
 	public JLabel getLBLRegione(String idReg){
 		return lblRegioni.get(idReg);
 	}
+	
+	/**
+	 * @return Ritorna il colore del giocatore corrente
+	 */
+	public Color getGiocatoreCorrente() {
+		return giocatoreCorrente;
+	}
+
+	/**
+	 * @return Ritorna il riferimento alla label della pecora nera
+	 */
+	public JLabel getLBLPecoraNera() {
+		return pecoraNera;
+	}
+
+	/**
+	 * @return Ritorna il colore del giocatore a cui è associata questa interfaccia grafica
+	 */
+	public Color getColoreGamer() {
+		return coloreGamer;
+	}
+
 
 
 }

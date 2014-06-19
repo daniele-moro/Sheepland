@@ -22,7 +22,7 @@ public class ClientMessageReader implements Runnable{
 	private BufferedReader input;
 	private Socket socket;
 	
-	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.network");
+	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.network");
 	
 	public ClientMessageReader(IFView view2, Socket socket,BufferedReader scInput) {
 		this.view=(View)view2;
@@ -31,9 +31,8 @@ public class ClientMessageReader implements Runnable{
 	}
 
 	/**
-	 * Ricevo tutte le richeiste che riguardano azioni che il server vuole eseguire sulla view in locale
-	 * comprese le eccezioni generate dalle chiamate ai metodi
-	 * 
+	 * Ricevo tutte le richeiste che riguardano azioni che il server vuole eseguire sulla view
+	 * comprese le eccezioni generate dalle chiamate ai metodi che verranno comunicate all'utente
 	 */
 	@Override
 	public void run() {
@@ -43,7 +42,7 @@ public class ClientMessageReader implements Runnable{
 				//Metto in sleep il thread per dare non occupare tutte le risorse del PC
 				Thread.sleep(10);
 			} catch (InterruptedException e1) {
-				logger.log(Level.SEVERE, "Errore durante la thrad.sleep", e1);
+				LOGGER.log(Level.SEVERE, "Errore durante la thrad.sleep", e1);
 			}
 				//Eseguo il lock sullo stream di input,
 				//che potrebbe esssere usato anche in altri metodi dal client
@@ -108,6 +107,10 @@ public class ClientMessageReader implements Runnable{
 							case "G2_SELEZ_PAST":
 								view.selezPast(new Color(Integer.parseInt(parametri[1])));
 								break;
+							
+							case "USA_PAST_2":
+								view.usaPast2(new Color(Integer.parseInt(parametri[1])));
+								break;
 
 							case "SET_POS_REG":{
 								Map<String, Point> posRegioni= new HashMap<String,Point>();
@@ -141,7 +144,7 @@ public class ClientMessageReader implements Runnable{
 									try {
 										messaggio = input.readLine();
 									} catch (IOException e) {
-										logger.log(Level.SEVERE, "Errore di IO", e);
+										LOGGER.log(Level.SEVERE, "Errore di IO", e);
 									}
 									valori = messaggio.split("#");
 									System.out.println(messaggio);
@@ -257,7 +260,7 @@ public class ClientMessageReader implements Runnable{
 
 					} catch (NumberFormatException
 							| IOException e) {
-						logger.log(Level.SEVERE, "Errore di IO", e);
+						LOGGER.log(Level.SEVERE, "Errore di IO", e);
 					}
 				}
 			}

@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 public class ControllerRMI implements IFController {
 
 	IFController controller;
-	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.network");
+	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.network");
 	Boolean partitaIniziata;
 	
 	public ControllerRMI(String ip) {
@@ -29,11 +29,11 @@ public class ControllerRMI implements IFController {
 		try {
 			this.controller = (IFController)Naming.lookup("//"+ip+"/Server");
 		} catch (MalformedURLException e) {
-			logger.log(Level.SEVERE, "URL non trovato", e);
+			LOGGER.log(Level.SEVERE, "URL non trovato", e);
 		} catch (RemoteException e) {
-			logger.log(Level.SEVERE, "Errore di rete", e);
+			LOGGER.log(Level.SEVERE, "Errore di rete", e);
 		} catch (NotBoundException e) {
-			logger.log(Level.SEVERE, "Il riferimenton passato non è associaot a nulla", e);
+			LOGGER.log(Level.SEVERE, "Il riferimenton passato non è associaot a nulla", e);
 		}
 		
 	}

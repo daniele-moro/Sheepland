@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,16 +37,16 @@ public class ControllerSocket implements IFController{
 	BufferedReader input;
 	static boolean threadSuspended;
 	
-	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.network");
+	private static final Logger LOGGER=  Logger.getLogger("it.polimi.iodice_moro.network");
 	
-	public ControllerSocket(String host, int port) throws UnknownHostException, IOException{
+	public ControllerSocket(String host, int port) throws IOException{
 		//inizializza i parametri della connessione
 		this.host=host;
 		this.port=port;
 		
 	}
 	
-	public ControllerSocket(String host) throws UnknownHostException, IOException{
+	public ControllerSocket(String host) throws IOException{
 		this(host,DEFAULT_PORT);
 	}
 	
@@ -102,7 +101,7 @@ public class ControllerSocket implements IFController{
 				try {
 					Thread.sleep(10);
 				} catch (InterruptedException e) {
-					logger.log(Level.SEVERE, "Errore nella thread.sleep", e);
+					LOGGER.log(Level.SEVERE, "Errore nella thread.sleep", e);
 				}
 			}
 			if(!input.ready()){
@@ -122,7 +121,7 @@ public class ControllerSocket implements IFController{
 				System.out.println("colore assegnato: " + colore);
 			}			
 		}catch(IOException e ){
-			logger.log(Level.SEVERE, "Errore di IO", e);
+			LOGGER.log(Level.SEVERE, "Errore di IO", e);
 		}
 		
 		return colore;
@@ -140,7 +139,7 @@ public class ControllerSocket implements IFController{
 			try {
 				risposta = input.readLine();
 			} catch (IOException e) {
-				logger.log(Level.SEVERE, "Errore di IO", e);
+				LOGGER.log(Level.SEVERE, "Errore di IO", e);
 			}
 			System.out.println("MOSSA POSSIBILE? "+ risposta);
 			String[] parametri = risposta.split("#");
@@ -180,7 +179,7 @@ public class ControllerSocket implements IFController{
 			try {
 				risposta = input.readLine();
 			} catch (IOException e) {
-				logger.log(Level.SEVERE, "Errore di IO", e);
+				LOGGER.log(Level.SEVERE, "Errore di IO", e);
 			}
 			System.out.println("rispostar icveuto ");
 			String[] parametri = risposta.split("#");
@@ -190,7 +189,7 @@ public class ControllerSocket implements IFController{
 				try {
 					risposta = input.readLine();
 				} catch (IOException e) {
-					logger.log(Level.SEVERE, "Errore di IO", e);
+					LOGGER.log(Level.SEVERE, "Errore di IO", e);
 				}
 				parametri = risposta.split("#");
 			}
@@ -212,7 +211,7 @@ public class ControllerSocket implements IFController{
 			try {
 				risposta = input.readLine();
 			} catch (IOException e) {
-				logger.log(Level.SEVERE, "Errore di IO", e);
+				LOGGER.log(Level.SEVERE, "Errore di IO", e);
 			}
 			String[] parametri = risposta.split("#");
 			System.out.println(risposta);
@@ -221,7 +220,7 @@ public class ControllerSocket implements IFController{
 				try {
 					risposta = input.readLine();
 				} catch (IOException e) {
-					logger.log(Level.SEVERE, "Errore di IO", e);
+					LOGGER.log(Level.SEVERE, "Errore di IO", e);
 				}
 				parametri = risposta.split("#");
 				System.out.println(risposta);
@@ -242,14 +241,14 @@ public class ControllerSocket implements IFController{
 			try {
 				risposta=input.readLine();
 			} catch (IOException e) {
-				logger.log(Level.SEVERE, "Errore di IO", e);
+				LOGGER.log(Level.SEVERE, "Errore di IO", e);
 			}
 			while(!risposta.equals("END")){
 				idReg.add(risposta);
 				try {
 					risposta=input.readLine();
 				} catch (IOException e) {
-					logger.log(Level.SEVERE, "Errore di IO", e);
+					LOGGER.log(Level.SEVERE, "Errore di IO", e);
 				}
 			}
 		}
@@ -270,7 +269,7 @@ public class ControllerSocket implements IFController{
 			try {
 				risposta = input.readLine();
 			} catch (IOException e) {
-				logger.log(Level.SEVERE, "Errore di IO", e);
+				LOGGER.log(Level.SEVERE, "Errore di IO", e);
 			}
 			System.out.println(risposta);
 			String[] parametri = risposta.split("#");
@@ -282,7 +281,7 @@ public class ControllerSocket implements IFController{
 				try {
 					risposta = input.readLine();
 				} catch (IOException e) {
-					logger.log(Level.SEVERE, "Errore di IO", e);
+					LOGGER.log(Level.SEVERE, "Errore di IO", e);
 				}
 				parametri = risposta.split("#");
 			}
@@ -313,7 +312,7 @@ public class ControllerSocket implements IFController{
 		try {
 			socket.close();
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Errore di IO", e);
+			LOGGER.log(Level.SEVERE, "Errore di IO", e);
 		}
 		
 	}

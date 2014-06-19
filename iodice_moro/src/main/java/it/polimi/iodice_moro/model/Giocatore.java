@@ -208,7 +208,7 @@ public class Giocatore implements Serializable{
 	 * @param pos Nuova posizione corrente.
 	 */
 	public void setPosizioneTurno(Strada pos) {
-		if(!(position==pos)&&position2==pos) {
+		if(!(position.equals(pos))&&position2.equals(pos)) {
 			position2=position;
 			position=pos;
 		}

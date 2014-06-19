@@ -25,7 +25,7 @@ import org.jgrapht.graph.SimpleGraph;
  */
 public class StatoPartita {
 	
-	private final static Logger logger_model =  Logger.getLogger("it.polimi.iodice_moro.model");
+	private static final Logger logger_model =  Logger.getLogger("it.polimi.iodice_moro.model");
 	
 	//--------------------------ATTRIBUTI------------------------------------------
 	/**
@@ -469,7 +469,6 @@ public class StatoPartita {
 	public List<Regione> getRegioniByString(TipoTerreno terrenoRegione) {
 		List<Regione> listaRegioni = new ArrayList<Regione>();
 		for(Regione regione : getRegioni()) {
-			//String tipoRegione = regione.getTipo().toString();
 			if(regione.getTipo().equals(terrenoRegione)) {
 				listaRegioni.add(regione);
 			}

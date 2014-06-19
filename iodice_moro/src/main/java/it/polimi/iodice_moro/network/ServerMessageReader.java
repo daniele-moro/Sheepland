@@ -27,7 +27,7 @@ public class ServerMessageReader implements Runnable {
 	private Socket socket;
 	private PrintWriter output;
 	
-	private static final Logger LOGGER=  Logger.getLogger("it.polimi.iodice_moro.network");
+	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.network");
 	
 	public ServerMessageReader(Controller controller, Socket socket, PrintWriter output, BufferedReader input) {
 		this.controller=controller;
@@ -45,8 +45,7 @@ public class ServerMessageReader implements Runnable {
 				LOGGER.log(Level.SEVERE, "Errore nella thread.sleep", e2);
 			}
 			try {
-				if(input.ready())
-				{
+				if(input.ready()){
 					System.out.println("Attesa input da stream ");
 					String mossa = input.readLine();
 					String [] parametri=mossa.split("#");
@@ -70,7 +69,6 @@ public class ServerMessageReader implements Runnable {
 						System.out.println("SELEZ_POSIZ SERVER");
 						try {
 							controller.setStradaGiocatore(new Color(Integer.parseInt(parametri[1])), parametri[2]);
-							//giocaRisposta.println("OK#"+"Inserimento avvenuto con successo");
 						} catch (NotAllowedMoveException e1) {
 							LOGGER.log(Level.SEVERE, "Mossa proibita", e1);
 							System.out.println("eccezione");

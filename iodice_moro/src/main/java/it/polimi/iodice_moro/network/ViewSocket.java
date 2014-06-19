@@ -29,7 +29,24 @@ public class ViewSocket implements IFView {
 	private long inizio;
 	ServerConnessione attesaConnessioni;
 	
-	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.network");
+	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.network");
+	
+	
+	public ViewSocket(Controller controller, int porta) throws IOException {
+		serverSocket = new ServerSocket(porta);
+		this.controller=controller;
+		inizio=0;
+		//Avvio il thread per la ricezione delle connessioni
+		//il quale riceve le connessioni e aggiugne i giocatori alla partita
+		attesaConnessioni = new ServerConnessione(controller, this,serverSocket);
+		Thread t = new Thread(attesaConnessioni);
+		t.start();
+	}
+	
+
+	public ViewSocket(Controller controller) throws IOException {
+		this(controller, 12345);
+	}
 	
 	/**
 	 * Metodo che si mette in attesa che i client si connettano,
@@ -43,32 +60,13 @@ public class ViewSocket implements IFView {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
-				logger.log(Level.SEVERE, "Errore con la thread sleep");
+				LOGGER.log(Level.SEVERE, "Errore con la thread sleep");
 			}
 			ora=System.currentTimeMillis();
 		}
 		System.out.println("partita iniziata!!!");
 		attesaConnessioni.partitaIniziata=true;
 		controller.iniziaPartita();
-	}
-
-	
-	public ViewSocket(Controller controller, int porta) throws IOException {
-		serverSocket = new ServerSocket(porta);
-		this.controller=controller;
-		inizio=0;
-		//Avvio il thread per la ricezione delle connessioni
-		//il quale riceve le connessioni e aggiugne i giocatori alla partita
-		attesaConnessioni = new ServerConnessione(controller, this,serverSocket);
-		Thread t = new Thread(attesaConnessioni);
-		t.start();
-		
-	}
-	
-
-	public ViewSocket(Controller controller) throws IOException {
-		this(controller, 12345);
-		
 	}
 
 	@Override
@@ -309,6 +307,17 @@ public class ViewSocket implements IFView {
 				g.getValue().flush();
 			}
 		}
+	}
+
+
+	@Override
+	public void usaPast2(Color colore) throws RemoteException {
+		//Notifico a tutti i client che deve essere usato il secondo pastore del giocatore che sta giocando
+		for(Entry<Color, PrintWriter> g : writerGiocatori.entrySet()){
+			g.getValue().println("USA_PAST_2#"+colore.getRGB());
+			g.getValue().flush();
+		}
+		
 	}
 
 

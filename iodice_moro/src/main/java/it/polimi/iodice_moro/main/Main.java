@@ -26,6 +26,8 @@ import javax.swing.JOptionPane;
 
 public class Main {
 	
+	private static final String LOCALHOST = "127.0.0.1";
+	private static final String DEFAULT_PORT = "12345";
 	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.main");
 
 
@@ -71,7 +73,7 @@ public class Main {
 						JOptionPane.PLAIN_MESSAGE,
 						null,
 						null,
-						"127.0.0.1");
+						LOCALHOST);
 			}
 			if(sceltaTipoRete==0) {
 				while(porta.equals("")) {
@@ -82,7 +84,7 @@ public class Main {
 							JOptionPane.PLAIN_MESSAGE,
 							null,
 							null,
-							"12345");
+							DEFAULT_PORT);
 				}
 			}
 			while(nome.equals("")) {
@@ -103,8 +105,6 @@ public class Main {
 					view = new View((ControllerSocket)controller);
 					((View)view).setColore(colore);
 					controller.setView(view);	
-					System.out.println("Chiamata a iniziapartita");
-					//controller.iniziaPartita();
 				}else{
 					System.out.println("ERRORE DI CONNESSIONE");
 				}
@@ -140,7 +140,7 @@ public class Main {
 							JOptionPane.PLAIN_MESSAGE,
 							null,
 							null,
-							"12345");
+							DEFAULT_PORT);
 				}
 				controller = new Controller(statopartita);
 				int porta2 = Integer.parseInt(porta);
