@@ -344,5 +344,13 @@ public class ControllerSocket implements IFController{
 		output.flush();	
 	}
 
+	@Override
+	public void sparatoria2(String idRegione) throws RemoteException,
+			IllegalClickException, NotAllowedMoveException {
+		output.println("SPARATORIA2#"+idRegione);
+		output.flush();	
+		
+	}
+
 
 }

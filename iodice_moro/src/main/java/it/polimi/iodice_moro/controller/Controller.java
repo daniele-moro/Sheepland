@@ -186,7 +186,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		if(reg==null){
 			throw new IllegalClickException("Non hai cliccato su una regione!!");
 		}
-		System.out.println("sparatoria controller");
+		System.out.println("sparatoria1 controller");
 		sparatoria1(reg);
 		aggiornaTurno(TipoMossa.SPARATORIA1);
 		view.modificaQtaPecora(idRegione, reg.getNumPecore());
@@ -197,7 +197,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
 		//Controlliamo che la regione su cui fare la sparatoria sia vicino alla strada dove si trova il giocatore
 		if(!statoPartita.getStradeConfini(regione).contains(giocatore.getPosition())) {
-			throw new NotAllowedMoveException("Non puoi spostare pecore da questa regione");
+			throw new NotAllowedMoveException("Non puoi effettuare una sparatoria su questa regione");
 		}
 		
 		//controllo che nella regione selezionata ci sia almeno una pecora
@@ -214,7 +214,53 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		}
 	}
 	
+	public synchronized void sparatoria2(String idRegione) throws NotAllowedMoveException, RemoteException, IllegalClickException{
+		Regione reg = statoPartita.getRegioneByID(idRegione);
+		if(reg==null){
+			throw new IllegalClickException("Non hai cliccato su una regione!!");
+		}
+		System.out.println("sparatoria2 controller");
+		sparatoria2(reg);
+		aggiornaTurno(TipoMossa.SPARATORIA2);
+		view.modificaQtaPecora(idRegione, reg.getNumPecore());
+		for(Giocatore giocatore : statoPartita.getGiocatori()) {
+			view.modSoldiGiocatore(giocatore.getColore(), giocatore.getSoldi());
+		}
+		checkTurnoGiocatore(TipoMossa.SPARATORIA2);
+	}
 	
+	
+	private void sparatoria2(Regione reg) throws RemoteException, NotAllowedMoveException {
+		Giocatore giocatoreCorrente = statoPartita.getGiocatoreCorrente();
+		List<Strada> stradeAdiacenti = statoPartita.getStradeConfini(reg);
+		int numeroGiocatoriSuReg = 0;
+		for(Giocatore giocatore : statoPartita.getGiocatori()) {
+			if(!(giocatore.equals(giocatoreCorrente)) 
+					&&stradeAdiacenti.contains(giocatore.getPosition())||stradeAdiacenti.contains(giocatore.getPosition2())) {
+				numeroGiocatoriSuReg++;
+			}	
+		}
+		if((giocatoreCorrente.getSoldi()-numeroGiocatoriSuReg*2)<0) {
+			throw new NotAllowedMoveException("Giocatore non ha abbastanza soldi");
+		}
+		
+		int numPecore = reg.getNumPecore();
+		sparatoria1(reg);
+		if(numPecore>reg.getNumPecore()) {
+			int lancioDado;
+			for(Giocatore giocatore : statoPartita.getGiocatori()) {
+				if(stradeAdiacenti.contains(giocatore.getPosition())||stradeAdiacenti.contains(giocatore.getPosition2())) {
+					lancioDado=lanciaDado();
+					if(lancioDado>5) {
+						giocatore.incrSoldi(2);
+						giocatoreCorrente.decrSoldi(2);
+					}
+
+				}
+			}
+		}
+		
+	}
 	/**
 	 * Metodo che sposta la pecora nera dala regione in cui si trova alla regione adiacente
 	 * @param regionePecora Regione dove si trova la pecora.

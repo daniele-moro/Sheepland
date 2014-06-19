@@ -299,6 +299,28 @@ class AzioniMouse extends MouseAdapter{
 						t1.start();
 						
 					}break;
+					
+					case SPARATORIA2:{
+						System.out.println("SPARATORIA2");
+						Thread t1 = new Thread( new Runnable() {
+							@Override
+							public void run() {
+								try {
+									controller.sparatoria2(Integer.toHexString(c));
+								} catch (RemoteException e) {
+									logger.log(Level.SEVERE, "Errore di rete", e);
+								} catch (IllegalClickException e) {
+									view.getLBLOutput().setText(e.getMessage());
+									logger.log(Level.SEVERE, "Area non clickabile", e);
+								} catch (NotAllowedMoveException e) {
+									view.getLBLOutput().setText(e.getMessage());
+									logger.log(Level.SEVERE, "Mossa proibita", e);
+								}
+								
+							}
+						});
+						t1.start();
+					}
 
 
 					default:

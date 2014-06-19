@@ -543,6 +543,7 @@ public class ControllerTest{
 		
 	}
 	
+	@Test
 	public void testMossaPossibile() throws RemoteException {
 		//Testo alcune delle mosse limite.
 		//Muovere il pastore 3 volte
@@ -572,8 +573,7 @@ public class ControllerTest{
 		//Ora testo condizioni che devono essere false.
 		//Compra 2 tessere terreno e poi muovere il pastore.
 		controllerTest.aggiornaTurno(TipoMossa.COMPRA_TESSERA);
-		controllerTest.aggiornaTurno(TipoMossa.COMPRA_TESSERA);
-		assertFalse(controllerTest.mossaPossibile(TipoMossa.SPOSTA_PASTORE));
+		assertFalse(controllerTest.mossaPossibile(TipoMossa.COMPRA_TESSERA));
 		giocatoreTest.azzeraTurno();
 
 		//Muovere il Pastore, quindi Muovere una Pecora per due volte.
@@ -933,6 +933,7 @@ public class ControllerTest{
 			
 		}
 	}
+	
 	
 	@Test
 	public void testSortByValue() {

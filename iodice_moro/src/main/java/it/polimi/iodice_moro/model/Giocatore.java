@@ -266,4 +266,9 @@ public class Giocatore implements Serializable{
 		this.soldi=SOLDI_2_GIOCATORI;
 		
 	}
+
+	public void incrSoldi(int soldiAggiunti) {
+		this.soldi=this.soldi+soldiAggiunti;
+		
+	}
 }

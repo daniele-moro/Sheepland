@@ -156,5 +156,12 @@ public class ControllerRMI implements IFController {
 		
 	}
 
+	@Override
+	public void sparatoria2(String idStrada) throws RemoteException,
+			IllegalClickException, NotAllowedMoveException {
+		controller.sparatoria2(idStrada);
+		
+	}
+
 
 }

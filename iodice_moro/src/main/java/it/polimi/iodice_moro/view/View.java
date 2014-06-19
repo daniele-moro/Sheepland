@@ -101,7 +101,11 @@ public class View extends UnicastRemoteObject implements IFView {
 						if(reg.size()>0 && reg.size()<=2){
 							mouse.setRegioni(reg.get(0), reg.get(1));
 						}break;
-						
+					case SPARATORIA2:
+						lblOutput.setText("SPARATORIA 2");
+						mouse.setRegioni("","");
+						mossaAttuale=TipoMossa.SPARATORIA2;
+						break;						
 					default:
 						lblOutput.setText("Non puoi effettuare questa mossa!!!");
 						mouse.setRegioni("", "");
@@ -136,6 +140,7 @@ public class View extends UnicastRemoteObject implements IFView {
 	private JButton btnCompraTessera;
 	private JButton	btnAccoppiamento1;
 	private JButton btnSparatoria1;
+	private JButton btnSparatoria2;
 	
 	private Map<String,Point> posizioniRegioni = new HashMap<String,Point>();
 	private Map<Color,JLabel> giocatori = new HashMap<Color,JLabel>();
@@ -189,7 +194,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		//RIGHTPANEL
 		rightPanel = new JPanel();
 		rightPanel.setBackground(new Color(43,163,250));
-		rightPanel.setLayout(new GridLayout(5,1));
+		rightPanel.setLayout(new GridLayout(6,1));
 		AzioniBottoni action = new AzioniBottoni();
 		
 		btnSpostaPecora = new JButton("<html>SPOSTA <br>PECORA</html>");
@@ -216,18 +221,25 @@ public class View extends UnicastRemoteObject implements IFView {
 		btnSparatoria1.setIcon(new ImageIcon(this.getClass().getResource("/immagini/pistola.png")));
 		btnSparatoria1.addActionListener(action);
 		
+		btnSparatoria2 = new JButton("<html>SPARATORIA <br>2</html>");
+		btnSparatoria2.setActionCommand(TipoMossa.SPARATORIA2.toString());
+		btnSparatoria2.setIcon(new ImageIcon(this.getClass().getResource("/immagini/pistola.png")));
+		btnSparatoria2.addActionListener(action);
+		
 		//Disattivo i bottoni che per ora non servono
 		btnSpostaPastore.setEnabled(false);
 		btnSpostaPecora.setEnabled(false);
 		btnCompraTessera.setEnabled(false);
 		btnAccoppiamento1.setEnabled(false);
 		btnSparatoria1.setEnabled(false);
+		btnSparatoria2.setEnabled(false);
 		
 		rightPanel.add(btnSpostaPecora);
 		rightPanel.add(btnSpostaPastore);
 		rightPanel.add(btnCompraTessera);
 		rightPanel.add(btnAccoppiamento1);
 		rightPanel.add(btnSparatoria1);
+		rightPanel.add(btnSparatoria2);
 		frame.add(rightPanel, BorderLayout.EAST);
 		
 		//LEFTPANEL
@@ -472,6 +484,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		btnSpostaPecora.setEnabled(true);
 		btnAccoppiamento1.setEnabled(true);
 		btnSparatoria1.setEnabled(true);
+		btnSparatoria2.setEnabled(true);
 	}
 
 	
@@ -481,6 +494,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		btnSpostaPecora.setEnabled(false);
 		btnAccoppiamento1.setEnabled(false);
 		btnSparatoria1.setEnabled(false);
+		btnSparatoria2.setEnabled(false);
 		mossaAttuale=TipoMossa.NO_MOSSA;
 	}
 	

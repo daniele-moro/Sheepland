@@ -147,6 +147,21 @@ public class ServerMessageReader implements Runnable {
 							LOGGER.log(Level.SEVERE, "Area non clickabile", e);
 							output.println("EXCEPTION#"+e.getMessage()+"\n");
 						}
+					
+						
+					}break;
+					
+					case "SPARATORIA2":{
+						try {
+							controller.sparatoria2(parametri[1]);
+						} catch (NotAllowedMoveException e) {
+							LOGGER.log(Level.SEVERE, "Mossa proibita", e);
+							output.println("EXCEPTION#"+e.getMessage()+"\n");
+						} catch (IllegalClickException e) {
+							LOGGER.log(Level.SEVERE, "Area non clickabile", e);
+							output.println("EXCEPTION#"+e.getMessage()+"\n");
+						}
+					
 						
 					}break;
 					
