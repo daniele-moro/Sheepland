@@ -22,6 +22,7 @@ import java.awt.Point;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -936,6 +937,59 @@ public class ControllerTest{
 	
 	
 	@Test
+	public void testSparatoria2() throws RemoteException, NotAllowedMoveException, IllegalClickException {
+		int lancio;
+		Giocatore giocatoreCorrente = statoPartitaT.getGiocatoreCorrente();
+		Regione regionex = statoPartitaT.getRegioniADStrada(giocatoreCorrente.getPosition()).get(0);
+		Giocatore giocatorex = new Giocatore("Giocatore_x", statoPartitaT.getStradeConfini(regionex).get(1));
+		assertFalse(giocatorex.getPosition().equals(giocatoreCorrente.getPosition()));
+		int numPecoreRegX=5;
+		regionex.setNumPecore(numPecoreRegX);
+		int soldiGiocCorrente=giocatoreCorrente.getSoldi();
+		int soldiGiocX=giocatorex.getSoldi();
+		
+		//Testo per tre volte il giusto funzionamento di sparatoria2().
+		controllerTest.sparatoria2(regionex.getColore());
+		lancio = ((FakeView)fakeView).getLancioDado();
+		System.out.println(lancio);
+		if(numPecoreRegX>regionex.getNumPecore()) {
+			if(lancio >=5 && numPecoreRegX>regionex.getNumPecore()) {
+				assertEquals(numPecoreRegX-1, regionex.getNumPecore());
+				assertEquals(soldiGiocCorrente-2, giocatoreCorrente.getSoldi());
+				assertEquals(soldiGiocX+2, giocatoreCorrente.getSoldi());
+			}
+		}
+	}
+	
+	@Test
+	public void testSparatoria2WithException() {
+		//Provo con regione con id senza senso.
+		try {
+			controllerTest.sparatoria2("foingoi");
+			fail("Should have thrown exception");
+		} catch (IllegalClickException e) {
+			
+		} catch (RemoteException e) {
+			fail();
+		} catch (NotAllowedMoveException e) {
+			fail();
+		}
+		
+		//Provo regione senza giocatori su posizioni adiacenti.
+		try {
+			controllerTest.sparatoria2(statoPartitaT.getRegioni().get(2).getColore());
+			fail("Should have thrown exception");
+		} catch(RemoteException e) {
+			fail();
+		} catch (NotAllowedMoveException e) {
+			
+		} catch (IllegalClickException e) {
+			fail();
+		}
+	}
+	
+	
+	@Test
 	public void testSortByValue() {
 		//Creo una lista, la ordino usando l'algoritmo e controllo che l'ordine sia giusto.
 		Map<Giocatore, Integer> punteggi = new HashMap<Giocatore, Integer>();
@@ -951,4 +1005,113 @@ public class ControllerTest{
 		assertEquals((Integer)1, iterator.next().getValue());
 		
 	}
+	
+	
+	
+	@Test
+	public void testSetStradaGiocatore() throws RemoteException, NotAllowedMoveException, PartitaIniziataException {
+		//Controllo prima caso numero giocatori > 2. Imposto prima tutte le variabili
+		//necessarie per il funzionamento del metodo.
+		statoPartitaT.getGiocatori().remove(giocatoreTest);
+		statoPartitaT.setPosPecoraNera(statoPartitaT.getRegioni().get(0));
+		statoPartitaT.setPosLupo(statoPartitaT.getRegioni().get(0));
+		Color colore1 = controllerTest.creaGiocatore("Gioc1");
+		Color colore2 = controllerTest.creaGiocatore("Gioc2");
+		Color colore3 = controllerTest.creaGiocatore("Gioc3");
+		statoPartitaT.setGiocatoreCorrente(statoPartitaT.getGiocatori().get(0));
+		Strada strada1 = statoPartitaT.getStrade().get(0);
+		Strada strada2 = statoPartitaT.getStrade().get(1);
+		Strada strada3 = statoPartitaT.getStrade().get(2);
+		Strada strada4 = statoPartitaT.getStrade().get(3);
+		
+		//Controllo che abbia inizializzato le strade nel modo corretto
+		//e abbia cambiato il giocatore.
+		controllerTest.setStradaGiocatore(colore1, strada1.getColore());
+		assertEquals(strada1, statoPartitaT.getGiocatori().get(0).getPosition());
+		assertEquals(statoPartitaT.getGiocatori().get(1), statoPartitaT.getGiocatoreCorrente());
+		controllerTest.setStradaGiocatore(colore2, strada2.getColore());
+		assertEquals(strada2, statoPartitaT.getGiocatori().get(1).getPosition());
+		assertEquals(statoPartitaT.getGiocatori().get(2), statoPartitaT.getGiocatoreCorrente());
+		controllerTest.setStradaGiocatore(colore3, strada3.getColore());
+		assertEquals(strada3, statoPartitaT.getGiocatori().get(2).getPosition());
+		assertEquals(statoPartitaT.getGiocatori().get(0), statoPartitaT.getGiocatoreCorrente());
+		
+		//Controllo che abbia inizializzato le mappe con i colori per le strade e le regioni.
+		assertTrue(!(controllerTest.getPosRegioni().equals(null)));
+		assertTrue(!(controllerTest.getPosStrade().equals(null)));
+		//Controllo che abbia inizializzato la mappa con i colori per i giocatori.
+		assertEquals("Gioc1", controllerTest.getGiocatori().get(colore1));
+		assertEquals("Gioc2", controllerTest.getGiocatori().get(colore2));
+		assertEquals("Gioc3", controllerTest.getGiocatori().get(colore3));
+		
+		//Adesso controllo caso con due giocatori.
+		//Tutto come prima ma devo settare due posizioni per lo stesso giocatori, quindi
+		//turno cambia ogni due setStradaGiocatore().
+		statoPartitaT.getGiocatori().clear();
+		colore1 = controllerTest.creaGiocatore("Gioc1");
+		colore2 = controllerTest.creaGiocatore("Gioc2");
+		statoPartitaT.setGiocatoreCorrente(statoPartitaT.getGiocatori().get(0));
+		
+		controllerTest.setStradaGiocatore(colore1, strada1.getColore());
+		assertEquals(strada1, statoPartitaT.getGiocatori().get(0).getPosition());
+		assertEquals(statoPartitaT.getGiocatori().get(0), statoPartitaT.getGiocatoreCorrente());
+		
+		controllerTest.setStradaGiocatore(colore1, strada2.getColore());
+		assertEquals(strada2, statoPartitaT.getGiocatori().get(0).getPosition2());
+		assertEquals(statoPartitaT.getGiocatori().get(1), statoPartitaT.getGiocatoreCorrente());
+		
+		controllerTest.setStradaGiocatore(colore2, strada3.getColore());
+		assertEquals(strada3, statoPartitaT.getGiocatori().get(1).getPosition());
+		assertEquals(statoPartitaT.getGiocatori().get(1), statoPartitaT.getGiocatoreCorrente());
+		
+		controllerTest.setStradaGiocatore(colore2, strada4.getColore());
+		assertEquals(strada4, statoPartitaT.getGiocatori().get(1).getPosition2());
+		assertEquals(statoPartitaT.getGiocatori().get(0), statoPartitaT.getGiocatoreCorrente());
+		
+	}
+	
+	
+	@Test
+	public void testSetStradaWithException() {
+		//Testo il caso in cui la strada è già occupata.
+		try {
+			giocatoreTest.setColore(Color.black);
+			Strada posizione = statoPartitaT.getStradeAdiacenti(giocatoreTest.getPosition()).get(0);
+			Color coloreGioc = controllerTest.creaGiocatore("Giocatore X");
+			statoPartitaT.getGiocatori().get(1).setPosition(posizione);
+			controllerTest.setStradaGiocatore(giocatoreTest.getColore(), posizione.getColore());
+			fail("Should have thrown exception");
+		} catch (NotAllowedMoveException e) {
+			
+		} catch (RemoteException e) {
+			fail();
+		} catch (PartitaIniziataException e) {
+			fail("Partita già iniziata");
+		}
+	}
+	
+	@Test
+	public void testCambiaPastore() throws RemoteException, PartitaIniziataException, NotAllowedMoveException, IllegalClickException {
+		strada0=statoPartitaT.getStrade().get(0);
+		strada1=statoPartitaT.getStrade().get(1);
+		giocatoreTest.setPosition(strada0);
+		giocatoreTest.setPosition2(strada1);
+		controllerTest.cambiaPastore(strada1.getColore());
+		statoPartitaT.setGiocatoreCorrente(giocatoreTest);
+		assertEquals(strada1, giocatoreTest.getPosition());
+		assertEquals(strada0, giocatoreTest.getPosition2());
+	}
+	
+	@Test
+	public void testCambiaPastoreWithException() {
+		try {
+			controllerTest.cambiaPastore(statoPartitaT.getStrade().get(4).getColore());
+			fail();
+		} catch (IllegalClickException e) {
+			
+		} catch (RemoteException e) {
+			fail();
+		}
+	}
+	
 }

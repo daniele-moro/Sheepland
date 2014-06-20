@@ -165,7 +165,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
 		//Controlliamo che la regione su cui fare l'accoppiamento sia vicino alla strada dove si trova il giocatore
 		if(!statoPartita.getStradeConfini(regione).contains(giocatore.getPosition())) {
-			throw new NotAllowedMoveException("Non puoi spostare pecore da questa regione");
+			throw new NotAllowedMoveException("Non puoi fare questa mossa in questa regione");
 		}
 		
 		//Controllo che ci siano almeno due pecore nella regione selezionata
@@ -385,19 +385,12 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * Cambia la posizione corrente del giocatore.
 	 * Controlla che la posizione di destinazione non sia già occupata da un recinto o da un'altra pedina
 	 * @param nuovastrada Nuova posizione.
-	 * @throws Exception Se nuova ìposizione è già occupata da un recinto.
+	 * @throws Exception Se nuova posizione è già occupata da un recinto.
 	 * @throws Exception Se non ha abbastanza soldi per muoversi.
 	 */
 	private synchronized void spostaPedina (Strada nuovastrada) throws NotAllowedMoveException, RemoteException {
 		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
-		for(Giocatore g: statoPartita.getGiocatori()){
-			if(g.getPosition()==nuovastrada){
-				throw new NotAllowedMoveException("Non puoi spostare qui il tuo pastore, strada occupata!");
-			}
-			if(g.getPosition2()==nuovastrada){
-				throw new NotAllowedMoveException("Non puoi spostare qui il tuo pastore, strada occupata!");
-			}
-		}
+		isStradaOccupata(nuovastrada);
 		if(nuovastrada.isRecinto()) {
 			throw new NotAllowedMoveException("Non puoi sposare qui il tuo pastore, strada con recinto!");
 		}
@@ -644,15 +637,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		Strada strada = statoPartita.getStradaByID(idStrada);
 		
 		//Controllo che la posizione non sia già occupata da un altro pastore
-		for(Giocatore g: statoPartita.getGiocatori()){
-			if(g.getColore().equals(colore)){
-				for(Giocatore g2: statoPartita.getGiocatori()){
-					if(g2.getPosition()==strada|| g2.getPosition2()==strada){
-						throw new NotAllowedMoveException("non puoi posizionare qui il tuo pastore, strada occupata!!");
-					}
-				}
-			}
-		}
+		isStradaOccupata(strada);
 		//Inserisco la posizone iniziale del giocatore, controllando che sia nulla la posizione
 		if(statoPartita.getGiocatoreCorrente().getPosition()==null){
 			statoPartita.getGiocatoreCorrente().setPosition(strada);
@@ -673,7 +658,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		//oppure se ci sono due giocatori e sono già state selezionate entrambe le posizioni dei pastori
 		if(statoPartita.getGiocatori().size()!=2 ||
 				(statoPartita.getGiocatori().size()==2 && statoPartita.getGiocatoreCorrente().getPosition2()!=null)){
-			System.out.println("Cambio gicoatorei");
+			System.out.println("Cambio giocatore");
 			statoPartita.setGiocatoreCorrente(statoPartita.getNextGamer());
 		}
 		
@@ -726,6 +711,18 @@ public class Controller extends UnicastRemoteObject implements IFController {
 				view.selezPast(statoPartita.getGiocatoreCorrente().getColore());
 			}
 			//DA qui inizia la partita vera e propria
+		}
+	}
+	/**
+	 * @param strada
+	 * @throws NotAllowedMoveException
+	 */
+	private void isStradaOccupata(Strada strada) throws NotAllowedMoveException {
+		for(Giocatore g2: statoPartita.getGiocatori()){
+			if(g2.getPosition()==strada|| g2.getPosition2()==strada){
+				throw new NotAllowedMoveException("non puoi posizionare qui il tuo pastore, strada occupata!!");
+			}
+
 		}
 	}
 	
@@ -916,7 +913,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		
 		for(Giocatore g: statoPartita.getGiocatori()) {
 			g.addTessera(tipoTessere.get(statoPartita.getGiocatori().indexOf(g)));
-			//comunico alla view qual'è la tessera che gli è toccata
+			//comunico alla view qual è la tessera che gli è toccata
 			try {
 				view.modQtaTessera(tipoTessere.get(statoPartita.getGiocatori().indexOf(g)), 1, g.getColore());
 			} catch (RemoteException e) {

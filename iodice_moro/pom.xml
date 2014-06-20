@@ -44,7 +44,7 @@
   						<manifest>
   						  	<addClasspath>true</addClasspath>
   							<classpathPrefix>lib/</classpathPrefix>
-  							<mainClass>it.polimi.iodice_moro.view.View</mainClass>
+  							<mainClass>it.polimi.iodice_moro.main.Main</mainClass>
   						</manifest>
   					</archive>
   					<descriptorRefs>
