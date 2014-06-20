@@ -277,6 +277,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		btnCompraTessera.addActionListener(action);
 		
 		btnAccoppiamento1 = new JButton("<html>ACCOPPIAMENTO <br>1</html>");
+		btnAccoppiamento1.setIcon(new ImageIcon(this.getClass().getResource("/immagini/pecoraaccoppiamento.png")));
 		btnAccoppiamento1.setActionCommand(TipoMossa.ACCOPPIAMENTO1.toString());
 		btnAccoppiamento1.addActionListener(action);
 		
@@ -423,7 +424,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		frame.add(lblOutput,BorderLayout.SOUTH);
 		
 		//setto la dimensione minima della schermata
-		frame.setMinimumSize(new Dimension(900,785));
+		frame.setMinimumSize(new Dimension(930,785));
 		frame.setVisible(true);
 		frame.setResizable(false);
 		frame.pack();

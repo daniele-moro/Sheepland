@@ -249,7 +249,8 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		if(numPecore>reg.getNumPecore()) {
 			int lancioDado;
 			for(Giocatore giocatore : statoPartita.getGiocatori()) {
-				if(stradeAdiacenti.contains(giocatore.getPosition())||stradeAdiacenti.contains(giocatore.getPosition2())) {
+				if((stradeAdiacenti.contains(giocatore.getPosition())||stradeAdiacenti.contains(giocatore.getPosition2()))
+						&&!(giocatore.equals(giocatoreCorrente))) {
 					lancioDado=lanciaDado();
 					if(lancioDado>5) {
 						giocatore.incrSoldi(2);
