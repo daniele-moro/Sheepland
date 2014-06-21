@@ -39,6 +39,12 @@ import javax.swing.border.MatteBorder;
 
 public class View extends UnicastRemoteObject implements IFView {
 	
+	private static final int OFFSET_X_LUPO = 28;
+
+	private static final int OFFSET_Y_LUPO = -28;
+
+	private static final int OFFSET_Y_NERA = -18;
+
 	//Costante per la durata delle animazioni
 	private static final int TEMPO_ANIMAZIONI = 2000;
 
@@ -151,7 +157,7 @@ public class View extends UnicastRemoteObject implements IFView {
 	}
 	
 	//Frame su cui viene visualizzata tutta l'interfaccia grafica
-	private static JFrame frame;
+	private JFrame frame;
 	
 	//Pannelli di destra e di sinistra dell'interfaccia grafica
 	private JPanel rightPanel;
@@ -421,7 +427,7 @@ public class View extends UnicastRemoteObject implements IFView {
 
 		//LABEL PER GLI ERRORI e le COMUNICAZIONI CON L'UTENTE
 		lblOutput = new JLabel();
-		lblOutput.setText("  ");
+		lblOutput.setText("ATTESA GIOCATORI!!");
 		lblOutput.setBorder(new EmptyBorder(30,10,0,0));
 		c.anchor=GridBagConstraints.WEST;
 		frame.add(lblOutput,BorderLayout.SOUTH);
@@ -453,7 +459,7 @@ public class View extends UnicastRemoteObject implements IFView {
 				//devo posizionare la pecora nera perchè sono in sheepsburg
 				pecoraNera = new MovableLabel();
 				pecoraNera.setIcon(pecNera);
-				pecoraNera.setBounds(p.x+10, p.y-20, pecNera.getIconWidth(), pecNera.getIconHeight());
+				pecoraNera.setBounds(p.x, p.y+OFFSET_Y_NERA, pecNera.getIconWidth(), pecNera.getIconHeight());
 				layeredMappa.add(pecoraNera, SHEEP_LAYER);
 				//comunque devo inizializzare la label per la pecora normale, però senza numero di pecore
 				JLabel lblPecora = new MovableLabel(this.getClass().getResourceAsStream("/immagini/pecora_bianca.png"));
@@ -463,7 +469,7 @@ public class View extends UnicastRemoteObject implements IFView {
 				lupo = new MovableLabel();
 				lupo.setIcon(iconLupo);
 				//TODO
-				lupo.setBounds(p.x-25, p.y+20, iconLupo.getIconWidth(), iconLupo.getIconHeight());
+				lupo.setBounds(p.x+OFFSET_X_LUPO, p.y+OFFSET_Y_LUPO, iconLupo.getIconWidth(), iconLupo.getIconHeight());
 				layeredMappa.add(lupo, SHEEP_LAYER);
 			}else{
 				//Visualizzo le pecore bianche
@@ -472,6 +478,7 @@ public class View extends UnicastRemoteObject implements IFView {
 				layeredMappa.add(lblPecora, SHEEP_LAYER);
 				lblPecora.setBounds(p.x, p.y, iconBianca.getIconWidth(), iconBianca.getIconHeight());
 				lblPecore.put(s,lblPecora);
+				
 			}
 		}
 		
@@ -657,8 +664,8 @@ public class View extends UnicastRemoteObject implements IFView {
 	@Override
 	public void spostaPecoraNera(String s, String d){
 		//Il campo s diventa inutile usando la movableLabel
-		Point sorg= posizioniRegioni.get(s);
-		Point dest= posizioniRegioni.get(d);
+		Point dest= (Point) posizioniRegioni.get(d).clone();
+		dest.y+=OFFSET_Y_NERA;
 		//Avvio l'animazione della pedina
 		pecoraNera.moveTo(dest,TEMPO_ANIMAZIONI);
 	}
@@ -672,8 +679,9 @@ public class View extends UnicastRemoteObject implements IFView {
 			disattivaGiocatore();
 		}
 		//Il campo s diventa inutile usando la movablelabel
-		Point sorg= posizioniRegioni.get(s);
-		Point dest= posizioniRegioni.get(d);
+		Point dest= (Point) posizioniRegioni.get(d).clone();
+		dest.y+=OFFSET_Y_LUPO;
+		dest.x+=OFFSET_X_LUPO;
 		
 		//Attivo l'animazione
 		lupo.moveTo(dest, TEMPO_ANIMAZIONI);
@@ -687,7 +695,7 @@ public class View extends UnicastRemoteObject implements IFView {
 	 * @see it.polimi.iodice_moro.view.IFView#modificaQtaPecora(java.lang.String, int)
 	 */
 	@Override
-	public void modificaQtaPecora(String idReg, int num){
+	public void modificaQtaPecora(String idReg, int num, String testo){
 		//Prelevo la label di cui modificare il testo
 		JLabel lblPecora =lblPecore.get(idReg);
 		//Controllo se la label va o meno nascosta, 
@@ -700,6 +708,20 @@ public class View extends UnicastRemoteObject implements IFView {
 			layeredMappa.remove(lblPecora);
 		}
 		layeredMappa.repaint();
+		if(testo!=null && !" ".equals(testo) && !"".equals(testo)){
+			//creo un thread per comunicare all'utente l'azione avvenuta
+			final String text=testo;
+			Thread t = new Thread(new Runnable(){
+
+				@Override
+				public void run() {
+					JOptionPane.showMessageDialog(View.this.frame, text);
+					
+				}
+
+			});
+			t.start();
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -894,6 +916,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		btnAccoppiamento1.setEnabled(true);
 		btnSparatoria1.setEnabled(true);
 		btnSparatoria2.setEnabled(true);
+		mossaAttuale=TipoMossa.NO_MOSSA;
 	}
 
 	/**

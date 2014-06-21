@@ -91,34 +91,48 @@ public class MovableLabel extends JLabel {
 
 //ANIMAZIONE
 	/**
+	 * Animazione del movimento in una serie di punti da attraversare
+	 * @param destination Lista di punti da attraversare
+	 * @param timeMillisec Durata totale dell'animazione
+	 */
+	public void moveTo(List<Point> destination, int timeMillisec) {
+		//calcolo la durata dell'animazione del movimento tra due strade
+		final int durationAnimation=timeMillisec/destination.size();
+		//Iteratore che mi serve per iterare su tutti i punti in cui si deve muovere
+		final Iterator<Point> it = destination.iterator();
+		//Eseguo il primo movimento subito
+		if(it.hasNext()){
+			moveTo(it.next(),durationAnimation);
+		}
+		//creo un listener che venga attivato dal timer
+		ActionListener animationTask = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				//ogni volta che viene attivato il timer, controllo se ci sono ancora movimenti da fare
+				if(it.hasNext()){
+					//nel caso positivo avvio il movimento
+					moveTo(it.next(),durationAnimation);
+				} else{
+					//in caso negativo fermo il timer
+					((Timer)evt.getSource()).stop();
+				}
+			}
+		};
+		/*
+		 * Inizializzo un timer che ogni durataAnimation millisecondi, 
+		 * in base a quanto deve durare una animazione tra due strade
+		 * chiama l'azione collegata ad animationTast
+		 */
+		Timer timer = new Timer(durationAnimation,animationTask);
+		timer.start();
+	}
+	
+	/**
 	 * Fa partire l'animazione dalla posizione attuale del componente fino alla posizione passata come parametro
 	 * Se l'oggetto è già animato, l'animazione precedente viene annullata
 	 * @param destination Point che corrisponde alla destinazione
 	 * @param timeMillisec Durata dell'animazione
 	 */
-	public void moveTo(List<Point> destination, int timeMillisec) {
-		//calcolo la durata dell'animazione del movimento tra due strade
-		final int durataAnimation=timeMillisec/destination.size();
-		final Iterator<Point> it = destination.iterator();
-		if(it.hasNext()){
-			moveTo(it.next(),durataAnimation);
-		}
-		ActionListener animationTask = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent evt) {
-				if(it.hasNext()){
-					moveTo(it.next(),durataAnimation);
-				} else{
-					((Timer)evt.getSource()).stop();
-				}
-			}
-		};
-		//Inizializzo un timer che ogni x secondi, in base a quanto deve durare una animazione tra due strade
-		//chiama l'azione collegata ad animationTast
-		Timer timer = new Timer(durataAnimation,animationTask);
-		timer.start();
-	}
-	
 	public void moveTo(Point destination, int timeMillisec){
 		startingTime = System.nanoTime();
 		animationDuration = (long) (timeMillisec*DURATION_MUL);

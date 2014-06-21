@@ -592,21 +592,11 @@ public class StatoPartita {
 			 * Per ogni arco del percorso, prelevo il vertice opposto al quello della precedente iterazione,
 			 * se questo vertice è una strada, lo aggiungo alla lista dei vertici
 			 */
-			//------------DEBUG------------
-			System.out.println(src.toString()); 
-			System.out.println(e.toString());
-			//-----------------------------
 			src = Graphs.getOppositeVertex(mappa, e, src) ;
 			if(!src.isRegione()){
 				vertici.add((Strada) src);
 			}
 		}
-		//------------DEBUG----------
-		System.out.println("\n");
-		for(Strada s : vertici){
-			System.out.println(s.toString());
-		}
-		//-----------------------------
 		//Ritorno la lista dei vertici che bisogna attraversare, compreso inizio e fine del percorso
 		return vertici;
 		

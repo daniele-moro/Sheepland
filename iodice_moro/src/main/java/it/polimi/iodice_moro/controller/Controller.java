@@ -45,8 +45,14 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	
 	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.controller");
 
-	private static final Color[] vettColori = {new Color(255,0,0), new Color(0,255,0), new Color(0,0,255), new Color(255,255,0)};
+	/**
+	 * Costante per l'assegnamento dei colori ai giocatori
+	 */
+	private static final Color[] VETTCOLORI = {new Color(255,0,0), new Color(0,255,0), new Color(0,0,255), new Color(255,255,0)};
 	
+	/**
+	 * Riferimento alla view collegata al controller
+	 */
 	private IFView view;
 	
 	
@@ -147,8 +153,8 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		System.out.println("Sposta pecora animazione");
 
 		view.spostaPecoraBianca(idRegione, idregD);
-		view.modificaQtaPecora(idRegione, regSorg.getNumPecore());
-		view.modificaQtaPecora(idregD, statoPartita.getRegioneByID(idregD).getNumPecore());
+		view.modificaQtaPecora(idRegione, regSorg.getNumPecore()," ");
+		view.modificaQtaPecora(idregD, statoPartita.getRegioneByID(idregD).getNumPecore()," ");
 		
 		checkTurnoGiocatore(TipoMossa.SPOSTA_PECORA);
 	}
@@ -158,11 +164,13 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		if(reg==null){
 			throw new IllegalClickException("Non hai cliccato su una regione!!");
 		}
-		
+		int numPecore=reg.getNumPecore();
 		System.out.println("accoppiamento controller");
 		accoppiamento1(reg);
 		aggiornaTurno(TipoMossa.ACCOPPIAMENTO1);
-		view.modificaQtaPecora(idRegione, reg.getNumPecore());
+		if(numPecore>reg.getNumPecore()){
+			view.modificaQtaPecora(idRegione, reg.getNumPecore(), "Accoppiamento avvenuto!!");
+		}
 		checkTurnoGiocatore(TipoMossa.ACCOPPIAMENTO1);
 		
 	}
@@ -202,10 +210,13 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		if(reg==null){
 			throw new IllegalClickException("Non hai cliccato su una regione!!");
 		}
+		int numPecore=reg.getNumPecore();
 		System.out.println("sparatoria1 controller");
 		sparatoria1(reg);
 		aggiornaTurno(TipoMossa.SPARATORIA1);
-		view.modificaQtaPecora(idRegione, reg.getNumPecore());
+		if(numPecore>reg.getNumPecore()){
+			view.modificaQtaPecora(idRegione, reg.getNumPecore(), "Pecora uccisa!");
+		}
 		checkTurnoGiocatore(TipoMossa.SPARATORIA1);
 	}
 	
@@ -246,9 +257,12 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			throw new IllegalClickException("Non hai cliccato su una regione!!");
 		}
 		System.out.println("sparatoria2 controller");
+		int numPecore = reg.getNumPecore();
 		sparatoria2(reg);
 		aggiornaTurno(TipoMossa.SPARATORIA2);
-		view.modificaQtaPecora(idRegione, reg.getNumPecore());
+		if(numPecore>reg.getNumPecore()){
+		view.modificaQtaPecora(idRegione, reg.getNumPecore(),"Sparatoria 2 avvenuta!!");
+		}
 		for(Giocatore giocatore : statoPartita.getGiocatori()) {
 			view.modSoldiGiocatore(giocatore.getColore(), giocatore.getSoldi());
 		}
@@ -288,14 +302,14 @@ public class Controller extends UnicastRemoteObject implements IFController {
 						giocatore.incrSoldi(2);
 						giocatoreCorrente.decrSoldi(2);
 					}
-
 				}
 			}
 		}
-		
 	}
+	
+	
 	/**
-	 * Metodo che sposta la pecora nera dala regione in cui si trova alla regione adiacente
+	 * Metodo che sposta la pecora nera dalla regione in cui si trova alla regione adiacente
 	 * @param regionePecora Regione dove si trova la pecora.
 	 * @param regAdiacente Regione dove deve essere spostata le pecora.
 	 * @throws NotAllowedMoveException se non ci sono pecore nere da spostare.
@@ -348,7 +362,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			if(regAdiacente.getNumPecore()>0) {
 				regAdiacente.removePecora();
 				System.out.println("Il lupo mangia la pecora");
-				view.modificaQtaPecora(regAdiacente.getColore(), regAdiacente.getNumPecore());
+				view.modificaQtaPecora(regAdiacente.getColore(), regAdiacente.getNumPecore(),"Il Lupo ha mangiato!");
 			}
 		} else {
 			throw new NotAllowedMoveException("Non ci sono lupi.");
@@ -503,7 +517,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		List<Strada> stradeConfini=statoPartita.getStradeConfini(posNera);
 		/*
 		 * Controllo se nelle strade che circondano la regione in cui si trova la nera c'è una strada che 
-		 * come numero di casella corrisponda a quella che ho generato con il metodo lanciaDado()
+		 * come numero di casella corrisponda a quella che ho generato con il lanciaDado()
 		 * Se è cosi, allora sposto la pecora nera nella regione speculare
 		 * alla strada rispetto alla regione in cui si trova la nera
 		 */
@@ -543,9 +557,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		boolean puoScavalcare=true;
 		int valoreDado = lanciaDado();
 		System.out.println("VALORE DADO: "+ valoreDado);
-		
-		
-		
 		/*
 		 * Preleviamo la posizione del lupo
 		 * e delle regioni che circondano la regione in cui si trova.
@@ -594,7 +605,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 					}
 					return;
 				} catch (NotAllowedMoveException e) {
-					LOGGER.log(Level.SEVERE, "Non ci sono pecore da spostare", e);
+					LOGGER.log(Level.SEVERE, "Spostamento Lupo Fallito", e);
 				}
 			}
 		}
@@ -671,7 +682,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		}
 		Giocatore nuovoGiocatore = new Giocatore(nome);
 		statoPartita.addGiocatore(nuovoGiocatore);
-		nuovoGiocatore.setColore(vettColori[statoPartita.getGiocatori().indexOf(nuovoGiocatore)]);
+		nuovoGiocatore.setColore(VETTCOLORI[statoPartita.getGiocatori().indexOf(nuovoGiocatore)]);
 		return nuovoGiocatore.getColore();
 	}
 	
@@ -792,8 +803,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		//return mossaDaEffettuare.equals(TipoMossa.SPOSTA_PASTORE)&&giocatoreCorrente.getNumMosse()==2&&!pastoreSpostato;
 		if(!mossaDaEffettuare.equals(TipoMossa.SPOSTA_PASTORE)&&giocatoreCorrente.getNumMosse()==2&&!pastoreSpostato) {
 			return false;
-		}
-		else {
+		} else {
 			return true;
 		}
 	}
@@ -838,27 +848,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 				 */
 				statoPartita.setGiocatoreCorrente(statoPartita.getNextGamer());
 				if(view!=null){
-
-					/*for(String t:statoPartita.getGiocatoreCorrente().getTesserePossedute().keySet()){
-						if(!t.equals(TipoTerreno.SHEEPSBURG.toString())){
-							view.modQtaTessera(TipoTerreno.parseInput(t),statoPartita.getGiocatoreCorrente().getTesserePossedute().get(t));
-						}
-					}*/
-					//MODIFICATO:
-					//aggiorno le tessere di tutti i giocatori, nel caso online è INUTILE!!!!
-					//TODO DA SISTEMARE!!!!!!!!!!!!
-					/*for(Giocatore g : statoPartita.getGiocatori()){
-						for(Entry<String,Integer> tessere : g.getTesserePossedute().entrySet()){
-							//comunico alla view il tipo di terreno della tessera, 
-							//il numero di tessere di quel tipo ed il colore del giocatore a cui è associata la tessera
-							if(!tessere.getKey().equals(TipoTerreno.SHEEPSBURG.toString())){
-								view.modQtaTessera(TipoTerreno.parseInput(tessere.getKey()), tessere.getValue(), g.getColore());
-							}
-						}
-					}*/
-
-
-					//Regione oldNera = statoPartita.getPosPecoraNera();
 					checkSpostaPecoraNera();
 					checkSpostaLupo();
 					try{

@@ -28,6 +28,12 @@ public class Strada extends VerticeGrafo {
 		this.nCasella=nCasella;
 		this.recinto=false;
 	}
+	/**
+	 * Costruttore con parametri, che inizializza la classe
+	 * @param nCasella Numero della casella associata
+	 * @param colore Colore (ID) associato a questa strada
+	 * @param posizione Posizione assegnata a questa strada, rappresenta la posizione della casella assegnata a questa strada
+	 */
 	public Strada(int nCasella, String colore, Point posizione){
 		this.nCasella=nCasella;
 		this.recinto=false;

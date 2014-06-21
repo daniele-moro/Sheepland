@@ -13,6 +13,10 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Classe che rappresenta l'interfaccia del controller, usata per implementare RMI e Socket
+ *
+ */
 public interface IFController extends Remote{
 
 	/**

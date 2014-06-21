@@ -6,9 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Giocatore implements Serializable{
-	/**
-	 * 
-	 */
+
+	
 	private static final long serialVersionUID = -46069195325859567L;
 	
 	public static final int SOLDI_INIT = 20;
@@ -42,6 +41,9 @@ public class Giocatore implements Serializable{
 	 */
 	private transient Strada position2;
 	
+	/**
+	 * Colore associato al giocatore
+	 */
 	private Color colore;
 	
 	/**
@@ -73,6 +75,11 @@ public class Giocatore implements Serializable{
 		this.position=position;
 	}
 	
+	/**
+	 * Costruttore con parametri
+	 * @param nome Nome del giocatore da creare
+	 * @param colore Colore associato al giocatore
+	 */
 	public Giocatore (String nome, Color colore) {
 		this(nome);
 		this.colore=colore;

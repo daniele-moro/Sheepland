@@ -21,11 +21,19 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
+/**
+ * Questa classe implementa gli eventi collegati alla mappa,
+ *  i movimenti del mouse ed i click sulla mappa vengono intercettati dagli eventi qui implementati
+ *
+ */
 class AzioniMouse extends MouseAdapter{
 	//Regioni da evidenziare
 	private String reg1;
 	private String reg2;
 
+	/**
+	 * Riferimenti alla view e al controller
+	 */
 	View view;
 	IFController controller;
 	
@@ -36,7 +44,17 @@ class AzioniMouse extends MouseAdapter{
 	
 	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.view");
 
+	/**
+	 * Questa immagine è l'immagine utilizzata per vedere in quale regione/strada della mappa il giocatore ha cliccato
+	 */
 	BufferedImage image;
+	
+	/**
+	 * Costruttore che inizializza l'immagine, ed assegna i riferimenti alla view ed al controller
+	 * @param image InputStream collegato all'immagine usata per riferirsi alle regioni/strade
+	 * @param view Riferimento alla view collegata a questo listener
+	 * @param controller Riferimento al controller su cui la classe deve chiamare i metodi
+	 */
 	public AzioniMouse(InputStream image, View view, IFController controller){
 		super();
 		reg1="";
@@ -51,7 +69,9 @@ class AzioniMouse extends MouseAdapter{
 		prevPos=0;
 	}
 
-	//Evento di click del mouse
+	/**
+	 * Collegamento al click del mouse
+	 */
 	public void mouseClicked(MouseEvent e){
 		if(e.getX()< 0 || e.getY()<0 || e.getX()>image.getWidth() || e.getY()>image.getHeight()){
 			return;
@@ -70,8 +90,6 @@ class AzioniMouse extends MouseAdapter{
 					try {
 						//provo a comunicare quale pastore voglio usare
 						controller.cambiaPastore(Integer.toHexString(c1));
-						//azzero la mossa attuale se tutto è andato a buon fine
-						view.setMossaAttuale(TipoMossa.NO_MOSSA);
 					} catch (IllegalClickException e1) {
 						view.getLBLOutput().setText( e1.getMessage());
 						LOGGER.log(Level.SEVERE, "Area non clickabile", e1);
@@ -346,14 +364,18 @@ class AzioniMouse extends MouseAdapter{
 	}
 	
 	
-	//Evento di movimento del mouse all'interno del componente
+	/**
+	 * Evento di movimento del mouse all'interno della mappa
+	 */
 	public void mouseMoved(MouseEvent e){
 		JLabel lbl=(JLabel) e.getComponent();
 
+		//Controllo per sicurezza che il movimento avvenga all'interno dell'immagine che abbiamo per i riferimenti
 		if(e.getX()< 0 || e.getY()<0 || e.getX()>image.getWidth() || e.getY()>image.getHeight()){
 			lbl.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			return;
 		}
+		//Memorizzo il colore della regione/strada che ho cliccato, riferendomi all'immagine salvata
 		int color=image.getRGB(e.getX(),e.getY());
 		//Controllo se il cursore è in una regione tra quelle che devo evidenziare
 		if(color!=prevPos){

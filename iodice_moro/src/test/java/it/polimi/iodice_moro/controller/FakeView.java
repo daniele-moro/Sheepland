@@ -85,7 +85,7 @@ public class FakeView implements IFView {
 	}
 
 	@Override
-	public void modificaQtaPecora(String idReg, int num) throws RemoteException {
+	public void modificaQtaPecora(String idReg, int num, String testo) throws RemoteException {
 
 	}
 

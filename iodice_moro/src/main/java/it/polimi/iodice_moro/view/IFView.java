@@ -76,9 +76,10 @@ public interface IFView extends Remote{
 	 * Cambia il numero di pecore della regione con ID passato come parametro
 	 * @param idReg Id della regione di cui cambiare il numero di pecore
 	 * @param num Numero di pecore presenti nella regione
+	 * @param testo Testo da visualizzare all'utente
 	 * @throws RemoteException
 	 */
-	public void modificaQtaPecora(String idReg, int num) throws RemoteException;
+	public void modificaQtaPecora(String idReg, int num, String testo) throws RemoteException;
 
 	/**
 	 * Cambia il numero di tessere del terreno passato come parametro

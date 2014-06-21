@@ -30,7 +30,9 @@ public class Regione extends VerticeGrafo{
 	 */
 	private final TipoTerreno tipo;
 	
-	
+	/**
+	 * Colore della regione
+	 */
 	private String colore;
 	
 	private Point posizione;
@@ -46,6 +48,12 @@ public class Regione extends VerticeGrafo{
 		this.pecoraNera=false;
 	}
 	
+	/**
+	 * Costruttore con parametri
+	 * @param tipo Tipo del terreno della regione che si sta inizializzando
+	 * @param colore Colore (ID) associato alla regione che si sta inizializzando
+	 * @param posizione Posizione nella mappa assegnata a questa regione(usata per le label delle pecore)
+	 */
 	public Regione(String tipo, String colore, Point posizione){
 		this.tipo=TipoTerreno.parseInput(tipo);
 		this.colore=colore;
@@ -57,10 +65,15 @@ public class Regione extends VerticeGrafo{
 	
 	
 	//GETTER & SETTER degli attributi
-	
+	/**
+	 * @return Colore (ID) associato a questa regione
+	 */
 	public String getColore(){
 		return colore;
 	}
+	/**
+	 * @return Posizione associata a questa regione
+	 */
 	public Point getPosizione(){
 		return posizione;
 	}

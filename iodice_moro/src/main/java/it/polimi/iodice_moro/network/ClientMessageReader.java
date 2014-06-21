@@ -218,6 +218,7 @@ public class ClientMessageReader implements Runnable{
 							case "EXCEPTION":
 								//ECCEZIONE, viene visualizzata nella label dedicata alle comunicazioni con l'utente
 								view.getLBLOutput().setText(parametri[1]);
+								LOGGER.log(Level.SEVERE, "Errore ", parametri[1]);
 								break;
 
 							case"ADD_CANC_NORM":
@@ -232,7 +233,7 @@ public class ClientMessageReader implements Runnable{
 
 							case "MOD_QTA_PEC":
 								//modifica della quantita di pecore contenute in un determinato terreno
-								view.modificaQtaPecora(parametri[1], Integer.parseInt(parametri[2]));
+								view.modificaQtaPecora(parametri[1], Integer.parseInt(parametri[2]), parametri[3]);
 								break;
 
 							case "RIS_DADO":{

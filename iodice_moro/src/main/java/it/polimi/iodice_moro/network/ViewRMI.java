@@ -3,6 +3,7 @@ package it.polimi.iodice_moro.network;
 import it.polimi.iodice_moro.controller.Controller;
 import it.polimi.iodice_moro.controller.IFController;
 import it.polimi.iodice_moro.exceptions.PartitaIniziataException;
+import it.polimi.iodice_moro.main.Main;
 import it.polimi.iodice_moro.model.Giocatore;
 import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.TipoTerreno;
@@ -197,10 +198,10 @@ public class ViewRMI implements IFView {
 	 * @see it.polimi.iodice_moro.controller.IFView#modificaQtaPecora
 	 */
 	@Override
-	public void modificaQtaPecora(String idReg, int num) {
+	public void modificaQtaPecora(String idReg, int num, String testo) {
 		for(IFView view : listaView.values()) {
 			try {
-				view.modificaQtaPecora(idReg, num);
+				view.modificaQtaPecora(idReg, num, testo);
 			} catch (RemoteException e) {
 				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
@@ -334,7 +335,7 @@ public class ViewRMI implements IFView {
 		inizio=0;
 		while(inizio==0 ||
 				(inizio!=0 &&
-				!(listaView.size()>=4 || (listaView.size()>=2 && ora-inizio>30)))){
+				!(listaView.size()>=4 || (listaView.size()>=2 && ora-inizio>Main.TEMPO_ATTESA)))){
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {

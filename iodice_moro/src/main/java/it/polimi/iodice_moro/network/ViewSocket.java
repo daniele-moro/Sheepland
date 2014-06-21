@@ -1,6 +1,7 @@
 package it.polimi.iodice_moro.network;
 
 import it.polimi.iodice_moro.controller.Controller;
+import it.polimi.iodice_moro.main.Main;
 import it.polimi.iodice_moro.model.Giocatore;
 import it.polimi.iodice_moro.model.TipoTerreno;
 import it.polimi.iodice_moro.view.IFView;
@@ -57,7 +58,7 @@ public class ViewSocket implements IFView {
 		long ora = System.currentTimeMillis();
 		while(inizio==0 ||
 				(inizio!=0 &&
-					!(socketGiocatori.size()>=4 || (socketGiocatori.size()>=2 && ora-inizio>30)))){
+					!(socketGiocatori.size()>=4 || (socketGiocatori.size()>=2 && ora-inizio>Main.TEMPO_ATTESA)))){
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
@@ -170,10 +171,10 @@ public class ViewSocket implements IFView {
 	}
 
 	@Override
-	public void modificaQtaPecora(String idReg, int num) {
+	public void modificaQtaPecora(String idReg, int num, String testo) {
 		//Comunico a tutti i client che bisogna modificare la quantita di pecora in una determinata regione
 		for(Entry<Color, PrintWriter> g : writerGiocatori.entrySet()){
-			g.getValue().println("MOD_QTA_PEC#"+idReg+"#"+num);
+			g.getValue().println("MOD_QTA_PEC#"+idReg+"#"+num+"#"+testo);
 			g.getValue().flush();
 		}
 
