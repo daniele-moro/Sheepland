@@ -39,6 +39,12 @@ public class ControllerSocket implements IFController{
 	
 	private static final Logger LOGGER=  Logger.getLogger("it.polimi.iodice_moro.network");
 	
+	/**
+	 * Costruttore del ControllerSocket.
+	 * @param host Host a cui connettersi.
+	 * @param port Porta a cui connettersi.
+	 * @throws IOException
+	 */
 	public ControllerSocket(String host, int port) throws IOException{
 		//inizializza i parametri della connessione
 		this.host=host;
@@ -46,16 +52,27 @@ public class ControllerSocket implements IFController{
 		
 	}
 	
+	/**
+	 * Costruttore di default di ControllerSocket.
+	 * @param host
+	 * @throws IOException
+	 */
 	public ControllerSocket(String host) throws IOException{
 		this(host,DEFAULT_PORT);
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#spostaPecora(java.lang.String)
+	 */
 	@Override
 	public void spostaPecora(String idRegione) throws NotAllowedMoveException , IllegalClickException{
 		output.println("SPOSTA_PECORA#"+idRegione);
 		output.flush();
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#spostaPecoraNera(java.lang.String)
+	 */
 	@Override
 	public void spostaPecoraNera(String idRegPecoraNera) throws NotAllowedMoveException, RemoteException {
 		output.println("SPOSTA_PECORA_NERA#"+idRegPecoraNera);
@@ -63,12 +80,18 @@ public class ControllerSocket implements IFController{
 	}
 
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#acquistaTessera(java.lang.String)
+	 */
 	@Override
 	public void acquistaTessera(String idRegione) throws IllegalClickException, NotAllowedMoveException, RemoteException {
 		output.println("COMPRA_TESSERA#"+idRegione);
 		output.flush();
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#spostaPedina(java.lang.String)
+	 */
 	@Override
 	public void spostaPedina(String idStrada) throws IllegalClickException, NotAllowedMoveException, RemoteException {
 		output.println("SPOSTA_PASTORE#"+idStrada);
@@ -76,6 +99,9 @@ public class ControllerSocket implements IFController{
 	}
 
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#creaGiocatore(java.lang.String)
+	 */
 	@Override
 	public Color creaGiocatore(String nome) {
 		//Prova a connettersi e se non riesce torna null, 
@@ -128,6 +154,9 @@ public class ControllerSocket implements IFController{
 	}
 	
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#mossaPossibile(Model.TipoMossa)
+	 */
 	@Override
 	public boolean mossaPossibile(TipoMossa mossaDaEffettuare) {
 		boolean retValue=false;
@@ -154,7 +183,10 @@ public class ControllerSocket implements IFController{
 		return retValue;
 	}
 
-	//CONTROLLARE SE VIENE USATO; NON DOVREBBE VENIRE USAtO, iniziaPartita chiamato dal server
+	// TODO CONTROLLARE SE VIENE USATO; NON DOVREBBE VENIRE USAtO, iniziaPartita chiamato dal server
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#iniziaPartita
+	 */
 	@Override
 	public void iniziaPartita() {
 		output.println("INIZIA_PARTITA");
@@ -165,6 +197,9 @@ public class ControllerSocket implements IFController{
 		attesaRisp.start();
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#getPosRegioni
+	 */
 	@Override
 	public Map<String, Point> getPosRegioni() {
 		Map<String,Point> posRegioni = new HashMap<String,Point>();
@@ -198,6 +233,9 @@ public class ControllerSocket implements IFController{
 
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#getPosStrade
+	 */
 	@Override
 	public Map<String, Point> getPosStrade() {
 		Map<String,Point> posStrade = new HashMap<String,Point>();
@@ -229,6 +267,9 @@ public class ControllerSocket implements IFController{
 		return posStrade;
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#getIDRegioniAd(java.lang.String)
+	 */
 	@Override
 	public List<String> getIDRegioniAd() {
 		List<String> idReg= new ArrayList<String>();
@@ -256,6 +297,9 @@ public class ControllerSocket implements IFController{
 	}
 
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#getGiocatori
+	 */
 	@Override
 	public Map<Color, String> getGiocatori() {
 		Map<Color,String> giocatori = new HashMap<Color,String>();
@@ -289,12 +333,18 @@ public class ControllerSocket implements IFController{
 		return giocatori;
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#setStradaGiocatore(Color, java.lang.String)
+	 */
 	@Override
 	public void setStradaGiocatore(Color colore, String idStrada) throws IllegalClickException {
 		output.println("SELEZ_POSIZ#"+colore.getRGB()+"#"+idStrada);
 		output.flush();
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#ssetView(View.IFView)
+	 */
 	@Override
 	public void setView(IFView view) {
 		this.view=view;
@@ -305,6 +355,9 @@ public class ControllerSocket implements IFController{
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#end
+	 */
 	@Override
 	public void end() {
 		System.out.println("chiusura della connessione!!");
@@ -318,6 +371,9 @@ public class ControllerSocket implements IFController{
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#addView(View.IFView, Color)
+	 */
 	@Override
 	public void addView(IFView view, Color coloreGiocatore)
 			throws RemoteException {
@@ -325,6 +381,9 @@ public class ControllerSocket implements IFController{
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#accoppiamento1(java.lang.String)
+	 */
 	@Override
 	public void accoppiamento1(String idRegione) throws NotAllowedMoveException, RemoteException, IllegalClickException {
 		output.println("ACCOPPIAMENTO1#"+idRegione);
@@ -332,18 +391,27 @@ public class ControllerSocket implements IFController{
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#sparatoria1(java.lang.String)
+	 */
 	@Override
 	public void sparatoria1(String idRegione) throws NotAllowedMoveException, RemoteException, IllegalClickException {
 		output.println("SPARATORIA1#"+idRegione);
 		output.flush();
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#cambiaPastore(java.lang.String)
+	 */
 	@Override
 	public void cambiaPastore(String idStrada) throws RemoteException,IllegalClickException {
 		output.println("CAMBIA_PASTORE#"+idStrada);
 		output.flush();	
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#sparatoria2(java.lang.String)
+	 */
 	@Override
 	public void sparatoria2(String idRegione) throws RemoteException,
 			IllegalClickException, NotAllowedMoveException {

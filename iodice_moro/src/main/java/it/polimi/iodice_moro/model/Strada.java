@@ -10,8 +10,6 @@ import java.awt.Point;
  */
 public class Strada extends VerticeGrafo {
 	
-	//ATTRIBUTI
-	//Attributo immutabile
 	private final int nCasella;
 	/**
 	 * Indica la presenza o meno di un recinto
@@ -22,7 +20,6 @@ public class Strada extends VerticeGrafo {
 	
 	private Point posizione;
 	
-	//Costruttore usato per l'inizializzazione della mappa caricata da XML
 	/**
 	 * Costruttore che inizializza la classe, verrà chiamato all'inizializzazione della partita
 	 * @param nCasella Numero della casella presente sulla strada
@@ -38,13 +35,16 @@ public class Strada extends VerticeGrafo {
 		this.posizione=posizione;
 	}
 
-	
-	//GETTER & SETTER degli attributi
-	
+	/**
+	 * @return Colore del giocatore.
+	 */
 	public String getColore(){
 		return colore;
 	}
 	
+	/**
+	 * @return Posizione attuale del giocatore.
+	 */
 	public Point getPosizione(){
 		return posizione;
 	}
@@ -88,4 +88,5 @@ public class Strada extends VerticeGrafo {
 	public boolean isRegione() {
 		return false;
 	}
+
 }

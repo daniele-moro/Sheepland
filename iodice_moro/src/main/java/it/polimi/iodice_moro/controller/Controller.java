@@ -59,6 +59,12 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		this.statoPartita = new StatoPartita();
 		this.view=view;
 	}
+	
+	/**
+	 * Costruttore del controller.
+	 * @param statoPartita Istanza dello Stato Partita.
+	 * @throws RemoteException Se ci sono problemi di rete.
+	 */
 	public Controller(StatoPartita statoPartita) throws RemoteException {
 		this.statoPartita= statoPartita;
 	}
@@ -161,6 +167,13 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		
 	}
 	
+	/**
+	 * Metodo per effettuare la mossa accoppiamento 1.
+	 * @param regione Regione su cui effettuare il controllo.
+	 * @throws NotAllowedMoveException Se la mossa non può essere effettuata nella regione.
+	 * @throws RemoteException In caso di problemi di rete.
+	 * @see IFController#accoppiamento1(String)
+	 */
 	private synchronized void accoppiamento1(Regione regione) throws NotAllowedMoveException,RemoteException{
 		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
 		//Controlliamo che la regione su cui fare l'accoppiamento sia vicino alla strada dove si trova il giocatore
@@ -181,6 +194,9 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#sparatoria1 (java.lang.String)
+	 */
 	public synchronized void sparatoria1(String idRegione) throws NotAllowedMoveException, RemoteException, IllegalClickException{
 		Regione reg = statoPartita.getRegioneByID(idRegione);
 		if(reg==null){
@@ -193,6 +209,13 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		checkTurnoGiocatore(TipoMossa.SPARATORIA1);
 	}
 	
+	/**
+	 * Metodo per effettuare la mossa sparatoria 1.
+	 * @param regione Regione su cui effettuare la mossa.
+	 * @throws NotAllowedMoveException Se non può essere effettuata la mossa nella regione.
+	 * @throws RemoteException In caso di problemi di rete.
+	 * @see IFController#sparatoria1(String)
+	 */
 	private synchronized void sparatoria1(Regione regione) throws NotAllowedMoveException, RemoteException{
 		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
 		//Controlliamo che la regione su cui fare la sparatoria sia vicino alla strada dove si trova il giocatore
@@ -214,6 +237,9 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#sparatoria2 (java.lang.String)
+	 */
 	public synchronized void sparatoria2(String idRegione) throws NotAllowedMoveException, RemoteException, IllegalClickException{
 		Regione reg = statoPartita.getRegioneByID(idRegione);
 		if(reg==null){
@@ -229,7 +255,13 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		checkTurnoGiocatore(TipoMossa.SPARATORIA2);
 	}
 	
-	
+	/**
+	 * Metodo per effettuare la mossa sparatoria 2.
+	 * @param reg Regione su cui effettuare la mossa.
+	 * @throws RemoteException Se ci sono problemi di rete.
+	 * @throws NotAllowedMoveException Se la mossa non può esserre effettuata sulla regione.
+	 * @see IFController#sparatoria2(String)
+	 */
 	private void sparatoria2(Regione reg) throws RemoteException, NotAllowedMoveException {
 		Giocatore giocatoreCorrente = statoPartita.getGiocatoreCorrente();
 		List<Strada> stradeAdiacenti = statoPartita.getStradeConfini(reg);
@@ -279,14 +311,14 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		}
 	}
 	
-	//___________________________________________________________________________________________________________________
-	/*
-	 * Controlla se il giocatore corrente può fare ancora mosse (n. mosse): se non può farle
-	 * azzera le variabili di turno (fineturno() ) nel giocatore corrente e trova
-	 * il prossimo giocatore (modifica il StatoPartita.giocatoreCorrente ).
-	 * Inoltre se è il turno finale ed è l'ultimo giocatore mette finePartita().
-	 * Ritorna il prossimo giocatore.
+	/**
+	 * Metodo che sposta la pecora nera dala regione in cui si trova alla regione adiacente
+	 * @param regionePecora Regione dove si trova la pecora.
+	 * @param regAdiacente Regione dove deve essere spostata le pecora.
+	 * @throws NotAllowedMoveException se non ci sono pecore nere da spostare.
+	 * @see #checkSpostamentoNera
 	 */
+	@Override
 	public synchronized void spostaPecoraNera(String idRegPecoraNera) throws NotAllowedMoveException, RemoteException{
 		Regione regionePecora=statoPartita.getRegioneByID(idRegPecoraNera);
 		Regione regAdiacente=statoPartita.getAltraRegione(regionePecora, statoPartita.getGiocatoreCorrente().getPosition());
@@ -306,6 +338,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @param regAdiacente Nuova posizione lupo.
 	 * @throws NotAllowedMoveException se non ci sono lupi.
 	 * @throws RemoteException
+	 * @see {@link Controller#spostaLupo(Regione, Regione)}
 	 */
 	private synchronized void spostaLupo(Regione regioneLupo, Regione regAdiacente) throws NotAllowedMoveException, RemoteException {
 		if(regioneLupo.isLupo()) {
@@ -327,6 +360,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * al costo attuale della tessera che compra.
 	 * @param tipo Tipo della tessera che vuole comprare.
 	 * @throws Exception Se il costo della tessera è maggiore dei soldi del giocatore.
+	 * @see Controller#acquistaTessera(String)
 	 */
 	private synchronized void acquistaTessera(TipoTerreno tipo) throws NotAllowedMoveException, RemoteException {
 		Giocatore giocatore=statoPartita.getGiocatoreCorrente();
@@ -387,6 +421,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @param nuovastrada Nuova posizione.
 	 * @throws Exception Se nuova posizione è già occupata da un recinto.
 	 * @throws Exception Se non ha abbastanza soldi per muoversi.
+	 * @see Controller#spostaPedina(String)
 	 */
 	private synchronized void spostaPedina (Strada nuovastrada) throws NotAllowedMoveException, RemoteException {
 		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
@@ -491,8 +526,15 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		}
 	}
 	
-	
-	//DA REIMPLEMENTARE!!
+	//TODO DA REIMPLEMENTARE
+	/**
+	 * Controlla se dev'essere effettuato il movimento del lupo. Viene lanciato un dado e se
+	 * il risultato è lo stesso di una delle caselle adiacenti il lupo viene spostato in quella
+	 * direzione. Se caselle sono tutte occupate da recinti, il lupo può scavalcarli, altrimenti
+	 * se la direzione verso la quale spostarsi è occupata da un recinto dovrà essere lanciato
+	 * il dado.
+	 * @throws RemoteException
+	 */
 	public synchronized void checkSpostaLupo() throws RemoteException {
 		boolean puoScavalcare=true;
 		int valoreDado = lanciaDado();
@@ -714,9 +756,10 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			//DA qui inizia la partita vera e propria
 		}
 	}
-	/**
-	 * @param strada
-	 * @throws NotAllowedMoveException
+	/** 
+	 * Controlla se la strada è già occupata da un pastore.
+	 * @param strada Strada su cui effettuare il controllo.
+	 * @throws NotAllowedMoveException Se la trada è occupata.
 	 */
 	private void isStradaOccupata(Strada strada) throws NotAllowedMoveException {
 		for(Giocatore g2: statoPartita.getGiocatori()){
@@ -749,13 +792,16 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		}
 	}
 	
-//___________________________________________________________________________________________________________________
-	/*
+
+	/**
 	 * Controlla se il giocatore corrente può fare ancora mosse (n. mosse): se non può farle
 	 * azzera le variabili di turno (fineturno() ) nel giocatore corrente e trova
-	 * il prossimo giocatore (modifica il StatoPartita.giocatoreCorrente ).
+	 * il prossimo giocatore (modifica il giocatore corrente in stato partita ).
 	 * Inoltre se è il turno finale ed è l'ultimo giocatore mette finePartita().
 	 * Ritorna il prossimo giocatore.
+	 * @param mossaFatta Mossa appena effettuata.
+	 * @return Prossimo giocatore.
+	 * @throws RemoteException In caso di problemi di rete.
 	 */
 	public Giocatore checkTurnoGiocatore(TipoMossa mossaFatta) throws RemoteException {
 		/*
@@ -840,6 +886,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	
 	/**
 	 * Metodo inovocato alla fine della partita, dovrà aggiornare la view
+	 * @throws RemoteException In caso di problemi di rete.
 	 */
 	private void finePartita() throws RemoteException {
 		if(view!=null){
@@ -978,7 +1025,9 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		return regAD;
 	}
 
-	
+	/**
+	 * Imposta la view da utilizzare.
+	 */
 	public void setView(IFView view2) {
 		this.view=view2;
 	}
@@ -995,6 +1044,11 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		return gioc;
 	}
 	
+	/**
+	 * Metodo statico per ordinare una Map<Giocatore, Integer> secondo il valore.
+	 * @param map
+	 * @return
+	 */
 	public static Map<Giocatore, Integer> sortByValue(Map<Giocatore, Integer> map) {
 
 		List<Map.Entry<Giocatore, Integer>> list = new LinkedList<Map.Entry<Giocatore,Integer>>(map.entrySet());    
@@ -1013,11 +1067,18 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		return result;   
 	}
 	
-	//Precondizione: Metoto chiamato solo dal client in RMI.
+	/**
+	 * Precondizione: metodo chiamato solo dal client RMI. Serve per aggiungere una nuova view
+	 * alla ViewRMI.
+	 */
 	public void addView(IFView view, Color coloreGiocatore) throws RemoteException, PartitaIniziataException {
 		((ViewRMI)(this.view)).addView(view, coloreGiocatore);
 		
 	}
+	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#end
+	 */
 	@Override
 	public void end() throws RemoteException {
 		//Metodo per la chiusura dell'applicazione
@@ -1026,6 +1087,10 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		view.close();
 		
 	}
+
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#cambiaPastore(java.lang.String)
+	 */
 	@Override
 	public void cambiaPastore(String idStrada) throws RemoteException, IllegalClickException {
 		//metodo usato per selezionare il pastore che si vuole usare nel caso di due giocatori

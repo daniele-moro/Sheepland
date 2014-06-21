@@ -24,6 +24,12 @@ public class ClientMessageReader implements Runnable{
 	
 	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.network");
 	
+	/**
+	 * Costruttore del ClientMessageReader.
+	 * @param view2 View Associata.
+	 * @param socket Socket Associato.
+	 * @param scInput Da qui verranno lette le stringhe in ingresso.
+	 */
 	public ClientMessageReader(IFView view2, Socket socket,BufferedReader scInput) {
 		this.view=(View)view2;
 		this.input=scInput;

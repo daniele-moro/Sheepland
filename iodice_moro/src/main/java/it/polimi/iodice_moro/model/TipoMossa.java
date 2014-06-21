@@ -21,11 +21,19 @@ public enum TipoMossa {
 	public String toString(){
 		return super.toString().toLowerCase();
 	}
+	
+	/**
+	 * Porto la stringa di input in maiuscolo, il metodo valueOf confronta il secondo parametro
+	 * con tutte le possibili istanze dell'enumeratore,
+	 * Se non matcha con nessuna della possibilita mi torna un eccezione di tipo 
+	 * IllegalArgumentException
+	 * @param input Stringa da trasformare.
+	 * @return Valore dell'enumeratore corrispondente alla stringa in ingresso.
+	 * @throws IllegalArgumentException Se non matcha con nessuna della possibilita mi torna un eccezione di tipo 
+	 * IllegalArgumentException
+	 */
 	public static TipoMossa parseInput(String input){
-		/*
-		 * Porto la stringa di input in maiuscolo, il metodo valueOf confronta il secondo parametro con tutte le possibili istanze dell'enumeratore,
-		 * se non matcha con nessuna della possibilita mi torna un eccezione di tipo IllegalArgumentException
-		 */
+		
 		return Enum.valueOf(TipoMossa.class,  input.toUpperCase());  
 	}
 

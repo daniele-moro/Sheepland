@@ -33,6 +33,11 @@ public class Main {
 	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.main");
 
 
+	/**
+	 * Metodo avviato all'avvio del programma.
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
 		//CREO tutte le istanze che mi servono per far funzionare il gioco
 		JFrame frame = new JFrame();

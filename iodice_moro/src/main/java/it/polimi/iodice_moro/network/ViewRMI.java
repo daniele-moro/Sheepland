@@ -30,17 +30,27 @@ public class ViewRMI implements IFView {
 	
 	private static final Logger LOGGER= Logger.getLogger("it.polimi.iodice_moro.view");
 
+	/**
+	 * Costruttore ViewRMI.
+	 */
 	public ViewRMI() {
 		listaView = new HashMap<Color, IFView>();
 		
 	}
 	
+	/**
+	 * Costruttore ViewRMI.
+	 * @param controller Controller associato.
+	 */
 	public ViewRMI(IFController controller) {
 		this();
 		this.controller=controller;
 		partitaIniziata=false;
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView.initMappa
+	 */
 	public void initMappa() {
 		for(IFView view : listaView.values()) {
 			try {
@@ -52,6 +62,9 @@ public class ViewRMI implements IFView {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView.cambiaGiocatore(java.awt.Color)
+	 */
 	@Override
 	public void cambiaGiocatore(Color color) {
 		for(IFView view : listaView.values()){
@@ -65,6 +78,9 @@ public class ViewRMI implements IFView {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView.addCancelloNormale(java.lang.String)
+	 */
 	@Override
 	public void addCancelloNormale(String stradaID) {
 		for(IFView view : listaView.values()) {
@@ -77,6 +93,9 @@ public class ViewRMI implements IFView {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#addCancelloNormale(java.lang.String)
+	 */
 	@Override
 	public void addCancelloFinale(String stradaID) {
 		for(IFView view : listaView.values()) {
@@ -89,6 +108,10 @@ public class ViewRMI implements IFView {
 
 	}
 
+
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#spostaPecoraBianca(java.lang.String, java.lang.String)
+	 */
 	@Override
 	public void spostaPecoraBianca(String s, String d) {
 		for(IFView view : listaView.values()) {
@@ -101,6 +124,9 @@ public class ViewRMI implements IFView {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#spostaPastore(java.lang.String, java.lang.String, java.awt.String)
+	 */
 	@Override
 	public void spostaPastore(String s, String d, Color colore) {
 		for(final IFView view : listaView.values()) {
@@ -112,6 +138,9 @@ public class ViewRMI implements IFView {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#posiziona2Pastore(java.lang.String, java.awt.String)
+	 */
 	@Override
 	public void posiziona2Pastore(String idStrada, Color colore) {
 		for(final IFView view : listaView.values()) {
@@ -123,13 +152,19 @@ public class ViewRMI implements IFView {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#selezPast(java.awt.Color)
+	 */
 	@Override
 	public void selezPast(Color colore) throws RemoteException {
 		//Mando solo all'interfaccia corretta il comando di selezione del pastore
 		listaView.get(colore).selezPast(colore);
 		
 	}
-
+	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#spostaPecoraNera(java.lang.String, java.lang.String)
+	 */
 	@Override
 	public void spostaPecoraNera(String s, String d) {
 		for(IFView view : listaView.values()) {
@@ -141,6 +176,9 @@ public class ViewRMI implements IFView {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#spostaLupo(java.lang.String, java.lang.String)
+	 */
 	@Override
 	public void spostaLupo(String s, String d) throws RemoteException {
 		for(IFView view : listaView.values()) {
@@ -153,6 +191,10 @@ public class ViewRMI implements IFView {
 		
 	}
 
+	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#modificaQtaPecora
+	 */
 	@Override
 	public void modificaQtaPecora(String idReg, int num) {
 		for(IFView view : listaView.values()) {
@@ -164,6 +206,9 @@ public class ViewRMI implements IFView {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#modQtaTessera(java.lang.String)
+	 */
 	@Override
 	public void modQtaTessera(TipoTerreno tess, int num, Color colore) {
 		try {
@@ -175,6 +220,9 @@ public class ViewRMI implements IFView {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#modSoldiGiocatore
+	 */
 	@Override
 	public void modSoldiGiocatore(Color coloreGiocatoreDaModificare, int soldi) {
 		for(IFView view : listaView.values()) {
@@ -187,6 +235,9 @@ public class ViewRMI implements IFView {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#incPrezzoTessera
+	 */
 	@Override
 	public void incPrezzoTessera(TipoTerreno tess) {
 		for(IFView view : listaView.values()) {
@@ -198,6 +249,9 @@ public class ViewRMI implements IFView {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#visualizzaPunteggi
+	 */
 	@Override
 	public void visualizzaPunteggi(Map<Giocatore, Integer> punteggiOrdinati) {
 		final Map<Giocatore,Integer> punteggi=punteggiOrdinati;
@@ -220,6 +274,9 @@ public class ViewRMI implements IFView {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#setGiocatoreCorrente
+	 */
 	@Override
 	public void setGiocatoreCorrente(Color colore) {
 		for(IFView view : listaView.values()) {
@@ -231,7 +288,13 @@ public class ViewRMI implements IFView {
 		}
 	}
 	
-	//Aggiunge istanza View alla lista della View. Utilizzato in implementazione View RMI.
+	/**
+	 * Aggiunge istanza View alla lista della View. Utilizzato in implementazione View RMI.
+	 * @param view Istanza della view da aggiungere-
+	 * @param coloreGiocatore Colore del giocatore da associare alla View.
+	 * @throws RemoteException In caso di problemi di rete.
+	 * @throws PartitaIniziataException Se la partita è già iniziata.
+	 */
 	public void addView(IFView view, Color coloreGiocatore) throws RemoteException, PartitaIniziataException {
 		if(listaView.isEmpty()) {
 			setInizio();
@@ -244,15 +307,26 @@ public class ViewRMI implements IFView {
 		}
 	}
 	
+	/**
+	 * Rimuove il colore del giocatore passato come parametro dalla mappa delle view.
+	 * @param view
+	 * @param coloreGiocatore
+	 */
 	public void removeView(IFView view, Color coloreGiocatore){
 		listaView.remove(coloreGiocatore);
 	}
 
+	/**
+	 * Imposta il tempo di aggiunta dell'ultimo giocatore.
+	 */
 	private void setInizio() {
 		inizio=System.currentTimeMillis();	
 	}
 
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#attendiGiocatori
+	 */
 	@Override
 	public void attendiGiocatori() throws IOException {
 		long ora = System.currentTimeMillis();
@@ -276,6 +350,9 @@ public class ViewRMI implements IFView {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#visRisDado
+	 */
 	@Override
 	public void visRisDado(int numero) throws RemoteException {
 		for(IFView view : listaView.values()) {
@@ -287,6 +364,9 @@ public class ViewRMI implements IFView {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#setPosizioniRegioni
+	 */
 	@Override
 	public void setPosizioniRegioni(Map<String, Point> posizioniRegioni) {
 		for(IFView view : listaView.values()) {
@@ -298,6 +378,9 @@ public class ViewRMI implements IFView {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#setPosizioniStrade
+	 */
 	@Override
 	public void setPosizioniStrade(Map<String, Point> posizioniCancelli) {
 		for(IFView view : listaView.values()) {
@@ -310,6 +393,9 @@ public class ViewRMI implements IFView {
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#setGiocatori
+	 */
 	@Override
 	public void setGiocatori(Map<Color, String> giocatori) {
 		for(IFView view : listaView.values()) {
@@ -322,6 +408,9 @@ public class ViewRMI implements IFView {
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#close
+	 */
 	@Override
 	public void close() throws RemoteException {
 		for(Entry<Color,IFView> view : listaView.entrySet()) {
@@ -381,14 +470,23 @@ public class ViewRMI implements IFView {
 		
 	}
 	
+	/**
+	 * @return Ritorna il parametro booleano per stabilire se la partita è già iniziata.
+	 */
 	public Boolean isIniziata() {
 		return partitaIniziata;
 	}
 
+	/**
+	 * @return Ritorna la mappa che associa ai colori del giocatori la loro view.
+	 */
 	public Map<Color, IFView> getViews() {
 		return listaView;
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFView#usaPast2(java.awt.Color)
+	 */
 	@Override
 	public void usaPast2(Color colore) throws RemoteException {
 		//Comunico a tutti che va usato il secondo pastore del giocatore che deve giocare

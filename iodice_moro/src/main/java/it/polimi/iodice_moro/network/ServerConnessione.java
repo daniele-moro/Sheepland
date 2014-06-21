@@ -34,11 +34,13 @@ public class ServerConnessione implements Runnable {
 		this.serverSocket=server;
 	}
 
+	/**
+	 * Accetta la richiesta dal client, il quale gli passa il nome del nuovo giocatore, chiama il
+	 * metodo {@link Controller#creaGiocatore(String)}, il quale gli torna il colore del giocatore
+	 * e con il colore viene inserito il socket nella hashmap.
+	 */
 	@Override
 	public void run() {
-		//accetta la richiesta dal client, il quale gli passa il nome del nuovo giocatore
-		//chiama il metodo creaGiocatore del controller, il quale gli torna il colore del giocatore appena creato
-		//e con il colore inserisco il socket nella hashmap
 		while(!serverSocket.isClosed()){
 			try{
 				Thread.sleep(10);

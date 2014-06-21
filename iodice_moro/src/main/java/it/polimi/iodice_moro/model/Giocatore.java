@@ -267,6 +267,10 @@ public class Giocatore implements Serializable{
 		
 	}
 
+	/**
+	 * Aumenta i soldi del giocatore di un valore pari al parametro.
+	 * @param soldiAggiunti Soldi da aggiungere.
+	 */
 	public void incrSoldi(int soldiAggiunti) {
 		this.soldi=this.soldi+soldiAggiunti;
 		

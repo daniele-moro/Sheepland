@@ -50,9 +50,11 @@ public interface IFController extends Remote{
 
 	/**
 	 * Metodo chiamato dalla view per effettuare il movimento della pecora nera
-	 * con le stesse modalità di quello del movimento della pecora bianca. Cioè spostarla
-	 * nell'altra regione adiacente alla posizione corrente del giocatore che ha effettuato
-	 * la mossa.
+	 * con le stesse modalità di quello del movimento della pecora bianca. Controlla se il giocatore corrente può fare ancora mosse (n. mosse): se non può farle
+	 * azzera le variabili di turno (fineturno() ) nel giocatore corrente e trova
+	 * il prossimo giocatore (modifica il StatoPartita.giocatoreCorrente ).
+	 * Inoltre se è il turno finale ed è l'ultimo giocatore mette finePartita().
+	 * Ritorna il prossimo giocatore.
 	 * @param idRegPecoraNera Posizione della pecora nera.
 	 * @throws NotAllowedMoveException Se non è presente una pecora nera da spostare.
 	 * @throws RemoteException
