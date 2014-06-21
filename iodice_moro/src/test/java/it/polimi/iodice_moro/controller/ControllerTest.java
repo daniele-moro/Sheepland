@@ -232,7 +232,6 @@ public class ControllerTest{
 		assertEquals(1, numeroLupo);
 		assertFalse(regione0.isLupo());
 	}
-	
 
 	@Test
 	public void testAcquistaTessera() throws Exception {

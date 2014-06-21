@@ -19,6 +19,11 @@ public class LabelDado extends JLabel {
 	
 	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.view");
 
+	/**
+	 * Serve a visualizzare il risultato del dado sulla schermata.
+	 * @param numero Numero del dado da visualizzare.
+	 * @param testoDaVisualizzare Testo da visualizzare.
+	 */
 	public void visualizzaDado(int numero, String testoDaVisualizzare){
 		final int n=numero;
 		final String testo=testoDaVisualizzare;

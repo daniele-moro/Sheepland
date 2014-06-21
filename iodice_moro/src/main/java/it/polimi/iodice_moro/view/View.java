@@ -645,6 +645,9 @@ public class View extends UnicastRemoteObject implements IFView {
 		
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFView#posiziona2Pastore(java.lang.String, java.awt.Color)
+	 */
 	@Override
 	public void posiziona2Pastore(String idStrada, Color colore) {
 		//Creo e posiziono la pedina, per il secondo pastore, nel caso si usino due giocatori
@@ -826,22 +829,34 @@ public class View extends UnicastRemoteObject implements IFView {
 	
 	//METODI per settare le posizioni delle regioni, dei cancelli e dei giocatori
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFVie#setPosizionoRegioni
+	 */
 	@Override
 	public void setPosizioniRegioni(Map<String, Point> posizioniRegioni) {
 		this.posizioniRegioni=posizioniRegioni;
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFVie#setPosizioniStrade
+	 */
 	@Override
 	public void setPosizioniStrade(Map<String, Point> posizioniCancelli) {
 		this.posizioniCancelli=posizioniCancelli;
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFVie#setGiocatori
+	 */
 	@Override
 	public void setGiocatori(Map<Color, String> giocatori) {
 		this.gioc=giocatori;
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFVie#close
+	 */
 	@Override
 	public void close() throws RemoteException {
 		//controller.end(coloreGamer);
@@ -858,6 +873,9 @@ public class View extends UnicastRemoteObject implements IFView {
 		
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFVie#selezPast(java.awt.Color)
+	 */
 	@Override
 	public void selezPast(Color colore){
 		if(coloreGamer.equals(colore)){
@@ -867,6 +885,9 @@ public class View extends UnicastRemoteObject implements IFView {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.view.IFVie#usaPast2(java.awt.Color)
+	 */
 	@Override
 	public void usaPast2(Color colore) throws RemoteException {
 		//metodo usato solo in caso di due giocatori

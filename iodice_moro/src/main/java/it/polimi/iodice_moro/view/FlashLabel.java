@@ -24,7 +24,7 @@ public class FlashLabel extends JLabel {
 	private boolean startVisibility;
 	
 	/**
-	 * Metodo per comandare il falshing della label
+	 * Metodo per comandare il flashing della label
 	 * @param count Numero di flash che deve fare la label
 	 */
 	public void flash(int count){
