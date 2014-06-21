@@ -10,8 +10,10 @@ import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -100,10 +102,22 @@ public class ClientMessageReader implements Runnable{
 								view.spostaLupo(parametri[1], parametri[2]);
 								break;
 
-							case "SPOSTA_PASTORE":
+							case "SPOSTA_PASTORE":{
 								//Animazione di spostamento del pastore
-								view.spostaPastore(parametri[1], parametri[2], new Color(Integer.parseInt(parametri[3])));
-								break;
+								List<String> posMov= new ArrayList<String>();
+								//LETTURA DELLA RISPOSTA, che conterrà tutte le strade da attraversare
+								String messaggio="";
+								messaggio = input.readLine();
+								String[] valori = messaggio.split("#");
+								System.out.println(messaggio);
+								while(!valori[0].equals("END")){
+									posMov.add(valori[0]);
+									messaggio = input.readLine();
+									valori = messaggio.split("#");
+								}
+								view.spostaPastore(posMov, new Color(Integer.parseInt(parametri[1])));
+								
+							}break;
 							
 							case "POS_2_PAST":
 								//Comando il posizionamento della seconda pedina sulla view

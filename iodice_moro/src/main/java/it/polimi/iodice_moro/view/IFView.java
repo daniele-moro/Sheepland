@@ -8,6 +8,7 @@ import java.awt.Point;
 import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Map;
 
 public interface IFView extends Remote{
@@ -48,13 +49,12 @@ public interface IFView extends Remote{
 	public void spostaPecoraBianca(String s, String d) throws RemoteException;
 
 	/**
-	 * Animazione di spostamento del pastore
-	 * @param s ID della regione da cui spostare il pastore
-	 * @param d ID della regione verso cui sposatre il pastore
+	 * Animazione di spostamento del pastore 
+	 * @param listaMov Lista delle strade su cui il pastore si deve muovere
 	 * @param colore Colore del pastore da spostare
 	 * @throws RemoteException
 	 */
-	public void spostaPastore(String s, String d, Color colore) throws RemoteException;
+	public void spostaPastore(List<String> listaMov, Color colore) throws RemoteException;
 
 	/**
 	 * Animazione di spostamento della pecora nera

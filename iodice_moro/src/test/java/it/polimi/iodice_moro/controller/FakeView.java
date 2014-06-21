@@ -5,6 +5,7 @@ import java.awt.Point;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import it.polimi.iodice_moro.model.Giocatore;
@@ -68,7 +69,7 @@ public class FakeView implements IFView {
 	}
 
 	@Override
-	public void spostaPastore(String s, String d, Color colore)
+	public void spostaPastore(List<String> listaMov, Color colore)
 			throws RemoteException {
 
 	}

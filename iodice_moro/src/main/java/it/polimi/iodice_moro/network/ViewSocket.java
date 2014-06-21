@@ -13,6 +13,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -119,10 +120,15 @@ public class ViewSocket implements IFView {
 	}
 
 	@Override
-	public void spostaPastore(String s, String d, Color colore) {
+	public void spostaPastore(List<String> listaMov, Color colore) {
 		//Deve effettuare il movimento del pastore su tutti i client collegati alla partita!
 		for(Entry<Color, PrintWriter> giocatore :writerGiocatori.entrySet()){
-			giocatore.getValue().println("SPOSTA_PASTORE#"+s+"#"+d+"#"+colore.getRGB());
+			giocatore.getValue().println("SPOSTA_PASTORE#"+colore.getRGB());
+			for(String pos : listaMov){
+				giocatore.getValue().println(pos);
+				giocatore.getValue().flush();
+			}
+			giocatore.getValue().println("END");
 			giocatore.getValue().flush();
 		}
 

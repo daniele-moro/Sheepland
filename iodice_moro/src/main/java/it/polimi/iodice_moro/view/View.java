@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -580,8 +581,8 @@ public class View extends UnicastRemoteObject implements IFView {
 	 * @see it.polimi.iodice_moro.view.IFView#spostaPastore(java.lang.String, java.lang.String, java.awt.Color)
 	 */
 	@Override
-	public void spostaPastore(String s, String d, Color colore){
-		//Il campo s è inutile perchè usando la movableLabel, i movimenti sono fatti a partire dalla posizione in cui si trova ora la pedina
+	public void spostaPastore(List<String> listaMov, Color colore){
+		/*//Il campo s è inutile perchè usando la movableLabel, i movimenti sono fatti a partire dalla posizione in cui si trova ora la pedina
 		Point sorg=null;
 		Point dest =posizioniCancelli.get(d);
 		if(!s.equals("")){
@@ -605,7 +606,36 @@ public class View extends UnicastRemoteObject implements IFView {
 			//Se la pedina esiste, la muovo
 			//Attivo l'animazione della pedina
 			pedGiocatore.moveTo(dest, TEMPO_ANIMAZIONI);
+		}*/
+		List<Point> listaPunti = new ArrayList<Point>();
+		for(String pos : listaMov){
+			listaPunti.add(posizioniCancelli.get(pos));
 		}
+		
+		MovableLabel pedGiocatore = pedineGiocatori.get(colore);
+
+		//questo metodo è usato anche nel caso di creazione della pedina, in questo caso,
+		//la pedina non è ancora esistente e viene creata in quel momento
+		if(pedGiocatore==null){
+			//Se la pedina non esiste, 
+			//la creo e la posiziono nella sua posizione che è quella di destinazione
+			pedGiocatore= new MovableLabel();
+			ImageIcon img = getImagePastore(colore);
+			pedGiocatore.setIcon(img);
+			pedGiocatore.setBounds(listaPunti.get(listaPunti.size()-1).x, listaPunti.get(listaPunti.size()-1).y, img.getIconWidth(), img.getIconHeight());
+			layeredMappa.add(pedGiocatore, View.SHEPPARD_LAYER);
+			//Aggiungo la pedina alla map delle pedine dei giocatori
+			pedineGiocatori.put(colore, pedGiocatore);
+		} else{
+			//Se la pedina esiste, la muovo
+			//Attivo l'animazione della pedina
+			//Rimuovo la posizione di partenza
+			listaPunti.remove(0);
+			pedGiocatore.moveTo(listaPunti, TEMPO_ANIMAZIONI);
+		}
+
+		
+		
 	}
 	
 	@Override

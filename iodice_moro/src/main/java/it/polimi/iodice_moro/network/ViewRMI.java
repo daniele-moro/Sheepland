@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -128,10 +129,10 @@ public class ViewRMI implements IFView {
 	 * @see it.polimi.iodice_moro.controller.IFView#spostaPastore(java.lang.String, java.lang.String, java.awt.String)
 	 */
 	@Override
-	public void spostaPastore(String s, String d, Color colore) {
-		for(final IFView view : listaView.values()) {
+	public void spostaPastore(List<String> listaMov, Color colore) {
+		for(IFView view : listaView.values()) {
 			try {
-				view.spostaPastore(s, d, colore);
+				view.spostaPastore(listaMov, colore);
 			} catch (RemoteException e) {
 				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}

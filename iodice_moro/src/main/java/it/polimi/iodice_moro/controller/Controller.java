@@ -452,7 +452,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			throw new IllegalClickException("Non hai cliccato su una strada!");
 		}
 		System.out.println("PERCORSO DA FARE");
-		statoPartita.dijkstraTraStrade(oldStreet, newStreet);
+		
 		//Memorizzo quanti recinti ci sono prima del movimento 
 		//per capire dopo se il recinto usato è normale o finale
 		int nRecinti = statoPartita.getNumRecinti();
@@ -465,8 +465,12 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		} else{
 			view.addCancelloFinale(oldStreet.getColore());
 		}
-		
-		view.spostaPastore(oldStreet.getColore(),idStrada, statoPartita.getGiocatoreCorrente().getColore());
+		List<Strada> stradeAttraversate = statoPartita.dijkstraTraStrade(oldStreet, newStreet);
+		List<String> idStradeAttraversate = new ArrayList<String>();
+		for(Strada s : stradeAttraversate){
+			idStradeAttraversate.add(s.getColore());
+		}
+		view.spostaPastore(idStradeAttraversate, statoPartita.getGiocatoreCorrente().getColore());
 		
 		view.modSoldiGiocatore(statoPartita.getGiocatoreCorrente().getColore(),
 				statoPartita.getGiocatoreCorrente().getSoldi());
@@ -684,7 +688,9 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		//Inserisco la posizone iniziale del giocatore, controllando che sia nulla la posizione
 		if(statoPartita.getGiocatoreCorrente().getPosition()==null){
 			statoPartita.getGiocatoreCorrente().setPosition(strada);
-			view.spostaPastore("", idStrada, colore);
+			List<String> listaStr = new ArrayList<String>();
+			listaStr.add(idStrada);
+			view.spostaPastore(listaStr, colore);
 		}else{
 			//Se non è nulla allora devo controllare se sono nel caso di due gicatori
 			if(statoPartita.getGiocatori().size()==2){

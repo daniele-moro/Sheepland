@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -94,7 +96,30 @@ public class MovableLabel extends JLabel {
 	 * @param destination Point che corrisponde alla destinazione
 	 * @param timeMillisec Durata dell'animazione
 	 */
-	public void moveTo(Point destination, int timeMillisec) {
+	public void moveTo(List<Point> destination, int timeMillisec) {
+		//calcolo la durata dell'animazione del movimento tra due strade
+		final int durataAnimation=timeMillisec/destination.size();
+		final Iterator<Point> it = destination.iterator();
+		if(it.hasNext()){
+			moveTo(it.next(),durataAnimation);
+		}
+		ActionListener animationTask = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				if(it.hasNext()){
+					moveTo(it.next(),durataAnimation);
+				} else{
+					((Timer)evt.getSource()).stop();
+				}
+			}
+		};
+		//Inizializzo un timer che ogni x secondi, in base a quanto deve durare una animazione tra due strade
+		//chiama l'azione collegata ad animationTast
+		Timer timer = new Timer(durataAnimation,animationTask);
+		timer.start();
+	}
+	
+	public void moveTo(Point destination, int timeMillisec){
 		startingTime = System.nanoTime();
 		animationDuration = (long) (timeMillisec*DURATION_MUL);
 		startPosition = getBounds().getLocation();

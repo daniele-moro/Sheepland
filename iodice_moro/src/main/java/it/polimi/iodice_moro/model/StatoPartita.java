@@ -15,12 +15,9 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jgrapht.Graphs;
-import org.jgrapht.UndirectedGraph;
 import org.jgrapht.WeightedGraph;
 import org.jgrapht.alg.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 /**
@@ -61,6 +58,8 @@ public class StatoPartita {
 	/**
 	 * Grafo che rappresenta la mappa, i vertici del grafo sono sia strade che regioni,
 	 * gli archi sono tra Regioni e Strade (regioni che hanno come confine la strada) e tra strade(tra strade adiacenti)
+	 * Gli archi tra Regioni e Strade pesano di più (100 volte gli altri)per evitare 
+	 * che nel calcolo del percorso minimo tra due strade vengano presi in considerazione anche questi archi.
 	 */
 	private WeightedGraph<VerticeGrafo, DefaultWeightedEdge> mappa;
 	
@@ -219,11 +218,15 @@ public class StatoPartita {
 			VerticeGrafo nodoSource = nodi.get(idSource);
 			VerticeGrafo nodoDest = nodi.get(idDest);
 			
-			//Alloco il nuovo arco
+			//Alloco il nuovo arco pesato
 			DefaultWeightedEdge edge = new DefaultWeightedEdge();
 			//Aggiungo al grafo l'arco corrispondente
 			mappa.addEdge((VerticeGrafo)nodoSource, (VerticeGrafo)nodoDest, edge);
-			//Controllo se l'arco è tra strade e regioni, in questo caso deve pesare 100, in caso contrario 1
+			/*
+			 * Controllo se l'arco è tra strade e regioni, in questo caso deve pesare 100 
+			 * (per evitare che venga preso in considerazione nel calcolo del percorso minimo tra strade), 
+			 *in caso contrario 1
+			 */
 			if(nodoDest.isRegione() || nodoSource.isRegione()){
 				mappa.setEdgeWeight(edge, 100);
 			} else{
@@ -570,29 +573,42 @@ public class StatoPartita {
 	}
 	
 	/**
-	 * Trova il percorso minimo tra due strade, passando in mezzo alle regioni
-	 * @param start Strada di partenza
+	 * Trova il percorso minimo tra due strade passando solo su strade
+	 * @param start Strada di Partenza
 	 * @param end Strada di arrivo
+	 * @return Lista delle strade da attraversare
 	 */
-	public void dijkstraTraStrade(Strada start, Strada end){
+	public List<Strada> dijkstraTraStrade(Strada start, Strada end){
+		//Prelevo il percorso più corto tra due strade, usando Dijkstra fornito dalla libreria JGraphT
 		List<DefaultWeightedEdge> archi = DijkstraShortestPath.findPathBetween(mappa, start, end);
+		//Ora dobbiamo costruirci la lista dei vertici (strade) bisogna attraversare
 		//Ci costruiamo la lista di vertici che bisogna attraversare
 		List<Strada> vertici = new ArrayList<Strada>();
 		VerticeGrafo src = start;
+		//inizio aggiungendo alla lista il vertice di inizio
 		vertici.add(start);
 		for (DefaultWeightedEdge e : archi) {
-		  System.out.println(src.toString()); 
-		  System.out.println(e.toString());
-		  src = Graphs.getOppositeVertex(mappa, e, src) ;
-		  if(!src.isRegione()){
-			  vertici.add((Strada) src);
-		  }
+			/*
+			 * Per ogni arco del percorso, prelevo il vertice opposto al quello della precedente iterazione,
+			 * se questo vertice è una strada, lo aggiungo alla lista dei vertici
+			 */
+			//------------DEBUG------------
+			System.out.println(src.toString()); 
+			System.out.println(e.toString());
+			//-----------------------------
+			src = Graphs.getOppositeVertex(mappa, e, src) ;
+			if(!src.isRegione()){
+				vertici.add((Strada) src);
+			}
 		}
+		//------------DEBUG----------
 		System.out.println("\n");
-		
 		for(Strada s : vertici){
 			System.out.println(s.toString());
 		}
+		//-----------------------------
+		//Ritorno la lista dei vertici che bisogna attraversare, compreso inizio e fine del percorso
+		return vertici;
 		
 	}
 }
