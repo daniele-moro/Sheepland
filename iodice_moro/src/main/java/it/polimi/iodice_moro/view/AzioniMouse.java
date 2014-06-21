@@ -70,6 +70,8 @@ class AzioniMouse extends MouseAdapter{
 					try {
 						//provo a comunicare quale pastore voglio usare
 						controller.cambiaPastore(Integer.toHexString(c1));
+						//azzero la mossa attuale se tutto è andato a buon fine
+						view.setMossaAttuale(TipoMossa.NO_MOSSA);
 					} catch (IllegalClickException e1) {
 						view.getLBLOutput().setText( e1.getMessage());
 						LOGGER.log(Level.SEVERE, "Area non clickabile", e1);

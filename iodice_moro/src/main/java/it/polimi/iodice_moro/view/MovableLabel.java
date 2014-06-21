@@ -24,6 +24,7 @@ import javax.swing.Timer;
  *  La classe permette anche che alla fine dell'animazione la label venga rimossa dall'oggetto padre
  *  (utilizzando il metodo setRemoveAfterAnimation()),
  *   utile nel caso si debbano usare label utili per la sola animazione
+ *   @author Daniele Moro
  *
  */
 public class MovableLabel extends JLabel {

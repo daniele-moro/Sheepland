@@ -416,7 +416,8 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		if(newStreet == null){
 			throw new IllegalClickException("Non hai cliccato su una strada!");
 		}
-		
+		System.out.println("PERCORSO DA FARE");
+		statoPartita.dijkstraTraStrade(oldStreet, newStreet);
 		//Memorizzo quanti recinti ci sono prima del movimento 
 		//per capire dopo se il recinto usato è normale o finale
 		int nRecinti = statoPartita.getNumRecinti();

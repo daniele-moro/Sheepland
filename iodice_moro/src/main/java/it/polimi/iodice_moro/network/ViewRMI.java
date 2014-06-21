@@ -1,17 +1,22 @@
 package it.polimi.iodice_moro.network;
 
+import it.polimi.iodice_moro.controller.Controller;
 import it.polimi.iodice_moro.controller.IFController;
 import it.polimi.iodice_moro.exceptions.PartitaIniziataException;
 import it.polimi.iodice_moro.model.Giocatore;
+import it.polimi.iodice_moro.model.StatoPartita;
 import it.polimi.iodice_moro.model.TipoTerreno;
 import it.polimi.iodice_moro.view.IFView;
 
 import java.awt.Color;
 import java.awt.Point;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -195,12 +200,22 @@ public class ViewRMI implements IFView {
 
 	@Override
 	public void visualizzaPunteggi(Map<Giocatore, Integer> punteggiOrdinati) {
+		final Map<Giocatore,Integer> punteggi=punteggiOrdinati;
 		for(IFView view : listaView.values()) {
-			try {
-				view.visualizzaPunteggi(punteggiOrdinati);
-			} catch (RemoteException e) {
-				LOGGER.log(Level.SEVERE, "Errore di rete", e);
-			}
+			final IFView v=view;
+			//Creo un thread per riuscire a visualizzare tutti i punteggi in tutti i client
+			Thread t = new Thread(new Runnable(){
+				@Override
+				public void run() {
+					try {
+						v.visualizzaPunteggi(punteggi);
+					} catch (RemoteException e) {
+						LOGGER.log(Level.SEVERE, "Errore di rete", e);
+					}
+				}
+
+			});
+			t.start();
 		}
 
 	}
@@ -218,13 +233,19 @@ public class ViewRMI implements IFView {
 	
 	//Aggiunge istanza View alla lista della View. Utilizzato in implementazione View RMI.
 	public void addView(IFView view, Color coloreGiocatore) throws RemoteException, PartitaIniziataException {
-		if(!isIniziata()) {
+		if(listaView.isEmpty()) {
 			setInizio();
+		} 
+		if(!isIniziata()){
 			listaView.put(coloreGiocatore, view);
-		} else {
-			throw new PartitaIniziataException("Partita già iniziata");
 		}
-		
+		else {
+			throw new PartitaIniziataException("Partita già iniziata 1");
+		}
+	}
+	
+	public void removeView(IFView view, Color coloreGiocatore){
+		listaView.remove(coloreGiocatore);
 	}
 
 	private void setInizio() {
@@ -236,19 +257,15 @@ public class ViewRMI implements IFView {
 	public void attendiGiocatori() throws IOException {
 		long ora = System.currentTimeMillis();
 		inizio=0;
-		try {
-			while(inizio==0 ||
-					(inizio!=0 &&
-						!(controller.getGiocatori().size()>=4 || (controller.getGiocatori().size()>=2 && ora-inizio>30000)))){
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					LOGGER.log(Level.SEVERE, "Errore di IO", e);
-				}
-				ora=System.currentTimeMillis();
+		while(inizio==0 ||
+				(inizio!=0 &&
+				!(listaView.size()>=4 || (listaView.size()>=2 && ora-inizio>30)))){
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				LOGGER.log(Level.SEVERE, "Errore di IO", e);
 			}
-		} catch (RemoteException e) {
-			LOGGER.log(Level.SEVERE, "Errore di rete", e);
+			ora=System.currentTimeMillis();
 		}
 		System.out.println("partita iniziata!!!");
 		partitaIniziata=true;
@@ -279,7 +296,6 @@ public class ViewRMI implements IFView {
 				LOGGER.log(Level.SEVERE, "Errore di rete", e);
 			}
 		}
-		
 	}
 
 	@Override
@@ -308,9 +324,60 @@ public class ViewRMI implements IFView {
 
 	@Override
 	public void close() throws RemoteException {
-		for(IFView view : listaView.values()) {
-			view.close();
+		for(Entry<Color,IFView> view : listaView.entrySet()) {
+			final IFView v = view.getValue();
+			Thread t = new Thread(new Runnable(){
+
+				@Override
+				public void run() {
+					try {
+						v.close();
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+				
+			});
+			t.start();
 		}
+		Thread t2 = new Thread( new Runnable(){
+
+			@Override
+			public void run() {
+				//Riavvio la connessione
+				System.out.println("RIATTIVO IL SERVER");
+				listaView=new HashMap<Color,IFView>();
+				try {
+					controller=new Controller(new StatoPartita());
+					//listaView=new HashMap<Color,IFView>();
+					controller.setView(ViewRMI.this);
+				} catch (RemoteException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				partitaIniziata=false;
+				try {
+					Naming.rebind("///Server", controller);
+				} catch (MalformedURLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				try {
+					ViewRMI.this.inizio=0;
+					ViewRMI.this.attendiGiocatori();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		t2.start();
+		
 		
 	}
 	

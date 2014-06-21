@@ -12,7 +12,9 @@ import it.polimi.iodice_moro.view.IFView;
 import it.polimi.iodice_moro.view.View;
 
 import java.awt.Color;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -143,11 +145,28 @@ public class Main {
 							DEFAULT_PORT);
 				}
 				controller = new Controller(statopartita);
-				int porta2 = Integer.parseInt(porta);
+				final int porta2 = Integer.parseInt(porta);
 				System.out.println("PORTA DI ASCOLTO: "+porta2);
 				view = new ViewSocket((Controller)controller, Integer.parseInt(porta));
 				//metto in attesa il server dei gioacatori
 				controller.setView(view);
+				
+				//Visualizzo l'IP e la PORTA del SERVER a cui dovranno connettersi i client
+				Thread t = new Thread(new Runnable(){
+
+					@Override
+					public void run() {
+						try {
+							JOptionPane.showMessageDialog(null, "INDIRIZZO IP: "+InetAddress.getLocalHost().getHostAddress()+"\n PORTA: "+porta2);
+						} catch (UnknownHostException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+					}
+					
+				});
+				t.start();
 				((ViewSocket)view).attendiGiocatori();
 				break;
 			}
@@ -165,10 +184,27 @@ public class Main {
 					controller = new Controller(statopartita);
 					ViewRMI viewRMI = new ViewRMI(controller);
 					//TODO E' da sostituire localhost con i veri ip.
+					System.out.println("//"+ip+"/Server");
 					Naming.rebind("//"+ip+"/Server", controller);
 					controller.setView(viewRMI);
 					System.out.println("PROVA");
 					System.out.println("Arrivo");
+					//Visualizzo l'IP del SERVER a cui dovranno connettersi i client
+					Thread t = new Thread(new Runnable(){
+
+						@Override
+						public void run() {
+							try {
+								JOptionPane.showMessageDialog(null, "INDIRIZZO IP: "+InetAddress.getLocalHost().getHostAddress());
+							} catch (UnknownHostException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+						}
+						
+					});
+					t.start();
 					viewRMI.attendiGiocatori();						
 				} catch (MalformedURLException e) {
 					System.err.println("Impossibile registrare l'oggetto indicato!");

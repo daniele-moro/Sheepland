@@ -14,9 +14,14 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.jgrapht.Graphs;
 import org.jgrapht.UndirectedGraph;
+import org.jgrapht.WeightedGraph;
+import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleGraph;
+import org.jgrapht.graph.SimpleWeightedGraph;
 
 /**
  * Classe che gestisce lo stato corrente della partita.
@@ -57,7 +62,7 @@ public class StatoPartita {
 	 * Grafo che rappresenta la mappa, i vertici del grafo sono sia strade che regioni,
 	 * gli archi sono tra Regioni e Strade (regioni che hanno come confine la strada) e tra strade(tra strade adiacenti)
 	 */
-	private UndirectedGraph<VerticeGrafo,DefaultEdge> mappa;
+	private WeightedGraph<VerticeGrafo, DefaultWeightedEdge> mappa;
 	
 	/**
 	 * Lista delle strade della mappa
@@ -105,7 +110,7 @@ public class StatoPartita {
 		giocatoreCorrente=null;
 		numRecinti=NUM_RECINTI_MAX;
 		turnoFinale=false;
-		mappa= new SimpleGraph<VerticeGrafo,DefaultEdge>(DefaultEdge.class);
+		mappa= new SimpleWeightedGraph<VerticeGrafo,DefaultWeightedEdge>(DefaultWeightedEdge.class);
 		caricaMappa(file);
 	}
 	
@@ -204,7 +209,7 @@ public class StatoPartita {
 			mappa.addVertex(nuovaStr);
 		}
 		
-		//itero sui link tra strade
+		//itero sui link tra strade/strade e strade/regioni
 		for (Element i : rootNode.getChildren("arco")){
 			//Memorizzo id del source e della destinazione
 			int idSource = Integer.parseInt(i.getAttributeValue("source"));
@@ -213,9 +218,17 @@ public class StatoPartita {
 			//prelevo dalla hashmap gli oggetti correlati a quell'id
 			VerticeGrafo nodoSource = nodi.get(idSource);
 			VerticeGrafo nodoDest = nodi.get(idDest);
-
+			
+			//Alloco il nuovo arco
+			DefaultWeightedEdge edge = new DefaultWeightedEdge();
 			//Aggiungo al grafo l'arco corrispondente
-			mappa.addEdge((VerticeGrafo)nodoSource, (VerticeGrafo)nodoDest);
+			mappa.addEdge((VerticeGrafo)nodoSource, (VerticeGrafo)nodoDest, edge);
+			//Controllo se l'arco è tra strade e regioni, in questo caso deve pesare 100, in caso contrario 1
+			if(nodoDest.isRegione() || nodoSource.isRegione()){
+				mappa.setEdgeWeight(edge, 100);
+			} else{
+				mappa.setEdgeWeight(edge, 1);
+			}
 		}
 	}
 
@@ -226,11 +239,11 @@ public class StatoPartita {
 	 */
 	public List<Strada> getStradeAdiacenti(Strada strada){
 		//Prelevo tutti gli archi che partono dalla strada di cui devo trovare le adiacenti
-		Set<DefaultEdge> archi =mappa.edgesOf(strada);
+		Set<DefaultWeightedEdge> archi =mappa.edgesOf(strada);
 		List<Strada> stradeAdiacenti = new ArrayList<Strada>();
 		
 		//itero sugli archi ottenuti
-		for(DefaultEdge arc : archi){
+		for(DefaultWeightedEdge arc : archi){
 			/*
 			 * Per ogni arco prelevo la sorgente dell'arco e 
 			 * controllo che il vertice sia una strada e non sia la strada che ho come parametro,
@@ -257,11 +270,11 @@ public class StatoPartita {
 	 */
 	public List<Strada> getStradeConfini(Regione regione){
 		//Prelevo tutti gli archi che partono dalla regione di cui devo trovare le strade confinanti
-		Set<DefaultEdge> archi = mappa.edgesOf(regione);
+		Set<DefaultWeightedEdge> archi = mappa.edgesOf(regione);
 		List<Strada> stradeConfini = new ArrayList<Strada>();
 		
 		//itero sugli archi ottenuti
-		for(DefaultEdge arc : archi){
+		for(DefaultWeightedEdge arc : archi){
 			/*
 			 *per ogni arco prelevo la sorgente dell'arco e 
 			 * controllo che il vertice sia una strada,
@@ -294,13 +307,13 @@ public class StatoPartita {
 		 * prelevo tutti gli archi che partono dalla strada, tra tutti gli archi ce ne saranno solo 2 che sono regioni,
 		 * una di queste è quella che stiamo cercando
 		 */
-		Set<DefaultEdge> archi = mappa.edgesOf(strada);
+		Set<DefaultWeightedEdge> archi = mappa.edgesOf(strada);
 		/*
 		 * itero sugli archi che partono dalla strada passata come parametro
 		 * per ogni arco dovrò vedere la destinazione e source e verificare se è una regione e se lo è,
 		 * che sia diversa da quella passata come parametro
 		 */
-		for(DefaultEdge arc : archi){
+		for(DefaultWeightedEdge arc : archi){
 			VerticeGrafo destArco=mappa.getEdgeSource(arc);
 			if(destArco.isRegione() && !destArco.equals(regione)){
 				return (Regione) destArco;
@@ -508,14 +521,14 @@ public class StatoPartita {
 	 * @return Lista di regioni che sono adiacenti alla strada passata come parametro
 	 */
 	public List<Regione> getRegioniADStrada(Strada strada){
-		Set<DefaultEdge> archi = mappa.edgesOf(strada);
+		Set<DefaultWeightedEdge> archi = mappa.edgesOf(strada);
 		/*
 		 * itero sugli archi che partono dalla strada passata come parametro
 		 * per ogni arco dovrò vedere la destinazione e source e verificare se è una regione e se lo è,
 		 * che sia diversa da quella passata come parametro
 		 */
 		List<Regione> reg = new ArrayList<Regione>();
-		for(DefaultEdge arc : archi){
+		for(DefaultWeightedEdge arc : archi){
 			VerticeGrafo destArco=mappa.getEdgeSource(arc);
 			if(destArco.isRegione()){
 				reg.add((Regione) destArco);
@@ -555,5 +568,31 @@ public class StatoPartita {
 		}
 		return null;
 	}
-
+	
+	/**
+	 * Trova il percorso minimo tra due strade, passando in mezzo alle regioni
+	 * @param start Strada di partenza
+	 * @param end Strada di arrivo
+	 */
+	public void dijkstraTraStrade(Strada start, Strada end){
+		List<DefaultWeightedEdge> archi = DijkstraShortestPath.findPathBetween(mappa, start, end);
+		//Ci costruiamo la lista di vertici che bisogna attraversare
+		List<Strada> vertici = new ArrayList<Strada>();
+		VerticeGrafo src = start;
+		vertici.add(start);
+		for (DefaultWeightedEdge e : archi) {
+		  System.out.println(src.toString()); 
+		  System.out.println(e.toString());
+		  src = Graphs.getOppositeVertex(mappa, e, src) ;
+		  if(!src.isRegione()){
+			  vertici.add((Strada) src);
+		  }
+		}
+		System.out.println("\n");
+		
+		for(Strada s : vertici){
+			System.out.println(s.toString());
+		}
+		
+	}
 }

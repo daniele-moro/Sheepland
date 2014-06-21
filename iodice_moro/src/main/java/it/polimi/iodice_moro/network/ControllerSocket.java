@@ -305,6 +305,7 @@ public class ControllerSocket implements IFController{
 		
 	}
 
+	@Override
 	public void end() {
 		System.out.println("chiusura della connessione!!");
 		output.println("END");

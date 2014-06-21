@@ -77,7 +77,7 @@ public class Strada extends VerticeGrafo {
 	 */
 	@Override
 	public String toString() {
-		return "Strada [nCasella=" + nCasella + ", recinto=" + recinto + "]" + "\n";
+		return "Strada [nCasella=" + nCasella + ", recinto=" + recinto + "colore=" + colore + "]" + "\n";
 	}
 
 	/**
@@ -88,5 +88,4 @@ public class Strada extends VerticeGrafo {
 	public boolean isRegione() {
 		return false;
 	}
-
 }

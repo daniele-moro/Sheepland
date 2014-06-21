@@ -139,7 +139,6 @@ public class ControllerRMI implements IFController {
 	@Override
 	public void end() throws RemoteException {
 		controller.end();
-		
 	}
 
 	@Override
@@ -162,6 +161,7 @@ public class ControllerRMI implements IFController {
 		controller.sparatoria2(idStrada);
 		
 	}
+
 
 
 }

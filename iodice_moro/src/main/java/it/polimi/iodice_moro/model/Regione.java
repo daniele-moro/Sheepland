@@ -119,7 +119,7 @@ public class Regione extends VerticeGrafo{
 	@Override
 	public String toString() {
 		return "Regione [numPecore=" + numPecore + ", pecoraNera=" + pecoraNera
-				+ ", lupo=" + lupo + ", tipo=" + tipo + "]" +"\n";
+				+ ", lupo=" + lupo + ", tipo=" + tipo + "colore=" + colore +"]" +"\n";
 	}
 
 	/**

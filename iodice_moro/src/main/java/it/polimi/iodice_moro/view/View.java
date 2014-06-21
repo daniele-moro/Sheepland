@@ -199,7 +199,7 @@ public class View extends UnicastRemoteObject implements IFView {
 	//label di output per comunicazioni con l'utente
 	private JLabel lblOutput = new JLabel();
 	
-	private JLabel lblDado;
+	private LabelDado lblDado;
 
 	
 	//Azioni collegate alle azioni fatte col mouse sulla mappa
@@ -249,9 +249,11 @@ public class View extends UnicastRemoteObject implements IFView {
 		mappa.addMouseListener(mouse);
 		mappa.addMouseMotionListener(mouse);
 		mappa.setLayout(null);
+
 		layeredMappa.add(mappa, BACKGROUD_LAYER);
 		layeredMappa.setSize(img.getIconWidth(), img.getIconHeight());
 		layeredMappa.setBackground(BG_COLOR);
+		layeredMappa.setOpaque(true);
 		frame.add(layeredMappa, BorderLayout.CENTER);
 		
 		//RIGHTPANEL
@@ -406,7 +408,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		leftPanel.add(lbltemp,c);
 		
 		//LABEL per il dado
-		lblDado = new JLabel();
+		lblDado = new LabelDado();
 		lblDado.setText("  ");
 		c.gridx=0;
 		c.gridy=8;
@@ -758,34 +760,15 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void visRisDado(int numero) {
-		/*if(giocatoreCorrente.equals(coloreGamer)){
+		if(giocatoreCorrente.equals(coloreGamer)){
 			disattivaGiocatore();
 		}
-		lblDado.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/dado.gif")));
-		frame.repaint();
-		try {
-			//metto in pausa il thread per dare la sensazione che si stia lanciando il dado
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			//e.printStackTrace();
-			logger.log(Level.SEVERE, "Errore nell'esecuzione della thread sleep", e);
-		}
-		lblDado.setIcon(null);
-		lblDado.setText("Risultato: "+numero);
-		frame.repaint();
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			//e.printStackTrace();
-			logger.log(Level.SEVERE, "Errore nell'esecuzione della thread sleep", e);
-		}
-		lblDado.setText("    ");
-		frame.repaint();
+		lblDado.visualizzaDado(numero,"   ");
 		if(giocatoreCorrente.equals(coloreGamer)){
 			attivaGiocatore();
-		}*/
+		}
 		//JOptionPane.showMessageDialog(frame, "Risultato dado: "+numero);
-		lblOutput.setText("Risultato dado: "+numero);
+		//lblOutput.setText("Risultato dado: "+numero);
 	}
 	
 	
@@ -809,9 +792,18 @@ public class View extends UnicastRemoteObject implements IFView {
 
 	@Override
 	public void close() throws RemoteException {
-		controller.end();
-		JOptionPane.showMessageDialog(frame,"Un utente si è disconnesso, la partita termina qui. \n Chiusura dell'applicazione");
-		System.exit(0);
+		//controller.end(coloreGamer);
+		Thread t = new Thread(new Runnable(){
+
+			@Override
+			public void run() {
+				JOptionPane.showMessageDialog(frame,"Un utente si è disconnesso, la partita termina qui. \n Chiusura dell'applicazione");
+				System.exit(0);
+			}
+			
+		});
+		t.start();
+		
 	}
 	
 	@Override
