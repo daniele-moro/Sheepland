@@ -139,7 +139,7 @@ public class ControllerSocket implements IFController{
 			String risp="";
 			risp = input.readLine();
 				
-			if(risp.equals("NO")){
+			if("NO".equals(risp)){
 				//La connessione non è avvenuta
 				System.out.println("CONNESSIONE NON AVVENUTA");
 			} else {
@@ -170,13 +170,14 @@ public class ControllerSocket implements IFController{
 			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, "Errore di IO", e);
 			}
+			
 			System.out.println("MOSSA POSSIBILE? "+ risposta);
+			
 			String[] parametri = risposta.split("#");
-			switch(parametri[0]){
-			case "OK":
+			if("OK".equals(parametri[0])){
 				retValue= Boolean.parseBoolean(parametri[1]);
-			break;
-			case "ERROR":
+			}
+			if("ERROR".equals(parametri[0])){
 				System.out.println("ERRORE"+parametri[1]);
 			}
 		}
@@ -219,7 +220,7 @@ public class ControllerSocket implements IFController{
 			System.out.println("rispostar icveuto ");
 			String[] parametri = risposta.split("#");
 			System.out.println(risposta);
-			while(!parametri[0].equals("END")){
+			while(!"END".equals(parametri[0])){
 				posRegioni.put(parametri[0], new Point(Integer.parseInt(parametri[1]),Integer.parseInt(parametri[2])));
 				try {
 					risposta = input.readLine();
@@ -253,7 +254,7 @@ public class ControllerSocket implements IFController{
 			}
 			String[] parametri = risposta.split("#");
 			System.out.println(risposta);
-			while(!parametri[0].equals("END")){
+			while(!"END".equals(parametri[0])){
 				posStrade.put(parametri[0], new Point(Integer.parseInt(parametri[1]),Integer.parseInt(parametri[2])));
 				try {
 					risposta = input.readLine();
@@ -284,7 +285,7 @@ public class ControllerSocket implements IFController{
 			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, "Errore di IO", e);
 			}
-			while(!risposta.equals("END")){
+			while(!"END".equals(risposta)){
 				idReg.add(risposta);
 				try {
 					risposta=input.readLine();
@@ -318,7 +319,7 @@ public class ControllerSocket implements IFController{
 			System.out.println(risposta);
 			String[] parametri = risposta.split("#");
 
-			while(!parametri[0].equals("END")){
+			while(!"END".equals(parametri[0])){
 				Color colore = new Color(Integer.parseInt(parametri[0]));
 				String pos=parametri[1];
 				giocatori.put(colore,pos);
@@ -377,8 +378,7 @@ public class ControllerSocket implements IFController{
 	@Override
 	public void addView(IFView view, Color coloreGiocatore)
 			throws RemoteException {
-		// TODO Auto-generated method stub
-		
+		//Metodo non utilizzato con i socket, ma solo in RMI
 	}
 
 	/* (non-Javadoc)

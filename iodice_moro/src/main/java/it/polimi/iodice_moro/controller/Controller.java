@@ -588,12 +588,13 @@ public class Controller extends UnicastRemoteObject implements IFController {
 							return;
 						}
 					}
-				}
-				//Se la strada ha un recinto e il lupo non può scavalcare dev'esssere
-				//rilanciato il dado.
-				else if(strada.isRecinto() && !puoScavalcare) {
-					checkSpostaLupo();
-					return;
+				}else{
+					//Se la strada ha un recinto e il lupo non può scavalcare dev'esssere
+					//rilanciato il dado
+					if(strada.isRecinto() && !puoScavalcare) {
+						checkSpostaLupo();
+						return;
+					}
 				}
 
 				Regione nuovaRegioneLupo=statoPartita.getAltraRegione(posLupo, strada);
@@ -730,7 +731,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			
 		}else{
 			//Finito inserimento delle posizioni dei giocatori
-			Map<String,Point> posRegioni = new HashMap<String,Point>();
+			/*Map<String,Point> posRegioni = new HashMap<String,Point>();
 			for(Regione r: statoPartita.getRegioni()){
 				posRegioni.put(r.getColore(),r.getPosizione());
 			}
@@ -738,19 +739,19 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			Map<String,Point> posStrade = new HashMap<String,Point>();
 			for(Strada s: statoPartita.getStrade()){
 				posStrade.put(s.getColore(),s.getPosizione());
-			}
+			}*/
 			
 			Map<Color, String> gioc= new HashMap<Color,String>();
 			for(Giocatore g:statoPartita.getGiocatori()){
 				gioc.put(g.getColore(), g.getNome());
 			}
 
-			view.setPosizioniRegioni(posRegioni);
-			view.setPosizioniStrade(posStrade);
+			//Setto posizioni delle regioni, delle strade e comunico i giocatori che partecipano alla partita
+			//view.setPosizioniRegioni(posRegioni);
+			//view.setPosizioniStrade(posStrade);
 			view.setGiocatori(gioc);
 			
-			//inizializzo la mappa nelal view
-			System.out.println("INIT MAPPA SERVER");
+			//inizializzo la mappa nella view
 			view.initMappa();
 			
 			for(Giocatore g : statoPartita.getGiocatori()){
@@ -800,12 +801,12 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		if(ultimaMossa.equals(mossaDaEffettuare)&&!mossaDaEffettuare.equals(TipoMossa.SPOSTA_PASTORE)) {
 			return false;
 		}
-		//return mossaDaEffettuare.equals(TipoMossa.SPOSTA_PASTORE)&&giocatoreCorrente.getNumMosse()==2&&!pastoreSpostato;
+		
 		if(!mossaDaEffettuare.equals(TipoMossa.SPOSTA_PASTORE)&&giocatoreCorrente.getNumMosse()==2&&!pastoreSpostato) {
 			return false;
-		} else {
-			return true;
 		}
+		
+		return true;
 	}
 	
 
@@ -917,10 +918,12 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			view.setPosizioniRegioni(posRegioni);
 			view.setPosizioniStrade(posStrade);
 		} catch (RemoteException e1) {
-			LOGGER.log(Level.SEVERE, "Problemi di rete");
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
-		
-		
+
+
+
 		
 		//questo metodo deve venire chiamato una sola volta all'inizio della partita,
 		//quando tutti i gicatori sono pronti a giocare

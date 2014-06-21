@@ -39,6 +39,12 @@ import javax.swing.border.MatteBorder;
 
 public class View extends UnicastRemoteObject implements IFView {
 	
+	//Font per le label per i giocatori
+	private static final Font FONT_SELECTED = new Font("Arial", Font.BOLD, 20);
+
+	private static final Font FONT_UNSELECTED = new Font("Arial", Font.PLAIN, 12);
+	
+	//OFFSET per le label del lupo e della pecora nera (offset rispetto alla posizione della pecora bianca)
 	private static final int OFFSET_X_LUPO = 28;
 
 	private static final int OFFSET_Y_LUPO = -28;
@@ -88,7 +94,7 @@ public class View extends UnicastRemoteObject implements IFView {
 						mossaAttuale=TipoMossa.COMPRA_TESSERA;
 						//Setto le due regini tra cui posso spostare la pecora.
 						reg=controller.getIDRegioniAd();
-						if(reg.size()>0 && reg.size()<=2){
+						if(!reg.isEmpty() && reg.size()<=2){
 							mouse.setRegioni(reg.get(0), reg.get(1));
 						}
 						break;
@@ -104,7 +110,7 @@ public class View extends UnicastRemoteObject implements IFView {
 						//l'utente quando ci passerà sopra vedrà comparire la manina e vedra flashare la regione
 						//Stessa cosa per le mosse ACCOPPIAMENTO1, SPARATORIA1, SPARATORIA2
 						reg=controller.getIDRegioniAd();
-						if(reg.size()>0 && reg.size()<=2){
+						if(!reg.isEmpty() && reg.size()<=2){
 							mouse.setRegioni(reg.get(0), reg.get(1));
 						}
 						break;
@@ -113,7 +119,7 @@ public class View extends UnicastRemoteObject implements IFView {
 						lblOutput.setText("ACCOPPIAMENTO 1");
 						mossaAttuale=TipoMossa.ACCOPPIAMENTO1;
 						reg=controller.getIDRegioniAd();
-						if(reg.size()>0 && reg.size()<=2){
+						if(!reg.isEmpty() && reg.size()<=2){
 							mouse.setRegioni(reg.get(0), reg.get(1));
 						}
 						break;
@@ -122,7 +128,7 @@ public class View extends UnicastRemoteObject implements IFView {
 						lblOutput.setText("SPARATORIA 1");
 						mossaAttuale=TipoMossa.SPARATORIA1;
 						reg=controller.getIDRegioniAd();
-						if(reg.size()>0 && reg.size()<=2){
+						if(!reg.isEmpty() && reg.size()<=2){
 							mouse.setRegioni(reg.get(0), reg.get(1));
 						}
 						break;
@@ -132,7 +138,7 @@ public class View extends UnicastRemoteObject implements IFView {
 						mouse.setRegioni("","");
 						mossaAttuale=TipoMossa.SPARATORIA2;
 						reg=controller.getIDRegioniAd();
-						if(reg.size()>0 && reg.size()<=2){
+						if(!reg.isEmpty() && reg.size()<=2){
 							mouse.setRegioni(reg.get(0), reg.get(1));
 						}
 						break;
@@ -235,14 +241,13 @@ public class View extends UnicastRemoteObject implements IFView {
 	/**
 	 * Inizializzazione dei componenti principali dell'interfaccia grafica
 	 */
-	public void initGUI(){
+	private void initGUI(){
 		//Inizializzazione del Frame principale
 		frame= new JFrame("SHEEPLAND");
 		frame.setBackground(BG_COLOR);
 		frame.setLayout(new BorderLayout());
 		frame.addWindowListener(new ChiusuraSchermata(controller));
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		//frame.setAlwaysOnTop(true);
 		
 		//CENTRALPANEL
 		layeredMappa = new JLayeredPane();
@@ -448,14 +453,13 @@ public class View extends UnicastRemoteObject implements IFView {
 		
 		//Visualizzo tutte le pecore
 		//File da passare al BackgroundedLabel per l'immagine di sfondo
-		//InputStream pecBianca = this.getClass().getResourceAsStream("/immagini/pecora_bianca.png");
 		//Usata solo per sapere le dimensioni dell'immagine della pecora bianca
 		ImageIcon iconBianca = new ImageIcon(this.getClass().getResource("/immagini/pecora_bianca.png"));
 		ImageIcon pecNera = new ImageIcon(this.getClass().getResource("/immagini/pecora_nera.png"));
 		ImageIcon iconLupo = new ImageIcon(this.getClass().getResource("/immagini/lupo.png"));
 		for(String s: posizioniRegioni.keySet()){
 			Point p = posizioniRegioni.get(s);
-			if(s.equals("ff002e73")){
+			if("ff002e73".equals(s)){
 				//devo posizionare la pecora nera perchè sono in sheepsburg
 				pecoraNera = new MovableLabel();
 				pecoraNera.setIcon(pecNera);
@@ -468,7 +472,6 @@ public class View extends UnicastRemoteObject implements IFView {
 				//posiziono anche il lupo.
 				lupo = new MovableLabel();
 				lupo.setIcon(iconLupo);
-				//TODO
 				lupo.setBounds(p.x+OFFSET_X_LUPO, p.y+OFFSET_Y_LUPO, iconLupo.getIconWidth(), iconLupo.getIconHeight());
 				layeredMappa.add(lupo, SHEEP_LAYER);
 			}else{
@@ -507,7 +510,7 @@ public class View extends UnicastRemoteObject implements IFView {
 			lbltemp2.setText(gioc.get(colore));
 			lbltemp2.setName(gioc.get(colore));
 			lbltemp2.setBackground(colore);
-			lbltemp2.setFont(new Font("Arial", Font.PLAIN, 12));
+			lbltemp2.setFont(FONT_UNSELECTED);
 			lbltemp2.setOpaque(true);
 			lbltemp2.setBorder(new MatteBorder(10,10,10,10, colore));
 			c.gridx=0;
@@ -534,11 +537,11 @@ public class View extends UnicastRemoteObject implements IFView {
 		for(Color col: giocatori.keySet()){
 			if(col.equals(color)){
 				giocatori.get(col).setEnabled(true);
-				giocatori.get(col).setFont(new Font("Arial", Font.BOLD, 20));
+				giocatori.get(col).setFont(FONT_SELECTED);
 				giocatori.get(col).setText(giocatori.get(col).getText());
 			}else{
 				giocatori.get(col).setEnabled(false);
-				giocatori.get(col).setFont(new Font("Arial", Font.PLAIN, 12));
+				giocatori.get(col).setFont(FONT_UNSELECTED);
 				giocatori.get(col).setText(giocatori.get(col).getText());
 			}
 		}
@@ -589,39 +592,19 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void spostaPastore(List<String> listaMov, Color colore){
-		/*//Il campo s è inutile perchè usando la movableLabel, i movimenti sono fatti a partire dalla posizione in cui si trova ora la pedina
-		Point sorg=null;
-		Point dest =posizioniCancelli.get(d);
-		if(!s.equals("")){
-			sorg=posizioniCancelli.get(s);
-		}
-		MovableLabel pedGiocatore = pedineGiocatori.get(colore);
+		//Il campo s è inutile perchè usando la movableLabel, 
+		//i movimenti sono fatti a partire dalla posizione in cui si trova ora la pedina
 		
-		//questo metodo è usato anche nel caso di creazione della pedina, in questo caso,
-		//la pedina non è ancora esistente e viene creata in quel momento
-		if(pedGiocatore==null){
-			//Se la pedina non esiste, 
-			//la creo e la posiziono nella sua posizione che è quella di destinazione
-			pedGiocatore= new MovableLabel();
-			ImageIcon img = getImagePastore(colore);
-			pedGiocatore.setIcon(img);
-			pedGiocatore.setBounds(dest.x, dest.y, img.getIconWidth(), img.getIconHeight());
-			layeredMappa.add(pedGiocatore, View.SHEPPARD_LAYER);
-			//Aggiungo la pedina alla map delle pedine dei giocatori
-			pedineGiocatori.put(colore, pedGiocatore);
-		} else{
-			//Se la pedina esiste, la muovo
-			//Attivo l'animazione della pedina
-			pedGiocatore.moveTo(dest, TEMPO_ANIMAZIONI);
-		}*/
+		//Costruisco la lista dei punti che il pastore deve attraversare
 		List<Point> listaPunti = new ArrayList<Point>();
 		for(String pos : listaMov){
 			listaPunti.add(posizioniCancelli.get(pos));
 		}
 		
+		//Prelevo la label collegata al giocatore
 		MovableLabel pedGiocatore = pedineGiocatori.get(colore);
 
-		//questo metodo è usato anche nel caso di creazione della pedina, in questo caso,
+		//questo metod.o è usato anche nel caso di creazione della pedina, in questo caso,
 		//la pedina non è ancora esistente e viene creata in quel momento
 		if(pedGiocatore==null){
 			//Se la pedina non esiste, 
@@ -706,22 +689,19 @@ public class View extends UnicastRemoteObject implements IFView {
 		if(num>0){
 			layeredMappa.add(lblPecora, SHEEP_LAYER);
 			lblPecora.setText("      "+num);
-		}
-		else{
+		} else{
 			layeredMappa.remove(lblPecora);
 		}
 		layeredMappa.repaint();
 		if(testo!=null && !" ".equals(testo) && !"".equals(testo)){
-			//creo un thread per comunicare all'utente l'azione avvenuta
+			//creo un thread per comunicare all'utente l'azione che è avvenuta
 			final String text=testo;
 			Thread t = new Thread(new Runnable(){
-
 				@Override
 				public void run() {
 					JOptionPane.showMessageDialog(View.this.frame, text);
 					
 				}
-
 			});
 			t.start();
 		}
@@ -786,7 +766,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		JOptionPane.showMessageDialog(null, tabellaPunteggi, "Lista Punteggi", JOptionPane.INFORMATION_MESSAGE);
 		
 		if(controller instanceof ControllerSocket){
-			System.out.println("CHIUSURA CONNESSIONE");
+			//Chiusura della connessione con il server nel caso di SOCKET
 			((ControllerSocket)controller).end();
 		}
 	}
@@ -803,9 +783,9 @@ public class View extends UnicastRemoteObject implements IFView {
 			if(mossaAttuale.equals(TipoMossa.SELEZ_POSIZ)){
 				vis+="\nSeleziona la posizione del tuo pastore";
 			}
-			//JOptionPane.showMessageDialog(frame, vis,"TURNO" , JOptionPane.INFORMATION_MESSAGE);
 			lblOutput.setText(vis);
 		} else{
+			//Non è il turno di questo giocatore
 			lblOutput.setText("Non è il tuo turno!!");
 		}
 	}
@@ -859,18 +839,16 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void close() throws RemoteException {
-		//controller.end(coloreGamer);
+		//Creo un Thread per chiudere l'applicazione, 
+		//cosi il controllo può tornare al metodo remoto che l'ha chiamato
 		Thread t = new Thread(new Runnable(){
-
 			@Override
 			public void run() {
 				JOptionPane.showMessageDialog(frame,"Un utente si è disconnesso, la partita termina qui. \n Chiusura dell'applicazione");
 				System.exit(0);
 			}
-			
 		});
 		t.start();
-		
 	}
 	
 	/* (non-Javadoc)

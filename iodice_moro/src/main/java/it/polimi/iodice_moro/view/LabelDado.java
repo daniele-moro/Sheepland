@@ -36,7 +36,6 @@ public class LabelDado extends JLabel {
 					//metto in pausa il thread per dare la sensazione che si stia lanciando il dado
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
-					//e.printStackTrace();
 					LOGGER.log(Level.SEVERE, "Errore nell'esecuzione della thread sleep", e);
 				}
 				setIcon(null);
@@ -44,7 +43,6 @@ public class LabelDado extends JLabel {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
-					//e.printStackTrace();
 					LOGGER.log(Level.SEVERE, "Errore nell'esecuzione della thread sleep", e);
 				}
 				setText(testo);

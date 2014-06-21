@@ -28,14 +28,17 @@ import javax.swing.JOptionPane;
 
 public class Main {
 	
+	public Main(){
+	}
+	
 	private static final String LOCALHOST = "127.0.0.1";
 	private static final String DEFAULT_PORT = "12345";
-	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.main");
+	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.main");
 	public static final int TEMPO_ATTESA = 30000;
 
 
 	/**
-	 * Metodo avviato all'avvio del programma.
+	 * Metod.o avviato all'avvio del programma.
 	 * @param args
 	 * @throws Exception
 	 */
@@ -73,7 +76,7 @@ public class Main {
 		switch (sceltaRete) {
 		//Client
 		case 0:
-			while(ip.equals("")) {
+			while("".equals(ip)) {
 				ip = (String)JOptionPane.showInputDialog(
 						frame,
 						"Inserisci Ip",
@@ -84,7 +87,7 @@ public class Main {
 						LOCALHOST);
 			}
 			if(sceltaTipoRete==0) {
-				while(porta.equals("")) {
+				while("".equals(porta)) {
 					porta = (String)JOptionPane.showInputDialog(
 							frame,
 							"Inserisci Porta a cui connettersi",
@@ -95,7 +98,7 @@ public class Main {
 							DEFAULT_PORT);
 				}
 			}
-			while(nome.equals("")) {
+			while("".equals(nome)) {
 				nome = (String)JOptionPane.showInputDialog(
 						frame,
 						"Nome",
@@ -113,19 +116,15 @@ public class Main {
 					view = new View((ControllerSocket)controller);
 					((View)view).setColore(colore);
 					controller.setView(view);	
-				}else{
+				} else{
 					System.out.println("ERRORE DI CONNESSIONE");
 				}
-			}
+			} else {
 
-			//RMIClient
-			else {
-				
+				//RMIClient
 				controller = new ControllerRMI(ip);
 				view = new View(controller);
 				try {
-					//TODO: Gestire il caso in cui il giocatore provi a connettersi
-					//a partita già iniziata (con meno di 4 giocatori).
 					Color coloreGiocatore = controller.creaGiocatore(nome);
 					((View)view).setColore(coloreGiocatore);
 					controller.addView(view, coloreGiocatore);
@@ -133,6 +132,7 @@ public class Main {
 					JOptionPane.showMessageDialog(frame,
 							"Partita già iniziata. Non puoi connetterti.");
 					frame.dispose();
+					System.exit(0);
 				}			
 			}
 			break;
@@ -140,7 +140,7 @@ public class Main {
 		case 1:
 			//ServerSocket
 			if(sceltaTipoRete==0) {
-				while(porta.equals("")) {
+				while("".equals(porta)) {
 					porta = (String)JOptionPane.showInputDialog(
 							frame,
 							"Inserisci Porta su cui mettersi in ascolto ",
@@ -152,7 +152,6 @@ public class Main {
 				}
 				controller = new Controller(statopartita);
 				final int porta2 = Integer.parseInt(porta);
-				System.out.println("PORTA DI ASCOLTO: "+porta2);
 				view = new ViewSocket((Controller)controller, Integer.parseInt(porta));
 				//metto in attesa il server dei gioacatori
 				controller.setView(view);
@@ -175,49 +174,46 @@ public class Main {
 				t.start();
 				((ViewSocket)view).attendiGiocatori();
 				break;
-			}
-			//ServerRMI
-			else {
+			} else {
+				//ServerRMI
 				try {
 					LocateRegistry.createRegistry(1099);
 				} catch (RemoteException e) {
 					System.out.println("Registry giÃ  presente!");
-					logger.log(Level.SEVERE, "Registry già presente!", e);
+					LOGGER.log(Level.SEVERE, "Registry già presente!", e);
 				}	
 
 
 				try {
 					controller = new Controller(statopartita);
 					ViewRMI viewRMI = new ViewRMI(controller);
-					//TODO E' da sostituire localhost con i veri ip.
-					System.out.println("//"+ip+"/Server");
+					
+					//Rebind dell'oggeto remoto, che nel nostro caso è il controller
 					Naming.rebind("//"+ip+"/Server", controller);
 					controller.setView(viewRMI);
-					System.out.println("PROVA");
-					System.out.println("Arrivo");
+					
 					//Visualizzo l'IP del SERVER a cui dovranno connettersi i client
 					Thread t = new Thread(new Runnable(){
-
 						@Override
 						public void run() {
 							try {
 								JOptionPane.showMessageDialog(null, "INDIRIZZO IP: "+InetAddress.getLocalHost().getHostAddress());
 							} catch (UnknownHostException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								LOGGER.log(Level.SEVERE, "Indirizzo inesistente", e);
 							}
-
 						}
-						
 					});
 					t.start();
+					
+					//Attesa dei giocatori ed attesa di inizio della partita
 					viewRMI.attendiGiocatori();						
+					
 				} catch (MalformedURLException e) {
 					System.err.println("Impossibile registrare l'oggetto indicato!");
-					logger.log(Level.SEVERE, "Impossibile registrare l'oggetto indicato!", e);
+					LOGGER.log(Level.SEVERE, "Impossibile registrare l'oggetto indicato!", e);
 				} catch (RemoteException e) {
 					System.err.println("Errore di connessione: " + e.getMessage() + "!");
-					logger.log(Level.SEVERE, "Impossibile registrare l'oggetto indicato", e);
+					LOGGER.log(Level.SEVERE, "Impossibile registrare l'oggetto indicato", e);
 				}
 			}
 

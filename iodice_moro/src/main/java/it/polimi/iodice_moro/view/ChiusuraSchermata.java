@@ -10,21 +10,30 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
+/**
+ * Classe che viene utilizzata per la chiusura della schermata principale
+ *
+ */
 public class ChiusuraSchermata extends WindowAdapter {
 
 	private IFController controller;
-	
+
 	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.view");
 
+	/**
+	 * @param controller Riferimento al controller, in cui invocare i metodi di chiusura della schermata
+	 */
 	public ChiusuraSchermata(IFController controller) {
 		this.controller=controller;
 	}
-	
+
+	/**
+	 * Evento di chiusura della finestra: questo metodo viene invocato quanto la schermata si sta chiudendo
+	 */
 	public void windowClosing(WindowEvent e){
 		int ret = JOptionPane.showConfirmDialog (e.getWindow(), "Sicuro di voler uscire da SHEEPLAND?\nLa chiusura del gioco comporta la terminazione della partita",
 				"Uscita Applicazione", JOptionPane.YES_NO_OPTION);
-		switch(ret){
-		case JOptionPane.YES_OPTION:
+		if(ret == JOptionPane.YES_OPTION){
 			try {
 				controller.end();
 			} catch (RemoteException e1) {
@@ -32,12 +41,6 @@ public class ChiusuraSchermata extends WindowAdapter {
 			}
 			e.getWindow().dispose();
 			System.exit(0);
-			break;
-		case JOptionPane.NO_OPTION:
-			break;
-
 		}
-		
 	}
-
 }

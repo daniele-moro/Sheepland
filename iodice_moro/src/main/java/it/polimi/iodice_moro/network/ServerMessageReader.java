@@ -53,121 +53,43 @@ public class ServerMessageReader implements Runnable {
 					switch(parametri[0]){
 
 					case "COMPRA_TESSERA":
-						try {
-							System.out.println("Acquista Tessera");
-							controller.acquistaTessera(parametri[1]);
-						} catch (IllegalClickException e) {
-							LOGGER.log(Level.SEVERE, "Area non clickabile", e);
-							output.println("EXCEPTION#"+e.getMessage()+"\n");
-						} catch (NotAllowedMoveException e) {
-							LOGGER.log(Level.SEVERE, "Mossa proibita", e);
-							output.println("EXCEPTION#"+e.getMessage()+"\n");
-						}
+						controller.acquistaTessera(parametri[1]);
 						break;
 
 					case "SELEZ_POSIZ":
-						System.out.println("SELEZ_POSIZ SERVER");
-						try {
-							controller.setStradaGiocatore(new Color(Integer.parseInt(parametri[1])), parametri[2]);
-						} catch (NotAllowedMoveException e1) {
-							LOGGER.log(Level.SEVERE, "Mossa proibita", e1);
-							System.out.println("eccezione");
-							output.println("EXCEPTION#"+e1.getMessage());
-						}
+						controller.setStradaGiocatore(new Color(Integer.parseInt(parametri[1])), parametri[2]);
 						break;
-						
-					case "CAMBIA_PASTORE":{
-						try {
-							controller.cambiaPastore(parametri[1]);
-						} catch (IllegalClickException e) {
-							LOGGER.log(Level.SEVERE, "Mossa proibita", e);
-							System.out.println("eccezione");
-							output.println("EXCEPTION#"+e.getMessage());
-						}
-					}break;
+
+					case "CAMBIA_PASTORE":
+						controller.cambiaPastore(parametri[1]);
+						break;
 
 					case "SPOSTA_PASTORE":
-						try {
-							System.out.println("spostaPastore");
-							controller.spostaPedina(parametri[1]);
-						} catch (IllegalClickException e) {
-							LOGGER.log(Level.SEVERE, "Area non clickabile", e);
-							output.println("EXCEPTION#"+e.getMessage()+"\n");
-						} catch (NotAllowedMoveException e) {
-							LOGGER.log(Level.SEVERE, "Mossa probita", e);
-							output.println("EXCEPTION#"+e.getMessage()+"\n");
-						}
+						controller.spostaPedina(parametri[1]);
 						break;
 
 					case "SPOSTA_PECORA":
-						try {
-							System.out.println("sposta Pecora");
-							controller.spostaPecora(parametri[1]);
-						} catch (NotAllowedMoveException e) {
-							LOGGER.log(Level.SEVERE, "Mossa proibita", e);
-							output.println("EXCEPTION#"+e.getMessage()+"\n");
-						} catch (IllegalClickException e) {
-							LOGGER.log(Level.SEVERE, "Area non clickabile", e);
-							output.println("EXCEPTION#"+e.getMessage()+"\n");
-						}
+						controller.spostaPecora(parametri[1]);
 						break;
 
 					case "SPOSTA_PECORA_NERA":
-						try {
-							System.out.println("sposta pecora nera");
-							controller.spostaPecoraNera(parametri[1]);
-						} catch (NotAllowedMoveException e) {
-							LOGGER.log(Level.SEVERE, "Mossa proibita", e);
-							output.println("EXCEPTION#"+e.getMessage()+"\n");
-						}
+						controller.spostaPecoraNera(parametri[1]);
 						break;
-					
-					case "ACCOPPIAMENTO1":{
-						try {
-							controller.accoppiamento1(parametri[1]);
-						} catch (NotAllowedMoveException e) {
-							LOGGER.log(Level.SEVERE, "Mossa proibita", e);
-							output.println("EXCEPTION#"+e.getMessage()+"\n");
-						} catch (IllegalClickException e) {
-							LOGGER.log(Level.SEVERE, "Area non clickabile", e);
-							output.println("EXCEPTION#"+e.getMessage()+"\n");
-						}
-						
-					}break;
-					
-					case "SPARATORIA1":{
-						try {
-							controller.sparatoria1(parametri[1]);
-						} catch (NotAllowedMoveException e) {
-							LOGGER.log(Level.SEVERE, "Mossa proibita", e);
-							output.println("EXCEPTION#"+e.getMessage()+"\n");
-						} catch (IllegalClickException e) {
-							LOGGER.log(Level.SEVERE, "Area non clickabile", e);
-							output.println("EXCEPTION#"+e.getMessage()+"\n");
-						}
-					
-						
-					}break;
-					
-					case "SPARATORIA2":{
-						try {
-							controller.sparatoria2(parametri[1]);
-						} catch (NotAllowedMoveException e) {
-							LOGGER.log(Level.SEVERE, "Mossa proibita", e);
-							output.println("EXCEPTION#"+e.getMessage()+"\n");
-						} catch (IllegalClickException e) {
-							LOGGER.log(Level.SEVERE, "Area non clickabile", e);
-							output.println("EXCEPTION#"+e.getMessage()+"\n");
-						}
-					
-						
-					}break;
-					
-					
 
+					case "ACCOPPIAMENTO1":
+						controller.accoppiamento1(parametri[1]);
+						break;
+
+					case "SPARATORIA1":
+						controller.sparatoria1(parametri[1]);
+						break;
+
+					case "SPARATORIA2":
+						controller.sparatoria2(parametri[1]);
+						break;
+						
 					case "MOSSA_POSSIBILE":
 						try {
-
 							Boolean risp = controller.mossaPossibile(TipoMossa.parseInput(parametri[1]));
 							System.out.println("mossapossibile   "+ risp.toString());
 							output.println("OK#"+risp.toString());
@@ -177,7 +99,7 @@ public class ServerMessageReader implements Runnable {
 							output.println("ERROR#"+e.getMessage()+"\n");
 						}
 						break;
-						
+
 					case "GET_ID_REG_AD":
 						List<String> reg= controller.getIDRegioniAd();
 						for(String r : reg){
@@ -198,6 +120,12 @@ public class ServerMessageReader implements Runnable {
 				}
 			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, "Errore di IO", e);
+			} catch (IllegalClickException e) {
+				LOGGER.log(Level.SEVERE, "Area non clickabile", e);
+				output.println("EXCEPTION#"+e.getMessage()+"\n");
+			} catch (NotAllowedMoveException e) {
+				LOGGER.log(Level.SEVERE, "Mossa proibita", e);
+				output.println("EXCEPTION#"+e.getMessage()+"\n");
 			}
 		}
 		System.out.println("Chiusura thread di attesa dei comandi del client");

@@ -636,7 +636,7 @@ public class ControllerTest{
 		x=posRegioni.get("ff005473").getX();
 		y=posRegioni.get("ff005473").getY();
 		assertEquals(173, x, 0);
-		assertEquals(383,y, 0);
+		assertEquals(385,y, 0);
 		//Regione ID ffff2323
 		x=posRegioni.get("ffff2323").getX();
 		y=posRegioni.get("ffff2323").getY();

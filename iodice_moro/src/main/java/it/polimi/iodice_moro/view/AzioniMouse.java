@@ -38,7 +38,7 @@ class AzioniMouse extends MouseAdapter{
 	IFController controller;
 	
 	//Uso prevPos per memorizzarmi il colore della posizione precedente, 
-	//altrimenti ogni micromovimento del mouse verrebbe invocato il metodo di flashing della regione
+	//altrimenti ogni micromovimento del mouse verrebbe invocato il metod.o di flashing della regione
 	private int prevPos;
 	
 	
@@ -73,12 +73,18 @@ class AzioniMouse extends MouseAdapter{
 	 * Collegamento al click del mouse
 	 */
 	public void mouseClicked(MouseEvent e){
+		//Controllo che la zona cliccata rientri nell'immagine a cui fare riferimento per i colori
 		if(e.getX()< 0 || e.getY()<0 || e.getX()>image.getWidth() || e.getY()>image.getHeight()){
 			return;
 		}
+		//prelevo il colore associato al click del mouse
 		int color=image.getRGB(e.getX(),e.getY());
 		System.out.println("X:"+e.getX()+" Y:"+e.getY() + "  COLOR:0x"+ Integer.toHexString(color));
 		
+		//Ora in base alla mossa attuale e quindi al momento in cui si trova la partita, 
+		//devo chiamare i metodi del controller
+		
+		//CASO 1: Selezione del pastore nel caso di due giocatori
 		if(view.getMossaAttuale().equals(TipoMossa.G2_SELEZ_PAST) 
 				&& view.getPosizioniCancelli().keySet().contains(Integer.toHexString(color)) 
 				&& view.getGiocatoreCorrente().equals(view.getColoreGamer())){
@@ -102,6 +108,7 @@ class AzioniMouse extends MouseAdapter{
 			t4.start();
 		}
 
+		//CASO 2: Selezione della posizione iniziale dei pastori
 		if(view.getMossaAttuale().equals(TipoMossa.SELEZ_POSIZ) 
 				&& view.getPosizioniCancelli().keySet().contains(Integer.toHexString(color)) 
 				&& view.getGiocatoreCorrente().equals(view.getColoreGamer())){
@@ -109,8 +116,9 @@ class AzioniMouse extends MouseAdapter{
 			
 			final int c1=color;
 			//STO SELEZIONANDO LE POSIZIONI DEI PASTORI
-			System.out.println("SELEZPOSIZ");
+			
 			//Metto il pastore nella posizione che ho appena selezionato
+			//Creo thread per evitare problemi con i thread in cui gira la GUI
 			Thread t4 = new Thread( new Runnable(){
 				@Override
 				public void run(){
@@ -132,6 +140,7 @@ class AzioniMouse extends MouseAdapter{
 			t4.start();
 		}
 
+		//CASO 3: MOSSA NORMALE
 		//Controllo che il click sia avvenuto all'interno della mappa(quindi o su regioni o su caselle),
 		//inoltre controllo che la mossa da fare non sia ne NO_MOSSA(in cui non si deve fare null) 
 		//ne SELEZ_POSIZ(caso gia gestito prima)
@@ -142,20 +151,20 @@ class AzioniMouse extends MouseAdapter{
 				&& view.getMossaAttuale()!=TipoMossa.G2_SELEZ_PAST){
 			//&&view.getGiocatoreCorrente().equals(view.getColoreGamer())){
 
-			System.out.println("A");
-			//ricontrollo per sicurezza che la mossa da fare sia possibile
 			try{
+				//ricontrollo per sicurezza che la mossa da fare sia possibile
 				if(controller.mossaPossibile(view.getMossaAttuale())){
-					System.out.println("B");
 					final int c=color;
 					switch(view.getMossaAttuale()){
 
+					//MOSSA: COMPRA TESSERA
 					case COMPRA_TESSERA:
-						System.out.println("COMPRA TESSERA");
 						Thread t = new Thread( new Runnable(){
 							@Override
 							public void run(){
 								try {
+									//effettuo la mossa nel controller, il quale controlla che l'acquisto sia possibile
+									//in caso contrario torna un eccezione
 									controller.acquistaTessera(Integer.toHexString(c));
 								} catch (NotAllowedMoveException e2) {
 									view.getLBLOutput().setText(e2.getMessage());
@@ -171,13 +180,15 @@ class AzioniMouse extends MouseAdapter{
 						t.start();
 						break;
 
-
+					//MOSSA: SPOSTA PASTORE
 					case SPOSTA_PASTORE:{
 						Thread t1 = new Thread(new Runnable(){
 
 							@Override
 							public void run() {
 								try {
+									//effettuo la mossa sul controller, il quale controlla se il movimento è possibile
+									//in caso contrario genera una eccezione
 									controller.spostaPedina(Integer.toHexString(c));
 								} catch (NotAllowedMoveException e1) {
 									view.getLBLOutput().setText(e1.getMessage());
@@ -194,11 +205,11 @@ class AzioniMouse extends MouseAdapter{
 
 					}break;
 
-
+					//MOSSA:SPOSTA PECORA (con gestione anche dello spostamento della pecora nera
 					case SPOSTA_PECORA:{
 						Point posPecoraNera=view.getLBLPecoraNera().getLocation();
+						//Controllo se nella regione è presente anche la pecora nera
 						if(image.getRGB((int)posPecoraNera.getX()+10,(int)posPecoraNera.getY()+10)==color){
-							System.out.println("PECORA NERA");
 							//In questo caso nel terreno c'è anche la pecora nera,
 							//quindi bisogna far scegliere all'utente cosa spostare
 							Object[] options = {new ImageIcon(this.getClass().getClassLoader().getResource("immagini/pecora_bianca.png")),
@@ -219,13 +230,13 @@ class AzioniMouse extends MouseAdapter{
 									@Override
 									public void run() {
 										try {
+											//Effettuo lo spostamento della pecora bianca sul controller
+											//in caso di problemi genera eccezione
 											controller.spostaPecora(Integer.toHexString(c));
 										} catch (RemoteException e) {
-											System.out.println("PROBLEMI DI RETE!!");
 											view.getLBLOutput().setText(e.getMessage());
 											LOGGER.log(Level.SEVERE, "Errore di rete", e);
 										} catch (NotAllowedMoveException e) {
-											System.out.println("ERRORE CLICK MAPPA!!");
 											view.getLBLOutput().setText(e.getMessage());
 										} catch (IllegalClickException e) {
 											view.getLBLOutput().setText(e.getMessage());
@@ -241,13 +252,13 @@ class AzioniMouse extends MouseAdapter{
 									@Override
 									public void run() {
 										try {
+											//effettuo il movimento della pecora nera sul controller
+											//nel caso di problemi vengono generate eccezioni
 											controller.spostaPecoraNera(Integer.toHexString(c));
 										} catch (RemoteException e) {
-											System.out.println("PROBLEMI DI RETE!!");
 											view.getLBLOutput().setText(e.getMessage());
 											LOGGER.log(Level.SEVERE, "Errore di rete", e);
 										} catch (NotAllowedMoveException e) {
-											System.out.println("ERRORE CLICK MAPPA!!");
 											view.getLBLOutput().setText(e.getMessage());
 										}
 									}
@@ -257,19 +268,19 @@ class AzioniMouse extends MouseAdapter{
 							}
 						}
 						else{
-							System.out.println("SPOSTAPECORA");
+							//Spostamento normale della pecora nera
+							//Creo il thread su cui avviene il movimento
 							Thread t3 = new Thread(new Runnable(){
-
 								@Override
 								public void run() {
 									try {
+										//effettuo il movimento della pecora sul controller
+										//nel caso di problemi genera eccezioni
 										controller.spostaPecora(Integer.toHexString(c));
 									} catch (RemoteException e) {
-										System.out.println("PROBLEMI DI RETE!!");
 										view.getLBLOutput().setText(e.getMessage());
 										LOGGER.log(Level.SEVERE, "Errore di rete", e);
 									} catch (NotAllowedMoveException e) {
-										System.out.println("ERRORE CLICK MAPPA!!");
 										view.getLBLOutput().setText(e.getMessage());
 									} catch (IllegalClickException e) {
 										view.getLBLOutput().setText(e.getMessage());
@@ -281,12 +292,14 @@ class AzioniMouse extends MouseAdapter{
 						}
 					}break;
 					
+					//MOSSA: ACCOPPIAMENTO 1
 					case ACCOPPIAMENTO1:{
-						System.out.println("ACCOPPIAMENTO 1");
+						
 						Thread t1 = new Thread( new Runnable(){
 							@Override
 							public void run(){
 								try {
+									//effettuo la mossa sul controller
 									controller.accoppiamento1(Integer.toHexString(c));
 								} catch (NotAllowedMoveException e2) {
 									view.getLBLOutput().setText(e2.getMessage());
@@ -300,15 +313,15 @@ class AzioniMouse extends MouseAdapter{
 							}
 						});
 						t1.start();
-
 					}break;
 					
+					//MOSSA: SPARATORIA 1
 					case SPARATORIA1:{
-						System.out.println("SPARATORIA 1");
 						Thread t1 = new Thread( new Runnable(){
 							@Override
 							public void run(){
 								try {
+									//Effettuo la mossa sul controller
 									controller.sparatoria1(Integer.toHexString(c));
 								} catch (NotAllowedMoveException e2) {
 									view.getLBLOutput().setText(e2.getMessage());
@@ -325,12 +338,13 @@ class AzioniMouse extends MouseAdapter{
 						
 					}break;
 					
+					//MOSSA: SPARATORIA 2
 					case SPARATORIA2:{
-						System.out.println("SPARATORIA2");
 						Thread t1 = new Thread( new Runnable() {
 							@Override
 							public void run() {
 								try {
+									//Effettuo la mossa sul controller
 									controller.sparatoria2(Integer.toHexString(c));
 								} catch (RemoteException e) {
 									LOGGER.log(Level.SEVERE, "Errore di rete", e);
@@ -346,20 +360,18 @@ class AzioniMouse extends MouseAdapter{
 						});
 						t1.start();
 					}break;
-
-
+					
 					default:
 						break;
 
 					}
+					//Effettuata la mossa, imposto il fatto che non ci siano mosse da effettuare in questo momento
 					view.setMossaAttuale(TipoMossa.NO_MOSSA);
 					setRegioni("","");
-
 				}
 			}catch(RemoteException e1){
 				LOGGER.log(Level.SEVERE, "Errore di rete", e1);
 			}
-
 		}
 	}
 	

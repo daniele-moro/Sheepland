@@ -303,8 +303,7 @@ public class ViewRMI implements IFView {
 		} 
 		if(!isIniziata()){
 			listaView.put(coloreGiocatore, view);
-		}
-		else {
+		} else {
 			throw new PartitaIniziataException("Partita già iniziata 1");
 		}
 	}
@@ -330,7 +329,7 @@ public class ViewRMI implements IFView {
 	 * @see it.polimi.iodice_moro.controller.IFView#attendiGiocatori
 	 */
 	@Override
-	public void attendiGiocatori() throws IOException {
+	public void attendiGiocatori() {
 		long ora = System.currentTimeMillis();
 		inizio=0;
 		while(inizio==0 ||
@@ -424,8 +423,7 @@ public class ViewRMI implements IFView {
 					try {
 						v.close();
 					} catch (RemoteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						LOGGER.log(Level.SEVERE, "Errore di rete", e);
 					}
 					
 				}
@@ -437,39 +435,33 @@ public class ViewRMI implements IFView {
 
 			@Override
 			public void run() {
-				//Riavvio la connessione
+				//Riavvio la connessione, reinizializzo gli oggetti del server (MODEL E CONTROLLER
 				System.out.println("RIATTIVO IL SERVER");
 				listaView=new HashMap<Color,IFView>();
 				try {
 					controller=new Controller(new StatoPartita());
-					//listaView=new HashMap<Color,IFView>();
 					controller.setView(ViewRMI.this);
-				} catch (RemoteException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
+				} catch (RemoteException e) {
+					LOGGER.log(Level.SEVERE, "Errore di rete", e);
 				}
 				partitaIniziata=false;
+				
 				try {
+					//Rebind dell'oggetto remoto controller che è stato reinizializzato per poter giocare una nuova partita
 					Naming.rebind("///Server", controller);
-				} catch (MalformedURLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					
+				} catch (MalformedURLException e) {
+					System.err.println("Impossibile registrare l'oggetto indicato!");
+					LOGGER.log(Level.SEVERE, "Impossibile registrare l'oggetto indicato!", e);
 				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					System.err.println("Errore di connessione: " + e.getMessage() + "!");
+					LOGGER.log(Level.SEVERE, "Impossibile registrare l'oggetto indicato", e);
 				}
-				try {
-					ViewRMI.this.inizio=0;
-					ViewRMI.this.attendiGiocatori();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				ViewRMI.this.inizio=0;
+				ViewRMI.this.attendiGiocatori();
 			}
 		});
 		t2.start();
-		
-		
 	}
 	
 	/**

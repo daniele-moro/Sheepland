@@ -107,12 +107,12 @@ public class ControllerRMI implements IFController {
 	/* (non-Javadoc)
 	 * @see it.polimi.iodice_moro.controller.IFController#creaGiocatore(java.lang.String)
 	 */
-	public Color creaGiocatore(String nome) throws RemoteException,
-			PartitaIniziataException {
+	public Color creaGiocatore(String nome) throws RemoteException, PartitaIniziataException {
 		if(partitaIniziata || controller.getGiocatori().size()>=4) {
 			throw new PartitaIniziataException();
+		} else{
+			return controller.creaGiocatore(nome);
 		}
-		else return controller.creaGiocatore(nome);
 	}
 
 	@Override

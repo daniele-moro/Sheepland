@@ -250,7 +250,7 @@ public class ViewSocket implements IFView {
 	 * @param colore
 	 */
 	public void addClient(Socket socket, PrintWriter output, Color colore) throws RemoteException{
-		if(socketGiocatori.size()==0){
+		if(socketGiocatori.isEmpty()){
 			System.out.println("INIZIO ARRIVO CLIENT");
 			inizio=System.currentTimeMillis();
 		}

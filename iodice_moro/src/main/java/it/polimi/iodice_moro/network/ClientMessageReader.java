@@ -92,13 +92,11 @@ public class ClientMessageReader implements Runnable{
 
 							case "SPOSTA_PECORA_NERA":
 								//Animazione di spostamento della pecora nera
-								System.out.println("spostamento pecora nera!!");
 								view.spostaPecoraNera(parametri[1], parametri[2]);
 								break;
 
 							case "SPOSTA_LUPO":
 								//Animazione di spostamento del lupo.
-								System.out.println("spostamento lupo!!");
 								view.spostaLupo(parametri[1], parametri[2]);
 								break;
 
@@ -125,14 +123,17 @@ public class ClientMessageReader implements Runnable{
 								break;
 								
 							case "G2_SELEZ_PAST":
+								//Selezione del pastore nel caso di due giocatori
 								view.selezPast(new Color(Integer.parseInt(parametri[1])));
 								break;
 							
 							case "USA_PAST_2":
+								//Comunico di usare il secondo pastore (al posto del primo) nel caso di due gicoatori
 								view.usaPast2(new Color(Integer.parseInt(parametri[1])));
 								break;
 
 							case "SET_POS_REG":{
+								//setting delle posizioni delle regioni
 								Map<String, Point> posRegioni= new HashMap<String,Point>();
 								//LETTURA DELLA RISPOSTA
 								String messaggio="";
@@ -141,7 +142,7 @@ public class ClientMessageReader implements Runnable{
 								System.out.println("rispostar icveuto ");
 								String[] valori = messaggio.split("#");
 								System.out.println(messaggio);
-								while(!valori[0].equals("END")){
+								while(!"END".equals(valori[0])){
 									posRegioni.put(valori[0], new Point(Integer.parseInt(valori[1]),Integer.parseInt(valori[2])));
 
 									messaggio = input.readLine();
@@ -152,6 +153,7 @@ public class ClientMessageReader implements Runnable{
 							}break;
 
 							case "SET_POS_STR":{
+								//Setting delle posizioni delle strade
 								Map<String, Point> posStrade= new HashMap<String,Point>();
 								//LETTURA DELLA RISPOSTA
 								String messaggio="";
@@ -159,7 +161,7 @@ public class ClientMessageReader implements Runnable{
 
 								String[] valori = messaggio.split("#");
 								System.out.println(messaggio);
-								while(!valori[0].equals("END")){
+								while(!"END".equals(valori[0])){
 									posStrade.put(valori[0], new Point(Integer.parseInt(valori[1]),Integer.parseInt(valori[2])));
 									try {
 										messaggio = input.readLine();
@@ -174,6 +176,7 @@ public class ClientMessageReader implements Runnable{
 							}break;
 
 							case "SET_GIOC":{
+								//Setting dei giocatori che partecipano alla partita
 								Map<Color,String> giocatori = new HashMap<Color,String>();
 								String messaggio="";
 								messaggio = input.readLine();
@@ -181,7 +184,7 @@ public class ClientMessageReader implements Runnable{
 								System.out.println(messaggio);
 								String[] valori = messaggio.split("#");
 
-								while(!valori[0].equals("END")){
+								while(!"END".equals(valori[0])){
 									Color colore = new Color(Integer.parseInt(valori[0]));
 									String pos=valori[1];
 									giocatori.put(colore,pos);
@@ -257,7 +260,7 @@ public class ClientMessageReader implements Runnable{
 								System.out.println(risposta);
 								parametri = risposta.split("#");
 
-								while(!parametri[0].equals("END")){
+								while(!"END".equals(parametri[0])){
 									Giocatore gioc = new Giocatore(parametri[0],
 											new Color(Integer.parseInt(parametri[1])));
 									Integer punteggio= Integer.parseInt(parametri[2]);

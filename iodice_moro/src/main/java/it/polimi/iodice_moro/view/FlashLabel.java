@@ -9,7 +9,7 @@ import javax.swing.Timer;
 
 /**
  * Questa classe è un estensione di JLabel, aggiunge la possibilità alla label di flashare 
- * rendendo visibile e invisibile la label ad intervalli regolari chiamando il metodo flash()
+ * rendendo visibile e invisibile la label ad intervalli regolari chiamando il metod.o flash()
  */
 public class FlashLabel extends JLabel {
 	/**
@@ -24,7 +24,7 @@ public class FlashLabel extends JLabel {
 	private boolean startVisibility;
 	
 	/**
-	 * Metodo per comandare il flashing della label
+	 * Metod.o per comandare il flashing della label
 	 * @param count Numero di flash che deve fare la label
 	 */
 	public void flash(int count){

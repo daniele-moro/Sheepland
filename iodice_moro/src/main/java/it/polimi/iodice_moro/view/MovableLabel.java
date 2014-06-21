@@ -51,7 +51,7 @@ public class MovableLabel extends JLabel {
 
 
 
-	private static final Logger logger =  Logger.getLogger("it.polimi.iodice_moro.view");
+	private static final Logger LOGGER = Logger.getLogger("it.polimi.iodice_moro.view");
 	BufferedImage img;
 	
 	/**
@@ -61,25 +61,32 @@ public class MovableLabel extends JLabel {
 	public MovableLabel(InputStream f){
 		super();
 		try{
-			setImage(ImageIO.read(f));
+			img = ImageIO.read(f);
 		} catch(IOException e) {
-			logger.log(Level.SEVERE, "Errore di IO", e);
+			LOGGER.log(Level.SEVERE, "Errore di IO", e);
 		} catch (IllegalArgumentException e) {
-			logger.log(Level.SEVERE, "Parameter is null", e);
+			LOGGER.log(Level.SEVERE, "Parameter is null", e);
 		}
 		removeAfterAnimation=false;
 	}
+	/**
+	 * Costruttore normal, crea una label Movable senza sfondo
+	 */
 	public MovableLabel(){
 		super();
 		removeAfterAnimation=false;
 	}
-	
+
+	/**
+	 * Metodo per settare l'immagine di sfondo
+	 * @param img BufferedImage di sfondo
+	 */
 	public void setImage(BufferedImage img){
 		this.img = img;
 	}
 
 	/**
-	 * Sovrascrivo il metodo paintComponent, disegnando l'immagine che è stata passato nel costruttore.
+	 * Sovrascrivo il metod.o paintComponent, disegnando l'immagine che è stata passato nel costruttore.
 	 * Disegna l'immagine solo se questa è stata aggiunta nel costruttore
 	 */
 	public void paintComponent(Graphics g){
@@ -156,7 +163,6 @@ public class MovableLabel extends JLabel {
 
 
 	private void performAnimation() {
-		
 		//Questo blocco di codice verrà ripetuto ogni 10ms
 		ActionListener animationTask = new ActionListener() {
 
@@ -186,7 +192,6 @@ public class MovableLabel extends JLabel {
 				//Controlla quando l'animazione deve terminare
 				if(progress == 1) {
 					if(removeAfterAnimation){
-						//AGGIUNTA:
 						//rimuovo la label dopo il movimento se ho settato la removeAfterAnimation
 						MovableLabel.this.getParent().remove(MovableLabel.this);
 					}
