@@ -764,11 +764,6 @@ public class View extends UnicastRemoteObject implements IFView {
 		 }
 		tabellaPunteggi.setEnabled(false);
 		JOptionPane.showMessageDialog(null, tabellaPunteggi, "Lista Punteggi", JOptionPane.INFORMATION_MESSAGE);
-		
-		if(controller instanceof ControllerSocket){
-			//Chiusura della connessione con il server nel caso di SOCKET
-			((ControllerSocket)controller).end();
-		}
 	}
 
 	/* (non-Javadoc)

@@ -190,7 +190,6 @@ public class ControllerTest{
 	}
 	
 	@Test
-	
 	public void testSpostaPecoraNeraWithException() {
 		try {
 			//Provo a spostare una pecora nera in una regione che non c'è.
@@ -206,6 +205,7 @@ public class ControllerTest{
 		}
 	}
 	
+	@Test
 	public void testSpostaLupo() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		Class myTarget = Controller.class;
 		Class params[] = new Class[2];
@@ -216,8 +216,8 @@ public class ControllerTest{
 		
 		//Aggiungo il lupo alla regione.
 		regione0.addLupo();
-		
-		spostaLupo.invoke(controllerTest, regione0);
+		List<Regione> regAdiacenti = statoPartitaT.getRegioniAdiacenti(regione0);
+		spostaLupo.invoke(controllerTest, regione0, regAdiacenti.get(0));
 		//Controllo che il lupo sia stato spostato in una delle regioni adiacenti e che
 		//ce ne sia soltano uno.
 		Boolean lupoPresente = false;
@@ -1014,6 +1014,7 @@ public class ControllerTest{
 		statoPartitaT.getGiocatori().remove(giocatoreTest);
 		statoPartitaT.setPosPecoraNera(statoPartitaT.getRegioni().get(0));
 		statoPartitaT.setPosLupo(statoPartitaT.getRegioni().get(0));
+		statoPartitaT.getRegioni().get(0).addLupo();
 		Color colore1 = controllerTest.creaGiocatore("Gioc1");
 		Color colore2 = controllerTest.creaGiocatore("Gioc2");
 		Color colore3 = controllerTest.creaGiocatore("Gioc3");

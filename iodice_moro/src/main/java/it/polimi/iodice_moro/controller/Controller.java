@@ -554,14 +554,21 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @throws RemoteException
 	 */
 	public synchronized void checkSpostaLupo() throws RemoteException {
+		//Variabile locale per sapere se tutte le regioni sono recintate
 		boolean puoScavalcare=true;
-		int valoreDado = lanciaDado();
-		System.out.println("VALORE DADO: "+ valoreDado);
+		//Numero di tentativi di spostamento effettuati
+		int tentativi=0;
+		//Variabile per indicare se il lupo è stato spostato
+		boolean lupoSpostato=false;
+		//Variabile per indicare se il dado può essere lanciato due volte
+		boolean secondaChance=true;
+		
 		/*
 		 * Preleviamo la posizione del lupo
 		 * e delle regioni che circondano la regione in cui si trova.
 		 */
 		Regione posLupo=statoPartita.getPosLupo();
+		//Preleviamo le strade confinanti con la regione dove si trova il lupo
 		List<Strada> stradeConfini=statoPartita.getStradeConfini(posLupo);
 		
 		/*
@@ -577,39 +584,31 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		 * Controllo se nelle strade che circondano la regione in cui si trova il lupo c'è una strada che 
 		 * come numero di casella corrisponda a quella che ho generato con il metodo lanciaDado()
 		 * Se è cosi, allora sposto il lupo nella regione speculare
-		 * alla strada rispetto alla regione in cui si trova la nera
+		 * alla strada rispetto alla regione in cui si trova il lupo
+		 * Ci sono due possibilità che il lupo possa spostarsi, se tutte le strade sono recintate salta,
+		 * se la strada su cui dovrebbe passare è recintata viene rilanciato il dado
 		 */
-		for(Strada strada : stradeConfini) {
-			if(strada.getnCasella()==valoreDado) {
-				if(!strada.isRecinto()) {
-					//Controllo che non la pecora non si debba spostare su strade in cui ci sono presenti pastori
-					for(Giocatore g : statoPartita.getGiocatori()){
-						if(strada==g.getPosition() || strada==g.getPosition2()){
-							return;
+		do{
+			//Lancio il dado per sapere dove dovrà spostarsi il lupo
+			int valoreDado = lanciaDado();
+			System.out.println("Lancio dado LUPO: " +valoreDado);
+			for(Strada strada : stradeConfini){
+				if(strada.getnCasella()==valoreDado){
+					secondaChance=true;
+					if(!strada.isRecinto() || puoScavalcare){
+						Regione regioneDavanti= statoPartita.getAltraRegione(posLupo, strada);
+						try {
+							System.out.println("SPOSTA LUPO");
+							spostaLupo(posLupo,regioneDavanti);
+						} catch (NotAllowedMoveException e) {
+							LOGGER.log(Level.SEVERE, "Mossa non consentita!", e);
 						}
+						lupoSpostato=true;
 					}
-				}else{
-					//Se la strada ha un recinto e il lupo non può scavalcare dev'esssere
-					//rilanciato il dado
-					if(strada.isRecinto() && !puoScavalcare) {
-						checkSpostaLupo();
-						return;
-					}
-				}
-
-				Regione nuovaRegioneLupo=statoPartita.getAltraRegione(posLupo, strada);
-				try {
-					spostaLupo(posLupo, nuovaRegioneLupo);
-					if(view!=null){
-						System.out.println("Spostamento automatico lupo!!");
-						view.spostaLupo(posLupo.getColore(), nuovaRegioneLupo.getColore());
-					}
-					return;
-				} catch (NotAllowedMoveException e) {
-					LOGGER.log(Level.SEVERE, "Spostamento Lupo Fallito", e);
 				}
 			}
-		}
+			tentativi++;
+		}while(tentativi<2 && !lupoSpostato && secondaChance);
 	}
 	
 	/**
@@ -894,8 +893,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 				LOGGER.log(Level.SEVERE, "Problemi di rete");
 			}
 		}
-		
-		
 	}
 	
 	
@@ -918,13 +915,8 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			view.setPosizioniRegioni(posRegioni);
 			view.setPosizioniStrade(posStrade);
 		} catch (RemoteException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Problemi di rete");
 		}
-
-
-
-		
 		//questo metodo deve venire chiamato una sola volta all'inizio della partita,
 		//quando tutti i gicatori sono pronti a giocare
 		List<Regione> listaRegioni = statoPartita.getRegioni();
