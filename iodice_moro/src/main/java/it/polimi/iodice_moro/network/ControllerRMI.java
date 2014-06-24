@@ -28,14 +28,12 @@ public class ControllerRMI implements IFController {
 
 	IFController controller;
 	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.network");
-	Boolean partitaIniziata;
 	
 	/**
 	 * Costruttore del ControllerRMI.
 	 * @param ip Ip a cui ci si dovrà connettere.
 	 */
 	public ControllerRMI(String ip) {
-		partitaIniziata=false;
 		try {
 			this.controller = (IFController)Naming.lookup("//"+ip+"/Server");
 		} catch (MalformedURLException e) {
@@ -43,9 +41,8 @@ public class ControllerRMI implements IFController {
 		} catch (RemoteException e) {
 			LOGGER.log(Level.SEVERE, "Errore di rete", e);
 		} catch (NotBoundException e) {
-			LOGGER.log(Level.SEVERE, "Il riferimento passato non è associaot a nulla", e);
+			LOGGER.log(Level.SEVERE, "Il riferimento passato non è associato a nulla", e);
 		}
-		
 	}
 
 	@Override
@@ -114,7 +111,7 @@ public class ControllerRMI implements IFController {
 	 * @see it.polimi.iodice_moro.controller.IFController#creaGiocatore(java.lang.String)
 	 */
 	public Color creaGiocatore(String nome) throws RemoteException, PartitaIniziataException {
-		if(partitaIniziata || controller.getGiocatori().size()>=4) {
+		if(controller.getGiocatori().size()>=4) {
 			throw new PartitaIniziataException();
 		} else{
 			return controller.creaGiocatore(nome);

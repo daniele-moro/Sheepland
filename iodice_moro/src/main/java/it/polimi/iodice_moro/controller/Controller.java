@@ -159,6 +159,9 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		checkTurnoGiocatore(TipoMossa.SPOSTA_PECORA);
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.polimi.iodice_moro.controller.IFController#accoppiamento1(java.lang.String)
+	 */
 	public synchronized void accoppiamento1(String idRegione) throws NotAllowedMoveException ,RemoteException, IllegalClickException{
 		Regione reg = statoPartita.getRegioneByID(idRegione);
 		if(reg==null){
@@ -201,6 +204,8 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			regione.addPecora();
 		}
 	}
+	
+
 	
 	/* (non-Javadoc)
 	 * @see it.polimi.iodice_moro.controller.IFController#sparatoria1 (java.lang.String)
@@ -354,7 +359,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @throws RemoteException
 	 * @see {@link Controller#spostaLupo(Regione, Regione)}
 	 */
-	private synchronized void spostaLupo(Regione regioneLupo, Regione regAdiacente) throws NotAllowedMoveException, RemoteException {
+	private void spostaLupo(Regione regioneLupo, Regione regAdiacente) throws NotAllowedMoveException, RemoteException {
 		if(regioneLupo.isLupo()) {
 			regioneLupo.removeLupo();
 			regAdiacente.addLupo();
@@ -507,7 +512,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * Metodo avviato all'inizio del turno per valutare se la pecora nera deve essere
 	 * spostata.
 	 */
-	public synchronized void checkSpostaPecoraNera() throws RemoteException {
+	private void checkSpostaPecoraNera() throws RemoteException {
 		int valoreDado = lanciaDado();
 		System.out.println("VALORE DADO: "+valoreDado);
 		/*
@@ -553,7 +558,9 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * il dado.
 	 * @throws RemoteException
 	 */
-	public synchronized void checkSpostaLupo() throws RemoteException {
+	private void checkSpostaLupo() throws RemoteException {
+		//TODO Ciclo fin quando non si sposta la pecora. Poi caso in cui ci sono solo giocatori.
+		
 		//Variabile locale per sapere se tutte le regioni sono recintate
 		boolean puoScavalcare=true;
 		//Numero di tentativi di spostamento effettuati

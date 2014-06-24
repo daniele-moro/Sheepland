@@ -509,10 +509,16 @@ public class ControllerTest{
 
 	
 	@Test
-	public void testCheckSpostaPecoraNera() throws RemoteException {
+	public void testCheckSpostaPecoraNera() throws RemoteException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		Class myTarget = Controller.class;
+		Method checkSpostaPecoraNera = myTarget.getDeclaredMethod("checkSpostaPecoraNera");
+		checkSpostaPecoraNera.setAccessible(true);
+
+		List<Regione> regAdiacenti = statoPartitaT.getRegioniAdiacenti(regione0);
+		
 		regione1.setPecoraNera(true);
 		statoPartitaT.setPosPecoraNera(regione1);
-		controllerTest.checkSpostaPecoraNera();
+		checkSpostaPecoraNera.invoke(controllerTest);
 		boolean pecoraInRegione1;
 		boolean pecoraInRegioniAdiacenti=false;
 		//Controllo se la pecora è ancora nella regione d'origine o meno.
@@ -1112,6 +1118,89 @@ public class ControllerTest{
 		} catch (RemoteException e) {
 			fail();
 		}
+	}
+	
+	
+	public void testCheckSpostamentoLupo() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, RemoteException {
+		//TODO Ripetere fin quando la pecora non si sposta. Poi caso in cui sono solo giocatori.
+		
+		Class myTarget = Controller.class;
+		Method checkSpostaLupo = myTarget.getDeclaredMethod("checkSpostaLupo");
+		checkSpostaLupo.setAccessible(true);
+
+		List<Regione> regAdiacenti = statoPartitaT.getRegioniAdiacenti(regione0);
+		
+		
+		regione1.setLupo(true);
+		statoPartitaT.setPosLupo(regione1);
+		
+		while(!regione1.isLupo()) {
+			checkSpostaLupo.invoke(controllerTest);
+			boolean lupoInRegione1;
+			boolean lupoInRegioniAdiacenti=false;
+			//Controllo se lil lupo è ancora nella regione d'origine o meno.
+			if(regione1.isLupo()) {
+				lupoInRegione1 = true;
+			} else {
+				lupoInRegione1 = false;
+			}
+
+			//Controllo se il lupo è in una delle regioni adiacenti al lupo.
+			List <Regione> regioniAdiacenti = statoPartitaT.getRegioniAdiacenti(regione1);
+			for(Regione regione: regioniAdiacenti) {
+				if (regione.isLupo()) {
+					lupoInRegioniAdiacenti = true;
+				}
+			}
+			//Se la pecora è sia nella regione d'origine che nelle regioni adiacenti
+			//test fallisce
+			if(lupoInRegione1 && lupoInRegioniAdiacenti) {
+				fail();		
+			}
+			//Se la pecora nera non è né nella regione d'origine né in quelle adiacenti,
+			//il test fallisce.
+			if(!lupoInRegione1 && !lupoInRegioniAdiacenti) {
+				fail();
+			}
+		}
+		
+		for(Strada strada : statoPartitaT.getStradeConfini(regione1)) {
+			controllerTest.creaGiocatore(strada1.toString(), strada);
+		}
+		
+		statoPartitaT.getPosLupo().setLupo(false);
+		statoPartitaT.setPosLupo(regione1);
+		regione1.setLupo(true);
+		
+		while(!regione1.isLupo()) {
+			checkSpostaLupo.invoke(controllerTest);
+			boolean lupoInRegione1;
+			boolean lupoInRegioniAdiacenti=false;
+			//Controllo se lil lupo è ancora nella regione d'origine o meno.
+			if(regione1.isLupo()) {
+				lupoInRegione1 = true;
+			} else {
+				lupoInRegione1 = false;
+			}
+			assertFalse(lupoInRegione1);
+			
+			
+			//Controllo se il lupo è in una delle regioni adiacenti al lupo.
+			List <Regione> regioniAdiacenti = statoPartitaT.getRegioniAdiacenti(regione1);
+			for(Regione regione: regioniAdiacenti) {
+				if (regione.isLupo()) {
+					lupoInRegioniAdiacenti = true;
+				}
+			}
+			
+			//Se la pecora nera non è né nella regione d'origine né in quelle adiacenti,
+			//il test fallisce.
+			if(!lupoInRegione1 && !lupoInRegioniAdiacenti) {
+				fail();
+			}
+		}
+		
+		
 	}
 	
 }
