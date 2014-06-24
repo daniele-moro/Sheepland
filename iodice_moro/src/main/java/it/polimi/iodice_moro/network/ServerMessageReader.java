@@ -1,6 +1,6 @@
 package it.polimi.iodice_moro.network;
 
-import it.polimi.iodice_moro.controller.Controller;
+import it.polimi.iodice_moro.controller.IFController;
 import it.polimi.iodice_moro.exceptions.IllegalClickException;
 import it.polimi.iodice_moro.exceptions.NotAllowedMoveException;
 import it.polimi.iodice_moro.model.TipoMossa;
@@ -22,14 +22,14 @@ import java.util.logging.Logger;
  */
 public class ServerMessageReader implements Runnable {
 	
-	private Controller controller;
+	private IFController controller;
 	private BufferedReader input;
 	private Socket socket;
 	private PrintWriter output;
 	
 	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.network");
 	
-	public ServerMessageReader(Controller controller, Socket socket, PrintWriter output, BufferedReader input) {
+	public ServerMessageReader(IFController controller, Socket socket, PrintWriter output, BufferedReader input) {
 		this.controller=controller;
 		this.socket=socket;
 		this.input=input;
@@ -116,7 +116,7 @@ public class ServerMessageReader implements Runnable {
 					default:
 						break;
 					}
-					output.flush();
+					
 				}
 			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, "Errore di IO", e);
@@ -126,6 +126,8 @@ public class ServerMessageReader implements Runnable {
 			} catch (NotAllowedMoveException e) {
 				LOGGER.log(Level.SEVERE, "Mossa proibita", e);
 				output.println("EXCEPTION#"+e.getMessage()+"\n");
+			} finally{
+				output.flush();
 			}
 		}
 		System.out.println("Chiusura thread di attesa dei comandi del client");

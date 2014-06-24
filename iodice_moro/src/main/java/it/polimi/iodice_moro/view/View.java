@@ -45,20 +45,31 @@ import javax.swing.border.MatteBorder;
  */
 public class View extends UnicastRemoteObject implements IFView {
 	
+	//Costanti per l'indirizzo delle immagini da visualizzare
+	private static final String IMM_PECORA_NERA = "/immagini/pecora_nera.png";
+	private static final String IMM_LUPO = "/immagini/lupo.png";
+	private static final String IMM_PECORA_BIANCA = "/immagini/pecora_bianca.png";
+	private static final String IMM_ARIETE = "/immagini/ariete.png";
+	private static final String IMM_AGNELLO = "/immagini/agnello.png";
+
 	//Font per le label per i giocatori
 	private static final Font FONT_SELECTED = new Font("Arial", Font.BOLD, 20);
-
 	private static final Font FONT_UNSELECTED = new Font("Arial", Font.PLAIN, 12);
+	
 	
 	//OFFSET per le label del lupo e della pecora nera (offset rispetto alla posizione della pecora bianca)
 	private static final int OFFSET_X_LUPO = 28;
-
 	private static final int OFFSET_Y_LUPO = -28;
-
 	private static final int OFFSET_Y_NERA = -18;
+	
+	private static final int OFFSET_X_ARIETE = 30;
+	private static final int OFFSET_Y_ARIETE = 0;
+	private static final int OFFSET_X_AGNELLO = 0;
+	private static final int OFFSET_Y_AGNELLO = 22; 
 
 	//Costante per la durata delle animazioni
-	private static final int TEMPO_ANIMAZIONI = 2000;
+	private static final int TEMPO_ANIMAZIONE_PASTORE = 350; //Da una strada alla successiva
+	private static final int TEMPO_ANIMAZIONE_PECORA = 1500; //tempo animazione completa
 
 	//costante per il colore di sfondo
 	private static final Color BG_COLOR = new Color(43,163,250);
@@ -77,6 +88,7 @@ public class View extends UnicastRemoteObject implements IFView {
 	private static final long serialVersionUID = -8928439736905632720L;
 	
 	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.view");
+	
 
 	/**
 	 * Questa classe è utilizzata per catturare gli eventi collegati ai bottoni per l'esecuzione delle mosse
@@ -204,6 +216,12 @@ public class View extends UnicastRemoteObject implements IFView {
 	
 	//Label delle pecore, presenti in ogni regione
 	private Map<String,JLabel> lblPecore = new HashMap<String,JLabel>();
+	
+	//Label degli arieti, presenti in ogni regione
+	private Map<String,JLabel> lblArieti= new HashMap<String,JLabel>();
+	
+	//Label degli agnelli, presenti in ogni regione
+	private Map<String,JLabel> lblAgnelli= new HashMap<String,JLabel>();
 	
 	//Label usate per evidenziare le regioni che è possibile premere per effettuare una determinata mossa
 	private Map<String, JLabel> lblRegioni = new HashMap<String,JLabel>();
@@ -456,41 +474,6 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void initMappa() throws RemoteException{
-		
-		//Visualizzo tutte le pecore
-		//File da passare al BackgroundedLabel per l'immagine di sfondo
-		//Usata solo per sapere le dimensioni dell'immagine della pecora bianca
-		ImageIcon iconBianca = new ImageIcon(this.getClass().getResource("/immagini/pecora_bianca.png"));
-		ImageIcon pecNera = new ImageIcon(this.getClass().getResource("/immagini/pecora_nera.png"));
-		ImageIcon iconLupo = new ImageIcon(this.getClass().getResource("/immagini/lupo.png"));
-		for(String s: posizioniRegioni.keySet()){
-			Point p = posizioniRegioni.get(s);
-			if("ff002e73".equals(s)){
-				//devo posizionare la pecora nera perchè sono in sheepsburg
-				pecoraNera = new MovableLabel();
-				pecoraNera.setIcon(pecNera);
-				pecoraNera.setBounds(p.x, p.y+OFFSET_Y_NERA, pecNera.getIconWidth(), pecNera.getIconHeight());
-				layeredMappa.add(pecoraNera, SHEEP_LAYER);
-				//comunque devo inizializzare la label per la pecora normale, però senza numero di pecore
-				JLabel lblPecora = new MovableLabel(this.getClass().getResourceAsStream("/immagini/pecora_bianca.png"));
-				lblPecora.setBounds(p.x, p.y, iconBianca.getIconWidth(), iconBianca.getIconHeight());
-				lblPecore.put(s,lblPecora);
-				//posiziono anche il lupo.
-				lupo = new MovableLabel();
-				lupo.setIcon(iconLupo);
-				lupo.setBounds(p.x+OFFSET_X_LUPO, p.y+OFFSET_Y_LUPO, iconLupo.getIconWidth(), iconLupo.getIconHeight());
-				layeredMappa.add(lupo, SHEEP_LAYER);
-			}else{
-				//Visualizzo le pecore bianche
-				JLabel lblPecora = new MovableLabel(this.getClass().getResourceAsStream("/immagini/pecora_bianca.png"));
-				lblPecora.setText("      1");
-				layeredMappa.add(lblPecora, SHEEP_LAYER);
-				lblPecora.setBounds(p.x, p.y, iconBianca.getIconWidth(), iconBianca.getIconHeight());
-				lblPecore.put(s,lblPecora);
-				
-			}
-		}
-		
 		//Caricamento delle immagini di selezione delle regioni
 		ImageIcon imgReg=null;
 		JLabel lblReg=null;
@@ -583,14 +566,14 @@ public class View extends UnicastRemoteObject implements IFView {
 		
 		//non posso usare direttamente la pecora presente per l'animazione, devo creare una nuova label
 		final MovableLabel lblMovimentoPecora = new MovableLabel();
-		ImageIcon img = new ImageIcon(this.getClass().getResource("/immagini/pecora_bianca.png"));
+		ImageIcon img = new ImageIcon(this.getClass().getResource(IMM_PECORA_BIANCA));
 		lblMovimentoPecora.setIcon(img);
 		lblMovimentoPecora.setBounds(sorg.x, sorg.y, img.getIconWidth(), img.getIconHeight());
 		layeredMappa.add(lblMovimentoPecora,SHEEP_LAYER);
 		//setto il fatto che la label deve essere rimossa dopo aver terminato l'animazione
 		lblMovimentoPecora.setRemoveAfterAnimation();
 		//Avvio l'animazione della pecora
-		lblMovimentoPecora.moveTo(dest, TEMPO_ANIMAZIONI);
+		lblMovimentoPecora.moveTo(dest, TEMPO_ANIMAZIONE_PECORA);
 	}
 	
 	/* (non-Javadoc)
@@ -627,7 +610,7 @@ public class View extends UnicastRemoteObject implements IFView {
 			//Attivo l'animazione della pedina
 			//Rimuovo la posizione di partenza
 			listaPunti.remove(0);
-			pedGiocatore.moveTo(listaPunti, TEMPO_ANIMAZIONI);
+			pedGiocatore.moveTo(listaPunti, TEMPO_ANIMAZIONE_PASTORE);
 		}
 
 		
@@ -655,11 +638,23 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void spostaPecoraNera(String s, String d){
+		/*
+		 * Questo metodo viene invocato anche per la creazione della label della pecora nera da parte del controller
+		 */
 		//Il campo s diventa inutile usando la movableLabel
 		Point dest= (Point) posizioniRegioni.get(d).clone();
 		dest.y+=OFFSET_Y_NERA;
+		//se la label della pecora nera non è ancora stata creata, la creo.
+		if(pecoraNera==null){
+			ImageIcon pecNera = new ImageIcon(this.getClass().getResource(IMM_PECORA_NERA));
+			pecoraNera = new MovableLabel();
+			pecoraNera.setIcon(pecNera);
+			pecoraNera.setBounds(dest.x, dest.y, pecNera.getIconWidth(), pecNera.getIconHeight());
+			layeredMappa.add(pecoraNera, SHEEP_LAYER);
+		}
+	
 		//Avvio l'animazione della pedina
-		pecoraNera.moveTo(dest,TEMPO_ANIMAZIONI);
+		pecoraNera.moveTo(dest,TEMPO_ANIMAZIONE_PECORA);
 	}
 	
 	/* (non-Javadoc)
@@ -667,20 +662,22 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void spostaLupo(String s, String d){
-		if(giocatoreCorrente.equals(coloreGamer)){
-			disattivaGiocatore();
-		}
+		/*
+		 * Questo metodo viene invocato anche per la creazione della label del lupo da parte del controller
+		 */
 		//Il campo s diventa inutile usando la movablelabel
 		Point dest= (Point) posizioniRegioni.get(d).clone();
 		dest.y+=OFFSET_Y_LUPO;
 		dest.x+=OFFSET_X_LUPO;
-		
-		//Attivo l'animazione
-		lupo.moveTo(dest, TEMPO_ANIMAZIONI);
-		
-		if(giocatoreCorrente.equals(coloreGamer)){
-			attivaGiocatore();
+		if(lupo==null){
+			ImageIcon iconLupo = new ImageIcon(this.getClass().getResource(IMM_LUPO));
+			lupo = new MovableLabel();
+			lupo.setIcon(iconLupo);
+			lupo.setBounds(dest.x, dest.y, iconLupo.getIconWidth(), iconLupo.getIconHeight());
+			layeredMappa.add(lupo, SHEEP_LAYER);
 		}
+		//Attivo l'animazione
+		lupo.moveTo(dest, TEMPO_ANIMAZIONE_PECORA);
 	}
 	
 	/* (non-Javadoc)
@@ -688,18 +685,106 @@ public class View extends UnicastRemoteObject implements IFView {
 	 */
 	@Override
 	public void modificaQtaPecora(String idReg, int num, String testo){
+		/*
+		 * Questo metodo viene invocato anche per la creazione delle label delle pecore da parte del controller
+		 */
 		//Prelevo la label di cui modificare il testo
 		JLabel lblPecora =lblPecore.get(idReg);
+		//Se la label della pecora non è ancora stata creata, viene inizializzata
+		if(lblPecora==null){
+			//Alloco la nuova label della pecora che mi serve
+			Point pos=posizioniRegioni.get(idReg);
+			ImageIcon iconBianca = new ImageIcon(this.getClass().getResource(IMM_PECORA_BIANCA));
+			lblPecora = new MovableLabel(this.getClass().getResourceAsStream(IMM_PECORA_BIANCA));
+			lblPecora.setBounds(pos.x, pos.y, iconBianca.getIconWidth(), iconBianca.getIconHeight());
+			lblPecora.setVisible(true);
+			lblPecore.put(idReg, lblPecora);
+		}
 		//Controllo se la label va o meno nascosta, 
 		//viene nascosta se il numero di pecore è 0
 		if(num>0){
 			layeredMappa.add(lblPecora, SHEEP_LAYER);
-			lblPecora.setText("      "+num);
+			lblPecora.setText("  "+num);
 		} else{
 			layeredMappa.remove(lblPecora);
 		}
 		layeredMappa.repaint();
 		if(testo!=null && !" ".equals(testo) && !"".equals(testo)){
+			visMessaggioNuovoThread(testo);
+		}
+	}
+	
+	
+	/*/**
+	 * Modifica il testo visualizzato su di una JLabel passata per parametro
+	 * @param lblModificare Label dal modificare 
+	 * @param qta Numero da visualizzare sopra la label
+	 */
+	/*private void modificaQtaLabel(JLabel lblModificare, int qta){
+		//Controllo se la label va o meno nascosta, 
+		//viene nascosta se il numero di pecore è 0
+		if(qta>0){
+			layeredMappa.add(lblModificare, SHEEP_LAYER);
+			lblModificare.setText("  "+qta);
+		} else{
+			layeredMappa.remove(lblModificare);
+		}
+		layeredMappa.repaint();
+	}
+	
+	public void modificaQtaAriete(String idReg, int num, String testo){
+		/*
+		 * Questo metodo viene invocato anche per la creazione delle label dell'ariete da parte del controller
+		 */
+		//Prelevo la label di cui modificare il testo
+		/*JLabel lblAriete =lblArieti.get(idReg);
+		//Se la label dell'ariete non è ancora stata creata, viene inizializzata
+		if(lblAriete==null){
+			//Alloco la nuova label dell'ariete che mi serve
+			Point pos=posizioniRegioni.get(idReg);
+			ImageIcon iconBianca = new ImageIcon(this.getClass().getResource(IMM_ARIETE));
+			lblAriete = new MovableLabel(this.getClass().getResourceAsStream(IMM_ARIETE));
+			lblAriete.setBounds(pos.x+OFFSET_X_ARIETE, pos.y+OFFSET_Y_ARIETE, iconBianca.getIconWidth(), iconBianca.getIconHeight());
+			lblAriete.setVisible(true);
+			lblArieti.put(idReg, lblAriete);
+		}
+		
+		//Modifico il testo visualizzato sulla label
+		modificaQtaLabel(lblAriete,num);
+		
+		if(testo!=null && !" ".equals(testo) && !"".equals(testo)){
+			visMessaggioNuovoThread(testo);
+		}
+	}
+	
+	public void modificaQtaAgnello(String idReg, int num, String testo){
+		/*
+		 * Questo metodo viene invocato anche per la creazione delle label dell'ariete da parte del controller
+		 */
+		//Prelevo la label di cui modificare il testo
+	/*	JLabel lblAgnello =lblAgnelli.get(idReg);
+		//Se la label dell'ariete non è ancora stata creata, viene inizializzata
+		if(lblAgnello==null){
+			//Alloco la nuova label dell'ariete che mi serve
+			Point pos=posizioniRegioni.get(idReg);
+			ImageIcon iconBianca = new ImageIcon(this.getClass().getResource(IMM_AGNELLO));
+			lblAgnello = new MovableLabel(this.getClass().getResourceAsStream(IMM_AGNELLO));
+			lblAgnello.setBounds(pos.x+OFFSET_X_AGNELLO, pos.y+OFFSET_Y_AGNELLO, iconBianca.getIconWidth(), iconBianca.getIconHeight());
+			lblAgnello.setVisible(true);
+			lblAgnelli.put(idReg, lblAgnello);
+		}
+		//Modifico la quantità visualizzata nella label
+		modificaQtaLabel(lblAgnello,num);
+		if(testo!=null && !" ".equals(testo) && !"".equals(testo)){
+			visMessaggioNuovoThread(testo);
+		}
+	}*/
+
+	/**
+	 * Metodo per visualizzare un messaggio all'utente sul JOptionPane che gira in un thread separato dal chiamante
+	 * @param testo
+	 */
+	private void visMessaggioNuovoThread(String testo) {
 			//creo un thread per comunicare all'utente l'azione che è avvenuta
 			final String text=testo;
 			Thread t = new Thread(new Runnable(){
@@ -710,7 +795,6 @@ public class View extends UnicastRemoteObject implements IFView {
 				}
 			});
 			t.start();
-		}
 	}
 	
 	/* (non-Javadoc)
@@ -1037,7 +1121,4 @@ public class View extends UnicastRemoteObject implements IFView {
 	public Color getColoreGamer() {
 		return coloreGamer;
 	}
-
-
-
 }

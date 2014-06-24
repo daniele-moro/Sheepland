@@ -225,6 +225,7 @@ public class ClientMessageReader implements Runnable{
 
 							case "EXCEPTION":
 								//ECCEZIONE, viene visualizzata nella label dedicata alle comunicazioni con l'utente
+								System.out.println("eccezione");
 								view.getLBLOutput().setText(parametri[1]);
 								LOGGER.log(Level.SEVERE, "Errore ", parametri[1]);
 								break;

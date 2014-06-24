@@ -162,6 +162,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	/* (non-Javadoc)
 	 * @see it.polimi.iodice_moro.controller.IFController#accoppiamento1(java.lang.String)
 	 */
+	@Override
 	public synchronized void accoppiamento1(String idRegione) throws NotAllowedMoveException ,RemoteException, IllegalClickException{
 		Regione reg = statoPartita.getRegioneByID(idRegione);
 		if(reg==null){
@@ -185,7 +186,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @throws RemoteException In caso di problemi di rete.
 	 * @see IFController#accoppiamento1(String)
 	 */
-	private synchronized void accoppiamento1(Regione regione) throws NotAllowedMoveException,RemoteException{
+	private void accoppiamento1(Regione regione) throws NotAllowedMoveException,RemoteException{
 		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
 		//Controlliamo che la regione su cui fare l'accoppiamento sia vicino alla strada dove si trova il giocatore
 		if(!statoPartita.getStradeConfini(regione).contains(giocatore.getPosition())) {
@@ -205,11 +206,10 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		}
 	}
 	
-
-	
 	/* (non-Javadoc)
 	 * @see it.polimi.iodice_moro.controller.IFController#sparatoria1 (java.lang.String)
 	 */
+	@Override
 	public synchronized void sparatoria1(String idRegione) throws NotAllowedMoveException, RemoteException, IllegalClickException{
 		Regione reg = statoPartita.getRegioneByID(idRegione);
 		if(reg==null){
@@ -232,7 +232,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @throws RemoteException In caso di problemi di rete.
 	 * @see IFController#sparatoria1(String)
 	 */
-	private synchronized void sparatoria1(Regione regione) throws NotAllowedMoveException, RemoteException{
+	private void sparatoria1(Regione regione) throws NotAllowedMoveException, RemoteException{
 		Giocatore giocatore = statoPartita.getGiocatoreCorrente();
 		//Controlliamo che la regione su cui fare la sparatoria sia vicino alla strada dove si trova il giocatore
 		if(!statoPartita.getStradeConfini(regione).contains(giocatore.getPosition())) {
@@ -357,13 +357,14 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * @param regAdiacente Nuova posizione lupo.
 	 * @throws NotAllowedMoveException se non ci sono lupi.
 	 * @throws RemoteException
-	 * @see {@link Controller#spostaLupo(Regione, Regione)}
 	 */
 	private void spostaLupo(Regione regioneLupo, Regione regAdiacente) throws NotAllowedMoveException, RemoteException {
 		if(regioneLupo.isLupo()) {
 			regioneLupo.removeLupo();
 			regAdiacente.addLupo();
 			statoPartita.setPosLupo(regAdiacente);
+			//Comando lo spostamento del lupo sulla view
+			view.spostaLupo(regioneLupo.getColore(), regAdiacente.getColore());
 			if(regAdiacente.getNumPecore()>0) {
 				regAdiacente.removePecora();
 				System.out.println("Il lupo mangia la pecora");
@@ -512,7 +513,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * Metodo avviato all'inizio del turno per valutare se la pecora nera deve essere
 	 * spostata.
 	 */
-	private void checkSpostaPecoraNera() throws RemoteException {
+	public void checkSpostaPecoraNera() throws RemoteException {
 		int valoreDado = lanciaDado();
 		System.out.println("VALORE DADO: "+valoreDado);
 		/*
@@ -549,7 +550,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		}
 	}
 	
-	//TODO DA REIMPLEMENTARE
 	/**
 	 * Controlla se dev'essere effettuato il movimento del lupo. Viene lanciato un dado e se
 	 * il risultato è lo stesso di una delle caselle adiacenti il lupo viene spostato in quella
@@ -557,10 +557,9 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	 * se la direzione verso la quale spostarsi è occupata da un recinto dovrà essere lanciato
 	 * il dado.
 	 * @throws RemoteException
+	 * @see {@link Controller#spostaLupo(Regione, Regione)}
 	 */
 	private void checkSpostaLupo() throws RemoteException {
-		//TODO Ciclo fin quando non si sposta la pecora. Poi caso in cui ci sono solo giocatori.
-		
 		//Variabile locale per sapere se tutte le regioni sono recintate
 		boolean puoScavalcare=true;
 		//Numero di tentativi di spostamento effettuati
@@ -902,13 +901,14 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		}
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see it.polimi.iodice_moro.controller.IFController#iniziaPartita()
+
+	/**
+	 * Inizializza tutte le variabili in modo che il gioco possa funzionare. 
+	 * @throws RemoteException
 	 */
-	@Override
 	public void iniziaPartita(){
 		
+		//Inizializzo le posizioni di strade e regioni nella VIEW
 		Map<String,Point> posRegioni = new HashMap<String,Point>();
 		for(Regione r: statoPartita.getRegioni()){
 			posRegioni.put(r.getColore(),r.getPosizione());
@@ -932,11 +932,31 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		for(Regione regione : listaRegioni) {
 			if(!regione.getTipo().equals(TipoTerreno.SHEEPSBURG)) {
 				regione.setNumPecore(1);
+				//inizializzo il numero di pecore anche nella VIEW
+				try {
+					view.modificaQtaPecora(regione.getColore(), 1, " ");
+				} catch (RemoteException e) {
+					LOGGER.log(Level.SEVERE, "Problemi di rete");
+				}
 			} else {
 				statoPartita.setPosPecoraNera(regione);
 				regione.setPecoraNera(true);
 				statoPartita.setPosLupo(regione);
 				regione.setLupo(true);
+				
+				/*
+				 * Inizializzazioni nella view:
+				 *  -numero di pecore anche nella VIEW (in questo caso siccome è sheepsburg va a 0)
+				 *  -la presenza del LUPO
+				 *  -la presenza della Pecora Nera
+				 */
+				try {
+					view.modificaQtaPecora(regione.getColore(), 0, " ");
+					view.spostaLupo("", regione.getColore());
+					view.spostaPecoraNera("", regione.getColore());
+				} catch (RemoteException e) {
+					LOGGER.log(Level.SEVERE, "Problemi di rete");
+				}
 			}
 		}
 		

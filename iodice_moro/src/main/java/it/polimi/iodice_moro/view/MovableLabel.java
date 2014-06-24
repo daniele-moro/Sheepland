@@ -100,16 +100,15 @@ public class MovableLabel extends JLabel {
 	/**
 	 * Animazione del movimento in una serie di punti da attraversare
 	 * @param destination Lista di punti da attraversare
-	 * @param timeMillisec Durata totale dell'animazione
+	 * @param timeMillisec Durata dell'animazione tra due punti della lista
 	 */
 	public void moveTo(List<Point> destination, int timeMillisec) {
-		//calcolo la durata dell'animazione del movimento tra due strade
-		final int durationAnimation=timeMillisec/destination.size();
+		final int durationAnimation=timeMillisec;
 		//Iteratore che mi serve per iterare su tutti i punti in cui si deve muovere
 		final Iterator<Point> it = destination.iterator();
 		//Eseguo il primo movimento subito
 		if(it.hasNext()){
-			moveTo(it.next(),durationAnimation);
+			moveTo(it.next(),timeMillisec);
 		}
 		//creo un listener che venga attivato dal timer
 		ActionListener animationTask = new ActionListener() {

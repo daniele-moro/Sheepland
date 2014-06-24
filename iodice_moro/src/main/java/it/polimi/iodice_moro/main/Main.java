@@ -27,7 +27,8 @@ import javax.swing.JOptionPane;
 
 /**
  * Classe che si occupa di istanziare gli oggetti per il funzionamento.
- * @author Antonio Iodice, Daniele Moro
+ * @author Antonio Iodice
+ * @author Daniele Moro
  */
 public class Main {
 	
@@ -37,7 +38,7 @@ public class Main {
 	private static final String LOCALHOST = "127.0.0.1";
 	private static final String DEFAULT_PORT = "12345";
 	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.main");
-	public static final int TEMPO_ATTESA = 30000;
+	public static final int TEMPO_ATTESA = 30;
 
 
 	/**
@@ -121,6 +122,10 @@ public class Main {
 					controller.setView(view);	
 				} else{
 					System.out.println("ERRORE DI CONNESSIONE");
+					JOptionPane.showMessageDialog(frame,
+							"Errore di connessione.\nPartita già iniziata. Non puoi connetterti.");
+					frame.dispose();
+					System.exit(0);
 				}
 			} else {
 
@@ -189,7 +194,7 @@ public class Main {
 
 				try {
 					controller = new Controller(statopartita);
-					ViewRMI viewRMI = new ViewRMI(controller);
+					ViewRMI viewRMI = new ViewRMI((Controller)controller);
 					
 					//Rebind dell'oggeto remoto, che nel nostro caso è il controller
 					Naming.rebind("//"+ip+"/Server", controller);

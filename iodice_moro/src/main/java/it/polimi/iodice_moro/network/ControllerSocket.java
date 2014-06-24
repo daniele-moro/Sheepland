@@ -33,7 +33,6 @@ public class ControllerSocket implements IFController{
 	private int port;
 	private Socket socket;
 	private static final int DEFAULT_PORT = 12345;
-	private IFView view;
 	Thread attesaRisp;
 	ClientMessageReader r;
 	
@@ -188,20 +187,6 @@ public class ControllerSocket implements IFController{
 		return retValue;
 	}
 
-	// TODO CONTROLLARE SE VIENE USATO; NON DOVREBBE VENIRE USAtO, iniziaPartita chiamato dal server
-	/* (non-Javadoc)
-	 * @see it.polimi.iodice_moro.controller.IFController#iniziaPartita
-	 */
-	@Override
-	public void iniziaPartita() {
-		output.println("INIZIA_PARTITA");
-		output.flush();
-		//Faccio partire il thread che gestisce i messaggi ricevuti dal server
-		r = new ClientMessageReader(view, socket, input);
-		attesaRisp = new Thread(r);
-		attesaRisp.start();
-	}
-
 	/* (non-Javadoc)
 	 * @see it.polimi.iodice_moro.controller.IFController#getPosRegioni
 	 */
@@ -352,7 +337,6 @@ public class ControllerSocket implements IFController{
 	 */
 	@Override
 	public void setView(IFView view) {
-		this.view=view;
 		//creo il thread che stara in ascolto delle risposte del server
 		r = new ClientMessageReader(view, socket, input);
 		attesaRisp = new Thread(r);

@@ -43,6 +43,7 @@ public class ControllerRMI implements IFController {
 		} catch (NotBoundException e) {
 			LOGGER.log(Level.SEVERE, "Il riferimento passato non è associato a nulla", e);
 		}
+		
 	}
 
 	@Override
@@ -136,15 +137,6 @@ public class ControllerRMI implements IFController {
 	public boolean mossaPossibile(TipoMossa mossaDaEffettuare)
 			throws RemoteException {
 		return controller.mossaPossibile(mossaDaEffettuare);
-	}
-
-	@Override
-	/* (non-Javadoc)
-	 * @see it.polimi.iodice_moro.controller.IFController#iniziaPartita
-	 */
-	public void iniziaPartita() throws RemoteException {
-		controller.iniziaPartita();
-		
 	}
 
 	@Override

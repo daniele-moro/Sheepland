@@ -1,7 +1,6 @@
 package it.polimi.iodice_moro.network;
 
 import it.polimi.iodice_moro.controller.Controller;
-import it.polimi.iodice_moro.controller.IFController;
 import it.polimi.iodice_moro.exceptions.PartitaIniziataException;
 import it.polimi.iodice_moro.main.Main;
 import it.polimi.iodice_moro.model.Giocatore;
@@ -11,7 +10,6 @@ import it.polimi.iodice_moro.view.IFView;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
@@ -32,7 +30,7 @@ import java.util.logging.Logger;
 public class ViewRMI implements IFView {
 	
 	Map<Color, IFView> listaView;
-	IFController controller;
+	Controller controller;
 	
 	long inizio;
 	Boolean partitaIniziata;
@@ -51,7 +49,7 @@ public class ViewRMI implements IFView {
 	 * Costruttore ViewRMI.
 	 * @param controller Controller associato.
 	 */
-	public ViewRMI(IFController controller) {
+	public ViewRMI(Controller controller) {
 		this();
 		this.controller=controller;
 		partitaIniziata=false;
@@ -351,11 +349,7 @@ public class ViewRMI implements IFView {
 		}
 		System.out.println("partita iniziata!!!");
 		partitaIniziata=true;
-		try {
-			controller.iniziaPartita();
-		} catch (RemoteException e) {
-			LOGGER.log(Level.SEVERE, "Errore di rete", e);
-		}
+		controller.iniziaPartita();
 	}
 
 	/* (non-Javadoc)

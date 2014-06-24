@@ -29,11 +29,11 @@ import java.util.logging.Logger;
 public class ViewSocket implements IFView {
 	
 	private Controller controller;
-	ServerSocket serverSocket;
-	Map<Color, Socket> socketGiocatori = new HashMap<Color, Socket>();
-	Map<Color, PrintWriter> writerGiocatori = new HashMap<Color,PrintWriter>();
+	private ServerSocket serverSocket;
+	private Map<Color, Socket> socketGiocatori = new HashMap<Color, Socket>();
+	private Map<Color, PrintWriter> writerGiocatori = new HashMap<Color,PrintWriter>();
 	private long inizio;
-	ServerConnessione attesaConnessioni;
+	private ServerConnessione attesaConnessioni;
 	
 	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.network");
 	

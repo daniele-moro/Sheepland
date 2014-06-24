@@ -119,11 +119,8 @@ public interface IFController extends Remote{
 	 */
 	public boolean mossaPossibile(TipoMossa mossaDaEffettuare) throws RemoteException;
 
-	/**
-	 * Inizializza tutte le variabili in modo che il gioco possa funzionare. 
-	 * @throws RemoteException
-	 */
-	public void iniziaPartita() throws RemoteException;
+	
+	//public void iniziaPartita() throws RemoteException;
 
 
 	/**
