@@ -21,8 +21,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
-//Utilizzato dalla view "remota", cioè dal client
+/**
+ * Classe utilizzata dalla view "remota", cioè dal client. Si occupa da agire 
+ * da intermediario per il client.
+ * @author Antonio Iodice, Daniele Moro
+ *
+ */
 public class ControllerSocket implements IFController{
 
 	private String host;

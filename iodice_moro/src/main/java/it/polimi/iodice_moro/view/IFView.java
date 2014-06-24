@@ -11,6 +11,11 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Interfaccia della View.
+ * @author Antonio Iodice, Daniele Moro
+ *
+ */
 public interface IFView extends Remote{
 	
 	/**

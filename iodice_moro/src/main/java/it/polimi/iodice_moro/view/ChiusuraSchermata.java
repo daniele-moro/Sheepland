@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 
 /**
  * Classe che viene utilizzata per la chiusura della schermata principale
- *
+ * @author Antonio Iodice, Daniele Moro
  */
 public class ChiusuraSchermata extends WindowAdapter {
 

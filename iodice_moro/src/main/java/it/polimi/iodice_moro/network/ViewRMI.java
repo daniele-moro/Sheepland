@@ -22,6 +22,13 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Classe che si occupa di agire da intermediario tra il client e il server nella modalità
+ * di rete RMI. In particolare riceverà le richieste del controller e si occuperà di mandare
+ * gli aggiornamenti a tutte le view dei client.
+ * @author Antonio Iodice, Daniele Moro
+ *
+ */
 public class ViewRMI implements IFView {
 	
 	Map<Color, IFView> listaView;

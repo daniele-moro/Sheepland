@@ -17,6 +17,11 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Classe che si occupa di accettare le richieste del client nella modailità di rete Socket.
+ * @author Antonio Iodice, Daniele Moro
+ *
+ */
 public class ServerConnessione implements Runnable {
 
 	private Controller controller;
@@ -27,6 +32,12 @@ public class ServerConnessione implements Runnable {
 	
 	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.network");
 	
+	/**
+	 * Costruttore di ServerConnessione.
+	 * @param controller Controller a cui si riferisce.
+	 * @param view View a cui si riferisce.
+	 * @param server
+	 */
 	public ServerConnessione(Controller controller, ViewSocket view, ServerSocket server) {
 		this.controller=controller;
 		partitaIniziata=false;

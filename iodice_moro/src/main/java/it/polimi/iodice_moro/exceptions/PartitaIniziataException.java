@@ -3,7 +3,8 @@ package it.polimi.iodice_moro.exceptions;
 public class PartitaIniziataException extends Exception {
 
 	/**
-	 * 
+	 * Eccezione lanciata quando un utente prova a connettersi a una partita che è già iniziata.
+	 * @author Antonio Iodice, Daniele Moro
 	 */
 	private static final long serialVersionUID = 1L;
 

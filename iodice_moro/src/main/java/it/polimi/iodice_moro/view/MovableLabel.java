@@ -156,6 +156,10 @@ public class MovableLabel extends JLabel {
 		return animating;
 	}
 	
+	/**
+	 * Setta il parametro che indica al metodo {@link MovableLabel#move(int, int)} se l'immagine
+	 * è da rimuovere dopo l'animazione.
+	 */
 	public void setRemoveAfterAnimation(){
 		removeAfterAnimation=true;
 	}

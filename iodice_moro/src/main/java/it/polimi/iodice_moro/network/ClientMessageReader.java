@@ -18,6 +18,11 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Classe che si occupa di ricevere i messaggi dal server, all'interno del client.
+ * @author Antonio
+ *
+ */
 public class ClientMessageReader implements Runnable{
 
 	private View view;

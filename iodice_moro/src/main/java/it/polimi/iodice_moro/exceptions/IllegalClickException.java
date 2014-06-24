@@ -3,7 +3,9 @@ package it.polimi.iodice_moro.exceptions;
 public class IllegalClickException extends Exception {
 
 	/**
-	 * 
+	 * Eccezione lanciata quando l'utente clicca con il mouse in un'area che non è compatibile
+	 * con l'azione da compiere.
+	 * @author Antonio Iodice, Daniele Moro
 	 */
 	private static final long serialVersionUID = 1L;
 

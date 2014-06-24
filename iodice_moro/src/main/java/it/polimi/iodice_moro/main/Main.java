@@ -25,7 +25,10 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 
-
+/**
+ * Classe che si occupa di istanziare gli oggetti per il funzionamento.
+ * @author Antonio Iodice, Daniele Moro
+ */
 public class Main {
 	
 	public Main(){

@@ -20,8 +20,12 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
-//Utilizzata dal controller, quindi dal SERVER
+/**
+ * Classe utilizzata dal controller, cioè dal server, nella modalità di rete Socket. La 
+ * sua funzione principale è di inviare messaggi ai client.
+ * @author Antonio Iodice, Daniele Moro
+ *
+ */
 public class ViewSocket implements IFView {
 	
 	private Controller controller;
@@ -34,6 +38,12 @@ public class ViewSocket implements IFView {
 	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.network");
 	
 	
+	/**
+	 * Costruttore della ViewSocket.
+	 * @param controller Controller da utilizzare.
+	 * @param porta Porta a cui connettersi.
+	 * @throws IOException In caso di errori di I/O durante la comunicazione.
+	 */
 	public ViewSocket(Controller controller, int porta) throws IOException {
 		serverSocket = new ServerSocket(porta);
 		this.controller=controller;
@@ -46,6 +56,11 @@ public class ViewSocket implements IFView {
 	}
 	
 
+	/**
+	 * Costruttore della ViewSocket. Si connette alla porta di default 12345.
+	 * @param controller Controller da utilizzare.
+	 * @throws IOException Se ci sono errori di I/O durante la comunicazione.
+	 */
 	public ViewSocket(Controller controller) throws IOException {
 		this(controller, 12345);
 	}
@@ -162,6 +177,7 @@ public class ViewSocket implements IFView {
 		}
 	}
 	
+	@Override
 	public void spostaLupo(String s, String d) {
 		//Deve effettuare il movimento della pecora nera su tutti i client collegati alla partita
 		for(Entry<Color, PrintWriter> giocatore :writerGiocatori.entrySet()){

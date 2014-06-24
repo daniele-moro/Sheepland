@@ -18,6 +18,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * La classe si occupa di agire da intermediario per il client in RMI quando vuole interagire 
+ * con il Controller.
+ * @author Antonio Iodice, Daniele Moro
+ *
+ */
 public class ControllerRMI implements IFController {
 
 	IFController controller;
@@ -37,7 +43,7 @@ public class ControllerRMI implements IFController {
 		} catch (RemoteException e) {
 			LOGGER.log(Level.SEVERE, "Errore di rete", e);
 		} catch (NotBoundException e) {
-			LOGGER.log(Level.SEVERE, "Il riferimenton passato non è associaot a nulla", e);
+			LOGGER.log(Level.SEVERE, "Il riferimento passato non è associaot a nulla", e);
 		}
 		
 	}

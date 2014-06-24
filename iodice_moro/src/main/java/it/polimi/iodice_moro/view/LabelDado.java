@@ -8,7 +8,7 @@ import javax.swing.JLabel;
 
 /**
  * Label con visualizzazione del risultato del lancio di un dado
- *
+ * @author Antonio Iodice, Daniele Moro
  */
 public class LabelDado extends JLabel {
 	

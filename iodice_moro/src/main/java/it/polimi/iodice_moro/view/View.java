@@ -37,6 +37,12 @@ import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
+/**
+ * La classe View si occupa di mostrare all'utente lo stato del gioco. Riceve gli input
+ * dall'utente e si occupa quindi di far partire i metodi del controller.
+ * @author Antonio Iodice, Daniele Moro
+ *
+ */
 public class View extends UnicastRemoteObject implements IFView {
 	
 	//Font per le label per i giocatori

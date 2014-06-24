@@ -3,7 +3,9 @@ package it.polimi.iodice_moro.exceptions;
 public class NotAllowedMoveException extends Exception {
 
 	/**
-	 * 
+	 * Eccezione lanciata quando l'utente prova a compiere una mossa non permesa dalle regole
+	 * del gioco.
+	 * @author Antonio Iodice, Daniele Moro
 	 */
 	private static final long serialVersionUID = 1L;
 

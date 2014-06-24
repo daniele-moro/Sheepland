@@ -5,6 +5,12 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * La classe Giocatore rappresenta l'istanza del giocatore, con tutte le variabili che riguardano
+ * il suo stato e i metodi per modificarli.
+ * @author Antonio Iodice, Daniele Moro
+ */
+
 public class Giocatore implements Serializable{
 
 	

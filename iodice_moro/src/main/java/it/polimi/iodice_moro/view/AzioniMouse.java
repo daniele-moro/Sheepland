@@ -23,8 +23,8 @@ import javax.swing.JOptionPane;
 
 /**
  * Questa classe implementa gli eventi collegati alla mappa,
- *  i movimenti del mouse ed i click sulla mappa vengono intercettati dagli eventi qui implementati
- *
+ * i movimenti del mouse ed i click sulla mappa vengono intercettati dagli eventi qui implementati
+ * @author Antonio Iodice, Daniele Moro
  */
 class AzioniMouse extends MouseAdapter{
 	//Regioni da evidenziare

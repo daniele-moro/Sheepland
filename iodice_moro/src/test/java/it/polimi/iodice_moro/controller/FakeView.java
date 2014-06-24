@@ -19,6 +19,9 @@ public class FakeView implements IFView {
 	private Map<String, Point> posRegioni;
 	private int lancioDado;
 	
+	/**
+	 * View fittizia utilizzata nel testing.
+	 */
 	public FakeView() {
 		posGiocatori = new HashMap<Color, String>();
 		posStrade = new HashMap<String, Point>();
