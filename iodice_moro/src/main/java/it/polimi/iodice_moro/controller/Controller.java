@@ -146,12 +146,11 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			throw new IllegalClickException("Non hai cliccato su una regione!!");
 		}
 		
-		System.out.println("Sposta pecora controller");
 		spostaPecora(statoPartita.getRegioneByID(idRegione));
 		aggiornaTurno(TipoMossa.SPOSTA_PECORA);
 		String idregD=statoPartita.getAltraRegione(regSorg, statoPartita.getGiocatoreCorrente().getPosition()).getColore();
-		System.out.println("Sposta pecora animazione");
 
+		//Animazione spostamento pecora
 		view.spostaPecoraBianca(idRegione, idregD);
 		view.modificaQtaPecora(idRegione, regSorg.getNumPecore()," ");
 		view.modificaQtaPecora(idregD, statoPartita.getRegioneByID(idregD).getNumPecore()," ");
@@ -169,7 +168,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			throw new IllegalClickException("Non hai cliccato su una regione!!");
 		}
 		int numPecore=reg.getNumPecore();
-		System.out.println("accoppiamento controller");
 		accoppiamento1(reg);
 		aggiornaTurno(TipoMossa.ACCOPPIAMENTO1);
 		if(numPecore>reg.getNumPecore()){
@@ -216,7 +214,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			throw new IllegalClickException("Non hai cliccato su una regione!!");
 		}
 		int numPecore=reg.getNumPecore();
-		System.out.println("sparatoria1 controller");
 		sparatoria1(reg);
 		aggiornaTurno(TipoMossa.SPARATORIA1);
 		if(numPecore>reg.getNumPecore()){
@@ -261,7 +258,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		if(reg==null){
 			throw new IllegalClickException("Non hai cliccato su una regione!!");
 		}
-		System.out.println("sparatoria2 controller");
 		int numPecore = reg.getNumPecore();
 		sparatoria2(reg);
 		aggiornaTurno(TipoMossa.SPARATORIA2);
@@ -343,7 +339,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		Regione regAdiacente=statoPartita.getAltraRegione(regionePecora, statoPartita.getGiocatoreCorrente().getPosition());
 		spostaPecoraNera(regionePecora,regAdiacente);
 		aggiornaTurno(TipoMossa.SPOSTA_PECORA);
-		System.out.println("Sposta pecora animazione");
 
 		view.spostaPecoraNera(regionePecora.getColore(), regAdiacente.getColore());
 		
@@ -367,7 +362,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			view.spostaLupo(regioneLupo.getColore(), regAdiacente.getColore());
 			if(regAdiacente.getNumPecore()>0) {
 				regAdiacente.removePecora();
-				System.out.println("Il lupo mangia la pecora");
 				view.modificaQtaPecora(regAdiacente.getColore(), regAdiacente.getNumPecore(),"Il Lupo ha mangiato!");
 			}
 		} else {
@@ -471,7 +465,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		if(newStreet == null){
 			throw new IllegalClickException("Non hai cliccato su una strada!");
 		}
-		System.out.println("PERCORSO DA FARE");
 		
 		//Memorizzo quanti recinti ci sono prima del movimento 
 		//per capire dopo se il recinto usato è normale o finale
@@ -485,7 +478,10 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		} else{
 			view.addCancelloFinale(oldStreet.getColore());
 		}
+		
+		//Prelevo il percordo che il pastore deve percorrere
 		List<Strada> stradeAttraversate = statoPartita.dijkstraTraStrade(oldStreet, newStreet);
+		//genero la lista da passare alla VIEW
 		List<String> idStradeAttraversate = new ArrayList<String>();
 		for(Strada s : stradeAttraversate){
 			idStradeAttraversate.add(s.getColore());
@@ -539,7 +535,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 				try {
 					spostaPecoraNera(posNera, nuovaRegionePecora);
 					if(view!=null){
-						System.out.println("Spostamento automatico pecora nera!!");
 						view.spostaPecoraNera(posNera.getColore(), nuovaRegionePecora.getColore());
 					}
 					return;
@@ -604,7 +599,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 					if(!strada.isRecinto() || puoScavalcare){
 						Regione regioneDavanti= statoPartita.getAltraRegione(posLupo, strada);
 						try {
-							System.out.println("SPOSTA LUPO");
 							spostaLupo(posLupo,regioneDavanti);
 						} catch (NotAllowedMoveException e) {
 							LOGGER.log(Level.SEVERE, "Mossa non consentita!", e);
@@ -724,36 +718,21 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		//oppure se ci sono due giocatori e sono già state selezionate entrambe le posizioni dei pastori
 		if(statoPartita.getGiocatori().size()!=2 ||
 				(statoPartita.getGiocatori().size()==2 && statoPartita.getGiocatoreCorrente().getPosition2()!=null)){
-			System.out.println("Cambio giocatore");
 			statoPartita.setGiocatoreCorrente(statoPartita.getNextGamer());
 		}
 		
 		//Controllo se la fase di selezione delle posizioni iniziali sia finita
 		if(statoPartita.getGiocatori().indexOf(statoPartita.getGiocatoreCorrente())!=0
 				|| (statoPartita.getGiocatori().size()==2 && statoPartita.getGiocatori().indexOf(statoPartita.getGiocatoreCorrente())==0 && statoPartita.getGiocatoreCorrente().getPosition2()==null)){
-			System.out.println("Selezione del nuovo giocatore che deve selezionare la posizione");
 			view.setGiocatoreCorrente(statoPartita.getGiocatoreCorrente().getColore());
 			
 		}else{
-			//Finito inserimento delle posizioni dei giocatori
-			/*Map<String,Point> posRegioni = new HashMap<String,Point>();
-			for(Regione r: statoPartita.getRegioni()){
-				posRegioni.put(r.getColore(),r.getPosizione());
-			}
-			
-			Map<String,Point> posStrade = new HashMap<String,Point>();
-			for(Strada s: statoPartita.getStrade()){
-				posStrade.put(s.getColore(),s.getPosizione());
-			}*/
-			
 			Map<Color, String> gioc= new HashMap<Color,String>();
 			for(Giocatore g:statoPartita.getGiocatori()){
 				gioc.put(g.getColore(), g.getNome());
 			}
 
-			//Setto posizioni delle regioni, delle strade e comunico i giocatori che partecipano alla partita
-			//view.setPosizioniRegioni(posRegioni);
-			//view.setPosizioniStrade(posStrade);
+			//Comunico i giocatori che partecipano alla partita
 			view.setGiocatori(gioc);
 			
 			//inizializzo la mappa nella view
@@ -776,7 +755,7 @@ public class Controller extends UnicastRemoteObject implements IFController {
 			if(statoPartita.getGiocatori().size()==2){
 				view.selezPast(statoPartita.getGiocatoreCorrente().getColore());
 			}
-			//DA qui inizia la partita vera e propria
+			//Inizia la partita vera e propria
 		}
 	}
 	/** 
@@ -844,7 +823,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 					 //Controllo se il giocatore corrente è l'ultimo della lista
 					.equals(statoPartita.getGiocatoreCorrente()	)
 					){
-				System.out.println("____________________FINE PARTITA_________________________________________");
 				finePartita();
 				return null;
 			}else{
@@ -909,18 +887,9 @@ public class Controller extends UnicastRemoteObject implements IFController {
 	public void iniziaPartita(){
 		
 		//Inizializzo le posizioni di strade e regioni nella VIEW
-		Map<String,Point> posRegioni = new HashMap<String,Point>();
-		for(Regione r: statoPartita.getRegioni()){
-			posRegioni.put(r.getColore(),r.getPosizione());
-		}
-		
-		Map<String,Point> posStrade = new HashMap<String,Point>();
-		for(Strada s: statoPartita.getStrade()){
-			posStrade.put(s.getColore(),s.getPosizione());
-		}
 		try {
-			view.setPosizioniRegioni(posRegioni);
-			view.setPosizioniStrade(posStrade);
+			view.setPosizioniRegioni(getPosRegioni());
+			view.setPosizioniStrade(getPosStrade());
 		} catch (RemoteException e1) {
 			LOGGER.log(Level.SEVERE, "Problemi di rete");
 		}
@@ -994,7 +963,6 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		}
 
 		//Set GIOCATORE CORRENTE
-		System.out.println("SET GIOCATORE CORRENTE!");
 		statoPartita.setGiocatoreCorrente(statoPartita.getGiocatori().get(0));
 		try {
 			view.setGiocatoreCorrente(statoPartita.getGiocatoreCorrente().getColore());
@@ -1003,11 +971,11 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see it.polimi.iodice_moro.controller.IFController#getPosRegioni()
+	/**
+	 * Ritorna l'elenco delle posizioni di tutte le regioni, con i colori loro assegnati
+	 * @return Mappa che associa l'id di ogni regione con la sua strada.
 	 */
-	@Override
-	public Map<String, Point> getPosRegioni() {
+	private Map<String, Point> getPosRegioni() {
 		Map<String,Point> posRegioni = new HashMap<String,Point>();
 		for(Regione r: statoPartita.getRegioni()){
 			posRegioni.put(r.getColore(),r.getPosizione());
@@ -1015,11 +983,11 @@ public class Controller extends UnicastRemoteObject implements IFController {
 		return posRegioni;
 	}
 	
-	/* (non-Javadoc)
-	 * @see it.polimi.iodice_moro.controller.IFController#getPosStrade()
+	/**
+	 * Ritorna l'elenco delle posizioni di tutte le strade, con i colori loro assegnati.	
+	 * @return Mappa che associa l'id di ogni regione con la sua strada.
 	 */
-	@Override
-	public Map<String, Point> getPosStrade() {
+	private Map<String, Point> getPosStrade() {
 		Map<String,Point> posStrade = new HashMap<String,Point>();
 		for(Strada s: statoPartita.getStrade()){
 			posStrade.put(s.getColore(),s.getPosizione());

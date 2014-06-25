@@ -17,6 +17,8 @@ public class LabelDado extends JLabel {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	private Boolean animating=false;
+	
 	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.view");
 
 	/**
@@ -31,21 +33,33 @@ public class LabelDado extends JLabel {
 
 			@Override
 			public void run() {
-				setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/dado.gif")));
-				try {
-					//metto in pausa il thread per dare la sensazione che si stia lanciando il dado
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					LOGGER.log(Level.SEVERE, "Errore nell'esecuzione della thread sleep", e);
+				while(animating){
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						LOGGER.log(Level.SEVERE, "Errore nell'esecuzione della thread sleep", e);
+					}
+					//attesa animazione
 				}
-				setIcon(null);
-				setText("Risultato: "+n);
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					LOGGER.log(Level.SEVERE, "Errore nell'esecuzione della thread sleep", e);
+				synchronized(animating){
+					animating=true;
+					setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("immagini/dado.gif")));
+					try {
+						//metto in pausa il thread per dare la sensazione che si stia lanciando il dado
+						Thread.sleep(800);
+					} catch (InterruptedException e) {
+						LOGGER.log(Level.SEVERE, "Errore nell'esecuzione della thread sleep", e);
+					}
+					setIcon(null);
+					setText("Risultato: "+n);
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						LOGGER.log(Level.SEVERE, "Errore nell'esecuzione della thread sleep", e);
+					}
+					setText(testo);
+					animating=false;
 				}
-				setText(testo);
 			}
 			
 		});

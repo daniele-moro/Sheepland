@@ -629,8 +629,12 @@ public class ControllerTest{
 	}
 	
 	@Test
-	public void testGetPosRegioni() {
-		Map<String, Point> posRegioni = controllerTest.getPosRegioni();
+	public void testGetPosRegioni() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Class myTarget = Controller.class;
+		Method getPosRegioni = myTarget.getDeclaredMethod("getPosRegioni");
+		getPosRegioni.setAccessible(true);
+		
+		Map<String, Point> posRegioni = (Map<String, Point>) getPosRegioni.invoke(controllerTest);
 		double x,y;
 		//Verifico per 4 regioni
 		//Regione ID ffd20000
@@ -656,8 +660,12 @@ public class ControllerTest{
 	}
 	
 	@Test
-	public void testGetPosStrade() {
-		Map<String, Point> posStrade = controllerTest.getPosStrade();
+	public void testGetPosStrade() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Class myTarget = Controller.class;
+		Method getPosStrade = myTarget.getDeclaredMethod("getPosStrade");
+		getPosStrade.setAccessible(true);
+		
+		Map<String, Point> posStrade = (Map<String, Point>) getPosStrade.invoke(controllerTest);
 		double x,y;
 		//Verifico per 4 strade
 		//Strada ID ff3c00ff
@@ -1042,9 +1050,6 @@ public class ControllerTest{
 		assertEquals(strada3, statoPartitaT.getGiocatori().get(2).getPosition());
 		assertEquals(statoPartitaT.getGiocatori().get(0), statoPartitaT.getGiocatoreCorrente());
 		
-		//Controllo che abbia inizializzato le mappe con i colori per le strade e le regioni.
-		assertTrue(!(controllerTest.getPosRegioni().equals(null)));
-		assertTrue(!(controllerTest.getPosStrade().equals(null)));
 		//Controllo che abbia inizializzato la mappa con i colori per i giocatori.
 		assertEquals("Gioc1", controllerTest.getGiocatori().get(colore1));
 		assertEquals("Gioc2", controllerTest.getGiocatori().get(colore2));

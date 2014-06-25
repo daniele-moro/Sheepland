@@ -79,7 +79,6 @@ class AzioniMouse extends MouseAdapter{
 		}
 		//prelevo il colore associato al click del mouse
 		int color=image.getRGB(e.getX(),e.getY());
-		System.out.println("X:"+e.getX()+" Y:"+e.getY() + "  COLOR:0x"+ Integer.toHexString(color));
 
 		//Ora in base alla mossa attuale e quindi al momento in cui si trova la partita, 
 		//devo chiamare i metodi del controller
@@ -90,22 +89,16 @@ class AzioniMouse extends MouseAdapter{
 				&& view.getGiocatoreCorrente().equals(view.getColoreGamer())){
 			//in questo caso sto selezionando quale dei due pastori voglio usare (sono nel caso di due giocatori)
 			final int c1=color;
-			/*Thread t4 = new Thread( new Runnable(){
-				@Override
-				public void run(){*/
-					try {
-						//provo a comunicare quale pastore voglio usare
-						controller.cambiaPastore(Integer.toHexString(c1));
-					} catch (IllegalClickException e1) {
-						view.getLBLOutput().setText( e1.getMessage());
-						LOGGER.log(Level.SEVERE, "Area non clickabile", e1);
-					} catch (RemoteException e1) {
-						view.getLBLOutput().setText( e1.getMessage());
-						LOGGER.log(Level.SEVERE, "Errore di rete", e1);
-					}
-		/*		} 
-			});
-			t4.start();*/
+			try {
+				//provo a comunicare quale pastore voglio usare
+				controller.cambiaPastore(Integer.toHexString(c1));
+			} catch (IllegalClickException e1) {
+				view.getLBLOutput().setText( e1.getMessage());
+				LOGGER.log(Level.SEVERE, "Area non clickabile", e1);
+			} catch (RemoteException e1) {
+				view.getLBLOutput().setText( e1.getMessage());
+				LOGGER.log(Level.SEVERE, "Errore di rete", e1);
+			}
 		}
 
 		//CASO 2: Selezione della posizione iniziale dei pastori
@@ -116,28 +109,20 @@ class AzioniMouse extends MouseAdapter{
 
 			final int c1=color;
 			//STO SELEZIONANDO LE POSIZIONI DEI PASTORI
-
 			//Metto il pastore nella posizione che ho appena selezionato
-			//Creo thread per evitare problemi con i thread in cui gira la GUI
-		/*	Thread t4 = new Thread( new Runnable(){
-				@Override
-				public void run(){*/
-					try {
-						//provo a settare la strada del Pastore
-						controller.setStradaGiocatore(view.getGiocatoreCorrente(), Integer.toHexString(c1));
-					} catch (IllegalClickException e1) {
-						view.getLBLOutput().setText( e1.getMessage());
-						LOGGER.log(Level.SEVERE, "Area non clickabile", e1);
-					} catch (NotAllowedMoveException e1) {
-						view.getLBLOutput().setText( e1.getMessage());
-						LOGGER.log(Level.SEVERE, "Mossa proibita", e1);
-					} catch (RemoteException e1) {
-						view.getLBLOutput().setText( e1.getMessage());
-						LOGGER.log(Level.SEVERE, "Errore di rete", e1);
-					}
-			/*	} 
-			});
-			t4.start();*/
+			try {
+				//provo a settare la strada del Pastore
+				controller.setStradaGiocatore(view.getGiocatoreCorrente(), Integer.toHexString(c1));
+			} catch (IllegalClickException e1) {
+				view.getLBLOutput().setText( e1.getMessage());
+				LOGGER.log(Level.SEVERE, "Area non clickabile", e1);
+			} catch (NotAllowedMoveException e1) {
+				view.getLBLOutput().setText( e1.getMessage());
+				LOGGER.log(Level.SEVERE, "Mossa proibita", e1);
+			} catch (RemoteException e1) {
+				view.getLBLOutput().setText( e1.getMessage());
+				LOGGER.log(Level.SEVERE, "Errore di rete", e1);
+			}
 		}
 
 		//CASO 3: MOSSA NORMALE
@@ -149,7 +134,6 @@ class AzioniMouse extends MouseAdapter{
 				&& view.getMossaAttuale()!=TipoMossa.NO_MOSSA
 				&& view.getMossaAttuale()!=TipoMossa.SELEZ_POSIZ
 				&& view.getMossaAttuale()!=TipoMossa.G2_SELEZ_PAST){
-			//&&view.getGiocatoreCorrente().equals(view.getColoreGamer())){
 
 			try{
 				//ricontrollo per sicurezza che la mossa da fare sia possibile
@@ -202,9 +186,10 @@ class AzioniMouse extends MouseAdapter{
 								//nel caso di problemi vengono generate eccezioni
 								controller.spostaPecoraNera(Integer.toHexString(c));
 								break;
+							default:
+								break;
 							}
-						}
-						else{
+						}else{
 							//Spostamento normale della pecora nera
 							//effettuo il movimento della pecora sul controller
 							//nel caso di problemi genera eccezioni
@@ -232,9 +217,7 @@ class AzioniMouse extends MouseAdapter{
 
 					default:
 						break;
-
 					}
-
 				}
 			}catch(RemoteException e1){
 				view.getLBLOutput().setText(e1.getMessage());
@@ -269,7 +252,6 @@ class AzioniMouse extends MouseAdapter{
 		int color=image.getRGB(e.getX(),e.getY());
 		//Controllo se il cursore è in una regione tra quelle che devo evidenziare
 		if(color!=prevPos){
-			lbl.setToolTipText("Pecore: ");
 			if(Integer.toHexString(color).equals(reg1) || Integer.toHexString(color).equals(reg2)){
 				lbl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				FlashLabel lblFlash= (FlashLabel) view.getLBLRegione(Integer.toHexString(color));
@@ -294,7 +276,7 @@ class AzioniMouse extends MouseAdapter{
 		this.reg1=reg1;
 		this.reg2=reg2;
 		//se le due regioni sono effettivamente regioni, allora le faccio flashare
-		if(!reg1.equals("") || !reg2.equals("")){
+		if(!"".equals(reg1) || !"".equals(reg2)){
 			//controllo prima che le label non stiano gia flashando
 			FlashLabel lblReg1 = (FlashLabel)view.getLBLRegione(reg1);
 			FlashLabel lblReg2 = (FlashLabel)view.getLBLRegione(reg2);

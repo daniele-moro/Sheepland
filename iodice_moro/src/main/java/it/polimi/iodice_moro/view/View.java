@@ -49,8 +49,6 @@ public class View extends UnicastRemoteObject implements IFView {
 	private static final String IMM_PECORA_NERA = "/immagini/pecora_nera.png";
 	private static final String IMM_LUPO = "/immagini/lupo.png";
 	private static final String IMM_PECORA_BIANCA = "/immagini/pecora_bianca.png";
-	private static final String IMM_ARIETE = "/immagini/ariete.png";
-	private static final String IMM_AGNELLO = "/immagini/agnello.png";
 
 	//Font per le label per i giocatori
 	private static final Font FONT_SELECTED = new Font("Arial", Font.BOLD, 20);
@@ -61,15 +59,10 @@ public class View extends UnicastRemoteObject implements IFView {
 	private static final int OFFSET_X_LUPO = 28;
 	private static final int OFFSET_Y_LUPO = -28;
 	private static final int OFFSET_Y_NERA = -18;
-	
-	private static final int OFFSET_X_ARIETE = 30;
-	private static final int OFFSET_Y_ARIETE = 0;
-	private static final int OFFSET_X_AGNELLO = 0;
-	private static final int OFFSET_Y_AGNELLO = 22; 
 
 	//Costante per la durata delle animazioni
-	private static final int TEMPO_ANIMAZIONE_PASTORE = 350; //Da una strada alla successiva
-	private static final int TEMPO_ANIMAZIONE_PECORA = 1500; //tempo animazione completa
+	private static final int TEMPO_ANIMAZIONE_PASTORE = 380; //Da una strada alla successiva
+	private static final int TEMPO_ANIMAZIONE_PECORA = 1700; //tempo animazione completa
 
 	//costante per il colore di sfondo
 	private static final Color BG_COLOR = new Color(43,163,250);
@@ -216,12 +209,6 @@ public class View extends UnicastRemoteObject implements IFView {
 	
 	//Label delle pecore, presenti in ogni regione
 	private Map<String,JLabel> lblPecore = new HashMap<String,JLabel>();
-	
-	//Label degli arieti, presenti in ogni regione
-	private Map<String,JLabel> lblArieti= new HashMap<String,JLabel>();
-	
-	//Label degli agnelli, presenti in ogni regione
-	private Map<String,JLabel> lblAgnelli= new HashMap<String,JLabel>();
 	
 	//Label usate per evidenziare le regioni che è possibile premere per effettuare una determinata mossa
 	private Map<String, JLabel> lblRegioni = new HashMap<String,JLabel>();
@@ -704,7 +691,7 @@ public class View extends UnicastRemoteObject implements IFView {
 		//viene nascosta se il numero di pecore è 0
 		if(num>0){
 			layeredMappa.add(lblPecora, SHEEP_LAYER);
-			lblPecora.setText("  "+num);
+			lblPecora.setText("      "+num);
 		} else{
 			layeredMappa.remove(lblPecora);
 		}
@@ -883,12 +870,10 @@ public class View extends UnicastRemoteObject implements IFView {
 		if(giocatoreCorrente.equals(coloreGamer)){
 			disattivaGiocatore();
 		}
-		lblDado.visualizzaDado(numero,"   ");
+		lblDado.visualizzaDado(numero,"    ");
 		if(giocatoreCorrente.equals(coloreGamer)){
 			attivaGiocatore();
 		}
-		//JOptionPane.showMessageDialog(frame, "Risultato dado: "+numero);
-		//lblOutput.setText("Risultato dado: "+numero);
 	}
 	
 	

@@ -115,12 +115,10 @@ public class ControllerSocket implements IFController{
 		//tenta la connessione al server
 		try{
 			socket = new Socket(host, port);
-			System.out.println("Apertura connessione");
 			output = new PrintWriter(socket.getOutputStream());
 			input = new BufferedReader(
 					new InputStreamReader(socket.getInputStream()));
 			
-			System.out.println("NOME:" + nome);
 			output.print(nome+"\n");
 			output.flush();
 			
@@ -163,19 +161,20 @@ public class ControllerSocket implements IFController{
 	@Override
 	public boolean mossaPossibile(TipoMossa mossaDaEffettuare) {
 		boolean retValue=false;
+		//lock sullo stream di input che è condiviso con un altro thread
 		synchronized(input){
-			System.out.println("FERMATO THREAD NEL TH PRINC\nchiamata remota al metodo Mossa Possibile");
+			//Mando in output verso il server la richiesta
 			output.println("MOSSA_POSSIBILE#"+mossaDaEffettuare.toString());
 			output.flush();
 			String risposta="";
 			try {
+				//Attendo la risposta, se è possibile o meno fare la mossa
 				risposta = input.readLine();
 			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, "Errore di IO", e);
 			}
 			
-			System.out.println("MOSSA POSSIBILE? "+ risposta);
-			
+			//verifico la risposta
 			String[] parametri = risposta.split("#");
 			if("OK".equals(parametri[0])){
 				retValue= Boolean.parseBoolean(parametri[1]);
@@ -185,76 +184,6 @@ public class ControllerSocket implements IFController{
 			}
 		}
 		return retValue;
-	}
-
-	/* (non-Javadoc)
-	 * @see it.polimi.iodice_moro.controller.IFController#getPosRegioni
-	 */
-	@Override
-	public Map<String, Point> getPosRegioni() {
-		Map<String,Point> posRegioni = new HashMap<String,Point>();
-		synchronized(input){
-			System.out.println("RICHIESTA POS REGIONI");
-			output.println("POS_REGIONI");
-			System.out.println("Inviata richiesta");
-			output.flush();
-			System.out.println("attesa risposta");
-			//LETTURA DELLA RISPOSTA
-			String risposta="";
-			try {
-				risposta = input.readLine();
-			} catch (IOException e) {
-				LOGGER.log(Level.SEVERE, "Errore di IO", e);
-			}
-			System.out.println("rispostar icveuto ");
-			String[] parametri = risposta.split("#");
-			System.out.println(risposta);
-			while(!"END".equals(parametri[0])){
-				posRegioni.put(parametri[0], new Point(Integer.parseInt(parametri[1]),Integer.parseInt(parametri[2])));
-				try {
-					risposta = input.readLine();
-				} catch (IOException e) {
-					LOGGER.log(Level.SEVERE, "Errore di IO", e);
-				}
-				parametri = risposta.split("#");
-			}
-		}
-		return posRegioni;
-
-	}
-
-	/* (non-Javadoc)
-	 * @see it.polimi.iodice_moro.controller.IFController#getPosStrade
-	 */
-	@Override
-	public Map<String, Point> getPosStrade() {
-		Map<String,Point> posStrade = new HashMap<String,Point>();
-		synchronized(input){
-			System.out.println("RICHIESTA POS STRADE");
-			output.print("POS_STRADE\n");
-			output.flush();
-
-			//LETTURA DELLA RISPOSTA
-			String risposta="";
-			try {
-				risposta = input.readLine();
-			} catch (IOException e) {
-				LOGGER.log(Level.SEVERE, "Errore di IO", e);
-			}
-			String[] parametri = risposta.split("#");
-			System.out.println(risposta);
-			while(!"END".equals(parametri[0])){
-				posStrade.put(parametri[0], new Point(Integer.parseInt(parametri[1]),Integer.parseInt(parametri[2])));
-				try {
-					risposta = input.readLine();
-				} catch (IOException e) {
-					LOGGER.log(Level.SEVERE, "Errore di IO", e);
-				}
-				parametri = risposta.split("#");
-				System.out.println(risposta);
-			}
-		}
-		return posStrade;
 	}
 
 	/* (non-Javadoc)

@@ -139,22 +139,6 @@ public class ControllerRMI implements IFController {
 		return controller.mossaPossibile(mossaDaEffettuare);
 	}
 
-	@Override
-	/* (non-Javadoc)
-	 * @see it.polimi.iodice_moro.controller.IFController#getPosRegioni
-	 */
-	public Map<String, Point> getPosRegioni() throws RemoteException {
-		return controller.getPosRegioni();
-	}
-
-	@Override
-	/* (non-Javadoc)
-	 * @see it.polimi.iodice_moro.controller.IFController#getPosStrade
-	 */
-	public Map<String, Point> getPosStrade() throws RemoteException {
-		return controller.getPosStrade();
-	}
-
 	/* (non-Javadoc)
 	 * @see it.polimi.iodice_moro.controller.IFController#getIDRegioniAd
 	 */

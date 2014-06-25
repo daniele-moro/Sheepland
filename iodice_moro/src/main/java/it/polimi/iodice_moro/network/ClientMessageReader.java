@@ -67,7 +67,7 @@ public class ClientMessageReader implements Runnable{
 						if(input.ready()){
 							//Leggo cosa c'è in input, leggo fino al carattere di "andata a capo"
 							String risposta = input.readLine();
-							System.out.println("RICEZIONE: "+risposta);
+							
 							//Splitto la stringa in tante sottostringhe
 							//che mi rappresentano i parametri del messaggio mandato dal serve
 							//(i parametri sono divisi dal carattere #)
@@ -112,8 +112,7 @@ public class ClientMessageReader implements Runnable{
 								String messaggio="";
 								messaggio = input.readLine();
 								String[] valori = messaggio.split("#");
-								System.out.println(messaggio);
-								while(!valori[0].equals("END")){
+								while(!"END".equals(valori[0])){
 									posMov.add(valori[0]);
 									messaggio = input.readLine();
 									valori = messaggio.split("#");
@@ -144,9 +143,7 @@ public class ClientMessageReader implements Runnable{
 								String messaggio="";
 								messaggio = input.readLine();
 
-								System.out.println("rispostar icveuto ");
 								String[] valori = messaggio.split("#");
-								System.out.println(messaggio);
 								while(!"END".equals(valori[0])){
 									posRegioni.put(valori[0], new Point(Integer.parseInt(valori[1]),Integer.parseInt(valori[2])));
 
@@ -165,7 +162,6 @@ public class ClientMessageReader implements Runnable{
 								messaggio = input.readLine();
 
 								String[] valori = messaggio.split("#");
-								System.out.println(messaggio);
 								while(!"END".equals(valori[0])){
 									posStrade.put(valori[0], new Point(Integer.parseInt(valori[1]),Integer.parseInt(valori[2])));
 									try {
@@ -174,7 +170,6 @@ public class ClientMessageReader implements Runnable{
 										LOGGER.log(Level.SEVERE, "Errore di IO", e);
 									}
 									valori = messaggio.split("#");
-									System.out.println(messaggio);
 								}
 								view.setPosizioniStrade(posStrade);
 
@@ -186,7 +181,6 @@ public class ClientMessageReader implements Runnable{
 								String messaggio="";
 								messaggio = input.readLine();
 
-								System.out.println(messaggio);
 								String[] valori = messaggio.split("#");
 
 								while(!"END".equals(valori[0])){
@@ -208,7 +202,6 @@ public class ClientMessageReader implements Runnable{
 
 							case "INIT_MAPPA":
 								//Comando di inizializzare la mappa
-								System.out.println("INIT MAPPA CLIENT");
 								view.initMappa();
 								break;
 
@@ -225,7 +218,6 @@ public class ClientMessageReader implements Runnable{
 
 							case "EXCEPTION":
 								//ECCEZIONE, viene visualizzata nella label dedicata alle comunicazioni con l'utente
-								System.out.println("eccezione");
 								view.getLBLOutput().setText(parametri[1]);
 								LOGGER.log(Level.SEVERE, "Errore ", parametri[1]);
 								break;
@@ -246,7 +238,7 @@ public class ClientMessageReader implements Runnable{
 								break;
 
 							case "RIS_DADO":{
-								System.out.println("Visualizzazione del risultato del dado");
+								//visualizzo il risultato del lancio del dado
 								view.visRisDado(Integer.parseInt(parametri[1]));
 							}break;
 
@@ -263,7 +255,6 @@ public class ClientMessageReader implements Runnable{
 								risposta="";
 								risposta = input.readLine();
 
-								System.out.println(risposta);
 								parametri = risposta.split("#");
 
 								while(!"END".equals(parametri[0])){
@@ -295,7 +286,6 @@ public class ClientMessageReader implements Runnable{
 				}
 			}
 		}
-		System.out.println("CHIUSURA THREAD CONTROLLER CLIENT");
 	}
 }
 

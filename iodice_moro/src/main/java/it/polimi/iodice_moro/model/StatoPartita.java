@@ -27,7 +27,7 @@ import org.jgrapht.graph.SimpleWeightedGraph;
  */
 public class StatoPartita {
 	
-	private static final Logger LOGGER_MODEL =  Logger.getLogger("it.polimi.iodice_moro.model");
+	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.model");
 	
 	//--------------------------ATTRIBUTI------------------------------------------
 	/**
@@ -143,12 +143,12 @@ public class StatoPartita {
 			/*
 			 * L'eccezione viene loggata nel logger del model
 			 */
-			LOGGER_MODEL.log(Level.SEVERE, e.getMessage());
+			LOGGER.log(Level.SEVERE, e.getMessage());
 		} catch(IOException e){
 			/*
 			 * L'eccezione viene loggata nel logger del model
 			 */
-			LOGGER_MODEL.log(Level.SEVERE, e.getMessage());
+			LOGGER.log(Level.SEVERE, e.getMessage());
 			
 		}
 	}

@@ -280,7 +280,7 @@ public class ViewSocket implements IFView {
 		System.out.println("POS_REGIONI");
 		for(Entry<Color, PrintWriter> g : writerGiocatori.entrySet()){
 			g.getValue().println("SET_POS_REG");
-			for(Entry<String,Point> reg : controller.getPosRegioni().entrySet()){
+			for(Entry<String,Point> reg : posizioniRegioni.entrySet()){
 				g.getValue().println(reg.getKey()+"#"+reg.getValue().x+"#"+reg.getValue().y);
 				g.getValue().flush();
 			}
@@ -296,7 +296,7 @@ public class ViewSocket implements IFView {
 		System.out.println("POS_STRADE");
 		for(Entry<Color, PrintWriter> g : writerGiocatori.entrySet()){
 			g.getValue().println("SET_POS_STR");
-			for(Entry<String,Point> str : controller.getPosStrade().entrySet()){
+			for(Entry<String,Point> str : posizioniCancelli.entrySet()){
 				g.getValue().println(str.getKey()+"#"+str.getValue().x+"#"+str.getValue().y);
 				g.getValue().flush();
 			}

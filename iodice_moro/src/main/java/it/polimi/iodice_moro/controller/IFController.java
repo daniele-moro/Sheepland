@@ -118,24 +118,6 @@ public interface IFController extends Remote{
 	 * @throws RemoteException
 	 */
 	public boolean mossaPossibile(TipoMossa mossaDaEffettuare) throws RemoteException;
-
-	
-	//public void iniziaPartita() throws RemoteException;
-
-
-	/**
-	 * Ritorna l'elenco delle posizioni di tutte le regioni, con i colori loro assegnati
-	 * @return Mappa che associa l'id di ogni regione con la sua strada.
-	 */
-	public Map<String, Point> getPosRegioni() throws RemoteException;
-
-	/**
-	 * Ritorna l'elenco delle posizioni di tutte le strade, con i colori loro assegnati.	
-	 * @return Mappa che associa l'id di ogni regione con la sua strada.
-	 * @throws RemoteException
-	 */
-	public Map<String, Point> getPosStrade() throws RemoteException;
-
 	
 	/**
 	 * Ritorna gli ID delle due regioni adiacenti alla strada in cui si trova il pastore

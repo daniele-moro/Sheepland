@@ -32,9 +32,6 @@ import javax.swing.JOptionPane;
  */
 public class Main {
 	
-	public Main(){
-	}
-	
 	private static final String LOCALHOST = "127.0.0.1";
 	private static final String DEFAULT_PORT = "12345";
 	private static final Logger LOGGER =  Logger.getLogger("it.polimi.iodice_moro.main");
