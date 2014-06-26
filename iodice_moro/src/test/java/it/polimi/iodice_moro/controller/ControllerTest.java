@@ -513,8 +513,6 @@ public class ControllerTest{
 		Class myTarget = Controller.class;
 		Method checkSpostaPecoraNera = myTarget.getDeclaredMethod("checkSpostaPecoraNera");
 		checkSpostaPecoraNera.setAccessible(true);
-
-		List<Regione> regAdiacenti = statoPartitaT.getRegioniAdiacenti(regione0);
 		
 		regione1.setPecoraNera(true);
 		statoPartitaT.setPosPecoraNera(regione1);
@@ -1127,15 +1125,10 @@ public class ControllerTest{
 	
 	
 	public void testCheckSpostamentoLupo() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, RemoteException {
-		//TODO Ripetere fin quando la pecora non si sposta. Poi caso in cui sono solo giocatori.
-		
 		Class myTarget = Controller.class;
 		Method checkSpostaLupo = myTarget.getDeclaredMethod("checkSpostaLupo");
 		checkSpostaLupo.setAccessible(true);
 
-		List<Regione> regAdiacenti = statoPartitaT.getRegioniAdiacenti(regione0);
-		
-		
 		regione1.setLupo(true);
 		statoPartitaT.setPosLupo(regione1);
 		

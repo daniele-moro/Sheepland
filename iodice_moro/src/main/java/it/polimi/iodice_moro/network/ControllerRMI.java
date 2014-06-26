@@ -8,7 +8,6 @@ import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.view.IFView;
 
 import java.awt.Color;
-import java.awt.Point;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
