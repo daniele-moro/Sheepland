@@ -50,7 +50,6 @@ public class Main {
 		StatoPartita statopartita= new StatoPartita();
 		IFController controller;
 		IFView view;
-		String[] optionsModalita = {"Online","Offline"};
 		String[] optionsRete = {"Client", "Server"};
 		String[] optionsTipoRete = {"Socket", "RMI"};
 		int sceltaTipoRete;

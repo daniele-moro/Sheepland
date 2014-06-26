@@ -5,7 +5,6 @@ import it.polimi.iodice_moro.controller.IFController;
 import it.polimi.iodice_moro.model.Giocatore;
 import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.model.TipoTerreno;
-import it.polimi.iodice_moro.network.ControllerSocket;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -700,72 +699,6 @@ public class View extends UnicastRemoteObject implements IFView {
 			visMessaggioNuovoThread(testo);
 		}
 	}
-	
-	
-	/*/**
-	 * Modifica il testo visualizzato su di una JLabel passata per parametro
-	 * @param lblModificare Label dal modificare 
-	 * @param qta Numero da visualizzare sopra la label
-	 */
-	/*private void modificaQtaLabel(JLabel lblModificare, int qta){
-		//Controllo se la label va o meno nascosta, 
-		//viene nascosta se il numero di pecore è 0
-		if(qta>0){
-			layeredMappa.add(lblModificare, SHEEP_LAYER);
-			lblModificare.setText("  "+qta);
-		} else{
-			layeredMappa.remove(lblModificare);
-		}
-		layeredMappa.repaint();
-	}
-	
-	public void modificaQtaAriete(String idReg, int num, String testo){
-		/*
-		 * Questo metodo viene invocato anche per la creazione delle label dell'ariete da parte del controller
-		 */
-		//Prelevo la label di cui modificare il testo
-		/*JLabel lblAriete =lblArieti.get(idReg);
-		//Se la label dell'ariete non è ancora stata creata, viene inizializzata
-		if(lblAriete==null){
-			//Alloco la nuova label dell'ariete che mi serve
-			Point pos=posizioniRegioni.get(idReg);
-			ImageIcon iconBianca = new ImageIcon(this.getClass().getResource(IMM_ARIETE));
-			lblAriete = new MovableLabel(this.getClass().getResourceAsStream(IMM_ARIETE));
-			lblAriete.setBounds(pos.x+OFFSET_X_ARIETE, pos.y+OFFSET_Y_ARIETE, iconBianca.getIconWidth(), iconBianca.getIconHeight());
-			lblAriete.setVisible(true);
-			lblArieti.put(idReg, lblAriete);
-		}
-		
-		//Modifico il testo visualizzato sulla label
-		modificaQtaLabel(lblAriete,num);
-		
-		if(testo!=null && !" ".equals(testo) && !"".equals(testo)){
-			visMessaggioNuovoThread(testo);
-		}
-	}
-	
-	public void modificaQtaAgnello(String idReg, int num, String testo){
-		/*
-		 * Questo metodo viene invocato anche per la creazione delle label dell'ariete da parte del controller
-		 */
-		//Prelevo la label di cui modificare il testo
-	/*	JLabel lblAgnello =lblAgnelli.get(idReg);
-		//Se la label dell'ariete non è ancora stata creata, viene inizializzata
-		if(lblAgnello==null){
-			//Alloco la nuova label dell'ariete che mi serve
-			Point pos=posizioniRegioni.get(idReg);
-			ImageIcon iconBianca = new ImageIcon(this.getClass().getResource(IMM_AGNELLO));
-			lblAgnello = new MovableLabel(this.getClass().getResourceAsStream(IMM_AGNELLO));
-			lblAgnello.setBounds(pos.x+OFFSET_X_AGNELLO, pos.y+OFFSET_Y_AGNELLO, iconBianca.getIconWidth(), iconBianca.getIconHeight());
-			lblAgnello.setVisible(true);
-			lblAgnelli.put(idReg, lblAgnello);
-		}
-		//Modifico la quantità visualizzata nella label
-		modificaQtaLabel(lblAgnello,num);
-		if(testo!=null && !" ".equals(testo) && !"".equals(testo)){
-			visMessaggioNuovoThread(testo);
-		}
-	}*/
 
 	/**
 	 * Metodo per visualizzare un messaggio all'utente sul JOptionPane che gira in un thread separato dal chiamante

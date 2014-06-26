@@ -7,7 +7,6 @@ import it.polimi.iodice_moro.model.TipoMossa;
 import it.polimi.iodice_moro.view.IFView;
 
 import java.awt.Color;
-import java.awt.Point;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
