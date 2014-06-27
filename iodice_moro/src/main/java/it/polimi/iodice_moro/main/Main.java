@@ -168,8 +168,7 @@ public class Main {
 						try {
 							JOptionPane.showMessageDialog(null, "INDIRIZZO IP: "+InetAddress.getLocalHost().getHostAddress()+"\n PORTA: "+porta2);
 						} catch (UnknownHostException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							LOGGER.log(Level.SEVERE, "Host sconosciuto!", e);
 						}
 
 					}
